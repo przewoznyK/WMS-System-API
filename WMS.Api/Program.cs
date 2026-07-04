@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using WMS.Application;
 using WMS.Infrastructure;
 
@@ -11,7 +12,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<ProductService>();
-builder.Services.AddSingleton<IProductRepository, InMemoryProductRepository>();
+builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
+builder.Services.AddDbContext<WmsDbContext>(options => options.UseSqlite("Data Source=wms.db"));
 
 var app = builder.Build();
 
