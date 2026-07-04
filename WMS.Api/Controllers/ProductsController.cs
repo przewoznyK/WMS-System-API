@@ -21,5 +21,13 @@ namespace WMS.Api.Controllers
 
             return Ok();
         }
+
+        [HttpGet]
+        public IActionResult GetAll()
+        {
+            var products = _productService.GetAllProducts();
+
+            return Ok(products);
+        }
     }
 }

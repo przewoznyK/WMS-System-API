@@ -12,5 +12,10 @@ namespace WMS.Infrastructure
             _products.Add(product);
             Console.WriteLine("Add product " + product.Name);
         }
+
+        public IEnumerable<Product> GetAll()
+        {
+            return _products;
+        }
     }
 }

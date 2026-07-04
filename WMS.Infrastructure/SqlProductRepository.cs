@@ -17,5 +17,10 @@ namespace WMS.Infrastructure
             _wmsDbContext.Products.Add(product);
             _wmsDbContext.SaveChanges();
         }
+
+        public IEnumerable<Product> GetAll()
+        {
+            return _wmsDbContext.Products.ToList();
+        }
     }
 }

@@ -16,5 +16,10 @@ namespace WMS.Application
             Product newProduct = new(sku, name, description);
             _productRepository.Add(newProduct);
         }
+
+        public IEnumerable<Product> GetAllProducts()
+        {
+            return _productRepository.GetAll();
+        }
     }
 }
