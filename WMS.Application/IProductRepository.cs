@@ -8,5 +8,6 @@ namespace WMS.Application
         public IEnumerable<Product> GetAll();
         public Product? GetProductById(Guid id);
         public void UpdateDetails(Product product, string name, string description);
+        public void Delete(Product product);
     }
 }

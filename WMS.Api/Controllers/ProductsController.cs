@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WMS.Application;
+using WMS.Domain;
 
 namespace WMS.Api.Controllers
 {
@@ -25,6 +26,21 @@ namespace WMS.Api.Controllers
             _productService.CreateProduct(createProductRequest.Sku, createProductRequest.Name, createProductRequest.Description);
 
             return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public IActionResult Delete(Guid id)
+        {
+            var product =  _productService.GetProductById(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            _productService.DeleteProduct(product);
+
+            return NoContent();
         }
 
         [HttpGet]

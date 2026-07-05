@@ -18,6 +18,12 @@ namespace WMS.Infrastructure
             _wmsDbContext.SaveChanges();
         }
 
+        public void Delete(Product product)
+        {
+            _wmsDbContext.Products.Remove(product);
+            _wmsDbContext.SaveChanges();
+        }
+
         public IEnumerable<Product> GetAll()
         {
             return _wmsDbContext.Products.ToList();

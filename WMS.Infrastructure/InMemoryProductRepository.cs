@@ -10,7 +10,11 @@ namespace WMS.Infrastructure
         public void Add(Product product)
         {
             _products.Add(product);
-            Console.WriteLine("Add product " + product.Name);
+        }
+
+        public void Delete(Product product)
+        {
+            _products.Remove(product);
         }
 
         public IEnumerable<Product> GetAll()

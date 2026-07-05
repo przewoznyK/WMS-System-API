@@ -17,6 +17,11 @@ namespace WMS.Application
             _productRepository.Add(newProduct);
         }
 
+        public void DeleteProduct(Product product)
+        {
+            _productRepository.Delete(product);
+        }
+
         public IEnumerable<Product> GetAllProducts()
         {
             return _productRepository.GetAll();
