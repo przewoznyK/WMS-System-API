@@ -16,45 +16,45 @@ namespace WMS.Api.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateProductRequest createProductRequest)
+        public async Task<IActionResult> CreateAsync(CreateProductRequest createProductRequest)
         {
             if(string.IsNullOrWhiteSpace(createProductRequest.Sku) || string.IsNullOrWhiteSpace(createProductRequest.Name))
             {
                 return BadRequest("SKU and Name is requested");
             }
 
-            _productService.CreateProduct(createProductRequest.Sku, createProductRequest.Name, createProductRequest.Description);
+            await _productService.CreateProductAsync(createProductRequest.Sku, createProductRequest.Name, createProductRequest.Description);
 
             return Ok();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(Guid id)
+        public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            var product =  _productService.GetProductById(id);
+            var product = await _productService.GetProductByIdAsync(id);
 
             if (product == null)
             {
                 return NotFound();
             }
 
-            _productService.DeleteProduct(product);
+           await _productService.DeleteProductAsync(product);
 
             return NoContent();
         }
 
         [HttpGet]
-        public IActionResult GetAll()
+        public async Task<IActionResult> GetAllAsync()
         {
-            var products = _productService.GetAllProducts();
+            var products = await _productService.GetAllProductsAsync();
 
             return Ok(products);
         }
 
         [HttpGet("{id}")]
-        public IActionResult GetProductById(Guid id)
+        public async Task<IActionResult> GetProductByIdAsync(Guid id)
         {
-            var product = _productService.GetProductById(id);
+            var product = await _productService.GetProductByIdAsync(id);
 
             if (product == null)
             {
@@ -65,21 +65,21 @@ namespace WMS.Api.Controllers
         }
 
         [HttpPut("{id}")]
-        public IActionResult UpdateProductRequest(UpdateProductRequest updateProductRequest, Guid id)
+        public async Task<IActionResult> UpdateProductRequest(UpdateProductRequest updateProductRequest, Guid id)
         {
             if (string.IsNullOrWhiteSpace(updateProductRequest.Name))
             {
                 return BadRequest("Name is requested");
             }
 
-            var product = _productService.GetProductById(id);
+            var product = await _productService.GetProductByIdAsync(id);
 
             if (product == null)
             {
                 return NotFound();
             }
 
-            _productService.UpdateDetails(product, updateProductRequest.Name, updateProductRequest.Description);
+            await _productService.UpdateDetailsAsync(product, updateProductRequest.Name, updateProductRequest.Description);
 
             return NoContent();
         }

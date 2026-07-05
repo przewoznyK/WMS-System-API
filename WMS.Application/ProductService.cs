@@ -11,30 +11,30 @@ namespace WMS.Application
             _productRepository = productRepository;
         }
 
-        public void CreateProduct(string sku, string name, string description)
+        public async Task CreateProductAsync(string sku, string name, string description)
         {
             Product newProduct = new(sku, name, description);
-            _productRepository.Add(newProduct);
+            await _productRepository.AddAsync(newProduct);
         }
 
-        public void DeleteProduct(Product product)
+        public async Task DeleteProductAsync(Product product)
         {
-            _productRepository.Delete(product);
+            await _productRepository.DeleteAsync(product);
         }
 
-        public IEnumerable<Product> GetAllProducts()
+        public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            return _productRepository.GetAll();
+            return await _productRepository.GetAllAsync();
         }
 
-        public Product GetProductById(Guid id)
+        public async Task<Product?> GetProductByIdAsync(Guid id)
         {
-            return _productRepository.GetProductById(id);
+            return await _productRepository.GetProductByIdAsync(id);
         }
 
-        public void UpdateDetails(Product product, string name, string description)
+        public async Task UpdateDetailsAsync(Product product, string name, string description)
         {
-            _productRepository.UpdateDetails(product, name, description);
+            await _productRepository.UpdateDetailsAsync(product, name, description);
         }
     }
 }

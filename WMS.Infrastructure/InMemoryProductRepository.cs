@@ -7,29 +7,33 @@ namespace WMS.Infrastructure
     {
         private List<Product> _products = new();
 
-        public void Add(Product product)
+        public Task AddAsync(Product product)
         {
             _products.Add(product);
+            return Task.CompletedTask;
         }
 
-        public void Delete(Product product)
+        public Task DeleteAsync(Product product)
         {
             _products.Remove(product);
+            return Task.CompletedTask;
         }
 
-        public IEnumerable<Product> GetAll()
+        public Task<IEnumerable<Product>> GetAll()
         {
-            return _products;
+            return Task.FromResult<IEnumerable<Product>>(_products);
         }
 
-        public Product? GetProductById(Guid id)
+        public Task<Product?> GetProductByIdAsync(Guid id)
         {
-            return _products.FirstOrDefault(x => x.Id == id);
+            var product = _products.FirstOrDefault(x => x.Id == id);
+            return Task.FromResult<Product?>(product);
         }
 
-        public void UpdateDetails(Product product, string name, string description)
+        public Task UpdateDetailsAsync(Product product, string name, string description)
         {
             product.UpdateDetails(name, description);
+            return Task.CompletedTask;
         }
     }
 }

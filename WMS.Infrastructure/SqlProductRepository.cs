@@ -1,5 +1,6 @@
 ﻿using WMS.Application;
 using WMS.Domain;
+using Microsoft.EntityFrameworkCore;
 
 namespace WMS.Infrastructure
 {
@@ -12,32 +13,32 @@ namespace WMS.Infrastructure
             _wmsDbContext = wmsDbContext;
         }
 
-        public void Add(Product product)
+        public async Task AddAsync(Product product)
         {
             _wmsDbContext.Products.Add(product);
-            _wmsDbContext.SaveChanges();
+            await _wmsDbContext.SaveChangesAsync();
         }
 
-        public void Delete(Product product)
+        public async Task DeleteAsync(Product product)
         {
             _wmsDbContext.Products.Remove(product);
-            _wmsDbContext.SaveChanges();
+            await _wmsDbContext.SaveChangesAsync();
         }
 
-        public IEnumerable<Product> GetAll()
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            return _wmsDbContext.Products.ToList();
+            return await _wmsDbContext.Products.ToListAsync();
         }
 
-        public Product? GetProductById(Guid id)
+        public async Task<Product?> GetProductByIdAsync(Guid id)
         {
-            return _wmsDbContext.Products.Find(id);
+            return await _wmsDbContext.Products.FindAsync(id);
         }
 
-        public void UpdateDetails(Product product, string name, string description)
+        public async Task UpdateDetailsAsync(Product product, string name, string description)
         {
             product.UpdateDetails(name, description);
-            _wmsDbContext.SaveChanges();
+            await _wmsDbContext.SaveChangesAsync();
         }
     }
 }

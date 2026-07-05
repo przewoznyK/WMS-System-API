@@ -4,10 +4,10 @@ namespace WMS.Application
 {
     public interface IProductRepository
     {
-        public void Add(Product product);
-        public IEnumerable<Product> GetAll();
-        public Product? GetProductById(Guid id);
-        public void UpdateDetails(Product product, string name, string description);
-        public void Delete(Product product);
+        public Task AddAsync(Product product);
+        public Task DeleteAsync(Product product);
+        public Task<IEnumerable<Product>> GetAllAsync();
+        public Task<Product?> GetProductByIdAsync(Guid id);
+        public Task UpdateDetailsAsync(Product product, string name, string description);
     }
 }
