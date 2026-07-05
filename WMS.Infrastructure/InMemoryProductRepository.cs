@@ -22,5 +22,10 @@ namespace WMS.Infrastructure
         {
             return _products.FirstOrDefault(x => x.Id == id);
         }
+
+        public void UpdateDetails(Product product, string name, string description)
+        {
+            product.UpdateDetails(name, description);
+        }
     }
 }

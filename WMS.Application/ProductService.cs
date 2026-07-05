@@ -26,5 +26,10 @@ namespace WMS.Application
         {
             return _productRepository.GetProductById(id);
         }
+
+        public void UpdateDetails(Product product, string name, string description)
+        {
+            _productRepository.UpdateDetails(product, name, description);
+        }
     }
 }

@@ -27,5 +27,11 @@ namespace WMS.Infrastructure
         {
             return _wmsDbContext.Products.Find(id);
         }
+
+        public void UpdateDetails(Product product, string name, string description)
+        {
+            product.UpdateDetails(name, description);
+            _wmsDbContext.SaveChanges();
+        }
     }
 }

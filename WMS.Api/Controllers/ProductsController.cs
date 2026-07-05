@@ -17,9 +17,9 @@ namespace WMS.Api.Controllers
         [HttpPost]
         public IActionResult Create(CreateProductRequest createProductRequest)
         {
-            if(string.IsNullOrWhiteSpace(createProductRequest.Name) || string.IsNullOrWhiteSpace(createProductRequest.Sku))
+            if(string.IsNullOrWhiteSpace(createProductRequest.Sku) || string.IsNullOrWhiteSpace(createProductRequest.Name))
             {
-                return BadRequest("Name and SKU is requested");
+                return BadRequest("SKU and Name is requested");
             }
 
             _productService.CreateProduct(createProductRequest.Sku, createProductRequest.Name, createProductRequest.Description);
@@ -46,6 +46,26 @@ namespace WMS.Api.Controllers
             }
 
             return Ok(product);
+        }
+
+        [HttpPut("{id}")]
+        public IActionResult UpdateProductRequest(UpdateProductRequest updateProductRequest, Guid id)
+        {
+            if (string.IsNullOrWhiteSpace(updateProductRequest.Name))
+            {
+                return BadRequest("Name is requested");
+            }
+
+            var product = _productService.GetProductById(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            _productService.UpdateDetails(product, updateProductRequest.Name, updateProductRequest.Description);
+
+            return NoContent();
         }
     }
 }
