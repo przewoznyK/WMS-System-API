@@ -17,6 +17,11 @@ namespace WMS.Api.Controllers
         [HttpPost]
         public IActionResult Create(CreateProductRequest createProductRequest)
         {
+            if(string.IsNullOrWhiteSpace(createProductRequest.Name) || string.IsNullOrWhiteSpace(createProductRequest.Sku))
+            {
+                return BadRequest("Name and SKU is requested");
+            }
+
             _productService.CreateProduct(createProductRequest.Sku, createProductRequest.Name, createProductRequest.Description);
 
             return Ok();
