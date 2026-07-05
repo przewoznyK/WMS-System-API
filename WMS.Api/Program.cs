@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using WMS.Api.Middleware;
 using WMS.Application;
+using WMS.Application.Commands;
 using WMS.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,9 +13,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
 builder.Services.AddDbContext<WmsDbContext>(options => options.UseSqlite("Data Source=wms.db"));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly));
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();

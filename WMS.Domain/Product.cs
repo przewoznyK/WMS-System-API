@@ -9,6 +9,8 @@ namespace WMS.Domain
         public string Name { get; private set; }
         public string Description { get; private set; }
 
+        private Product() { }
+
         public Product(string sku, string name, string description = "")
         {
             if (string.IsNullOrWhiteSpace(sku))
