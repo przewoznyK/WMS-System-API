@@ -19,7 +19,7 @@ namespace WMS.Infrastructure
             return Task.CompletedTask;
         }
 
-        public Task<IEnumerable<Product>> GetAll()
+        public Task<IEnumerable<Product>> GetAllAsync()
         {
             return Task.FromResult<IEnumerable<Product>>(_products);
         }

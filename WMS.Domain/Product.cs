@@ -1,4 +1,6 @@
-﻿namespace WMS.Domain
+﻿using WMS.Domain.Exceptions;
+
+namespace WMS.Domain
 {
     public class Product
     {
@@ -9,14 +11,14 @@
 
         public Product(string sku, string name, string description = "")
         {
-            if(string.IsNullOrWhiteSpace(sku))
+            if (string.IsNullOrWhiteSpace(sku))
             {
-                throw new ArgumentException("SKU cannot be null", nameof(sku));
+                throw new InvalidProductDataException("SKU cannot be null");
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Name cannot be null", nameof(name));
+                throw new InvalidProductDataException("Name cannot be null");
             }
 
             Id = Guid.NewGuid();
@@ -29,7 +31,7 @@
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ArgumentException("Name cannot be null", nameof(name));
+                throw new InvalidProductDataException("Name cannot be null");
             }
 
             Name = name;

@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using WMS.Api.Middleware;
 using WMS.Application;
 using WMS.Infrastructure;
 
@@ -16,6 +17,7 @@ builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
 builder.Services.AddDbContext<WmsDbContext>(options => options.UseSqlite("Data Source=wms.db"));
 
 var app = builder.Build();
+app.UseMiddleware<ExceptionMiddleware>();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())

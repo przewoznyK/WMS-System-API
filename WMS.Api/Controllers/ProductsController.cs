@@ -18,11 +18,6 @@ namespace WMS.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAsync(CreateProductRequest createProductRequest)
         {
-            if(string.IsNullOrWhiteSpace(createProductRequest.Sku) || string.IsNullOrWhiteSpace(createProductRequest.Name))
-            {
-                return BadRequest("SKU and Name is requested");
-            }
-
             await _productService.CreateProductAsync(createProductRequest.Sku, createProductRequest.Name, createProductRequest.Description);
 
             return Ok();
@@ -67,11 +62,6 @@ namespace WMS.Api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateProductRequest(UpdateProductRequest updateProductRequest, Guid id)
         {
-            if (string.IsNullOrWhiteSpace(updateProductRequest.Name))
-            {
-                return BadRequest("Name is requested");
-            }
-
             var product = await _productService.GetProductByIdAsync(id);
 
             if (product == null)
