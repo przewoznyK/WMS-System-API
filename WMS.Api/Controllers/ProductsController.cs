@@ -29,5 +29,18 @@ namespace WMS.Api.Controllers
 
             return Ok(products);
         }
+
+        [HttpGet("{id}")]
+        public IActionResult GetProductById(Guid id)
+        {
+            var product = _productService.GetProductById(id);
+
+            if (product == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(product);
+        }
     }
 }

@@ -21,5 +21,10 @@ namespace WMS.Application
         {
             return _productRepository.GetAll();
         }
+
+        public Product GetProductById(Guid id)
+        {
+            return _productRepository.GetProductById(id);
+        }
     }
 }

@@ -17,5 +17,10 @@ namespace WMS.Infrastructure
         {
             return _products;
         }
+
+        public Product? GetProductById(Guid id)
+        {
+            return _products.FirstOrDefault(x => x.Id == id);
+        }
     }
 }

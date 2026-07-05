@@ -22,5 +22,10 @@ namespace WMS.Infrastructure
         {
             return _wmsDbContext.Products.ToList();
         }
+
+        public Product? GetProductById(Guid id)
+        {
+            return _wmsDbContext.Products.Find(id);
+        }
     }
 }
