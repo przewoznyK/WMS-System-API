@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.Commands;
+using WMS.Application.Commands.Products.Queries;
 
 namespace WMS.Api.Controllers
 {

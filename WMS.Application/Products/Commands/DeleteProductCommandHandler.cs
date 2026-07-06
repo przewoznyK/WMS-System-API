@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using WMS.Domain.Exceptions;
 
-namespace WMS.Application.Commands
+namespace WMS.Application.Commands.Products.Queries
 {
     internal class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
     {
@@ -16,7 +16,7 @@ namespace WMS.Application.Commands
         {
             var product = await _productRepository.GetProductByIdAsync(request.Id);
 
-            if(product == null)
+            if (product == null)
             {
                 throw new ProductNotFoundException("Product not found");
             }
