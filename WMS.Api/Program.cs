@@ -1,8 +1,10 @@
 using Microsoft.EntityFrameworkCore;
 using WMS.Api.Middleware;
-using WMS.Application;
-using WMS.Application.Commands;
+using WMS.Application.Products.Commands;
+using WMS.Application.WarehouseLocations.Commands;
+using WMS.Domain.Repositories;
 using WMS.Infrastructure;
+using WMS.Infrastructure.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,8 +16,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddScoped<IProductRepository, SqlProductRepository>();
+builder.Services.AddScoped<IWarehouseLocationRepository, SqlWarehouseLocationRepository>();
 builder.Services.AddDbContext<WmsDbContext>(options => options.UseSqlite("Data Source=wms.db"));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly));
+builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateWarehouseLocationCommand).Assembly));
 
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();

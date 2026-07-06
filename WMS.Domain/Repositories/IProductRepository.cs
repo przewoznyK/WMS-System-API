@@ -1,6 +1,6 @@
 ﻿using WMS.Domain.Entities;
 
-namespace WMS.Application
+namespace WMS.Domain.Repositories
 {
     public interface IProductRepository
     {

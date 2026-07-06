@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using WMS.Domain.Entities;
 using WMS.Domain.Exceptions;
+using WMS.Domain.Repositories;
 
-namespace WMS.Application.Commands
+namespace WMS.Application.Products.Commands
 {
-    internal class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand, Product>
+    internal class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand>
     {
         private readonly IProductRepository _productRepository;
 
@@ -13,7 +13,7 @@ namespace WMS.Application.Commands
             _productRepository = productRepository;
         }
 
-        public async Task<Product> Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
         {
             var product = await _productRepository.GetProductByIdAsync(request.Id);
 
@@ -23,7 +23,6 @@ namespace WMS.Application.Commands
             }
 
             await _productRepository.UpdateDetailsAsync(product, request.Name, request.Description);
-            return product;
         }
     }
 }

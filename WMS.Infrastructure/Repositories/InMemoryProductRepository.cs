@@ -1,7 +1,7 @@
-﻿using WMS.Application;
-using WMS.Domain.Entities;
+﻿using WMS.Domain.Entities;
+using WMS.Domain.Repositories;
 
-namespace WMS.Infrastructure
+namespace WMS.Infrastructure.Repositories
 {
     public class InMemoryProductRepository : IProductRepository
     {
@@ -27,7 +27,7 @@ namespace WMS.Infrastructure
         public Task<Product?> GetProductByIdAsync(Guid id)
         {
             var product = _products.FirstOrDefault(x => x.Id == id);
-            return Task.FromResult<Product?>(product);
+            return Task.FromResult(product);
         }
 
         public Task UpdateDetailsAsync(Product product, string name, string description)

@@ -1,8 +1,9 @@
 ﻿using MediatR;
 using WMS.Domain.Entities;
 using WMS.Domain.Exceptions;
+using WMS.Domain.Repositories;
 
-namespace WMS.Application.Commands
+namespace WMS.Application.Products.Queries
 {
     internal class GetProductByIdQueryHandler : IRequestHandler<GetProductByIdQuery, Product>
     {

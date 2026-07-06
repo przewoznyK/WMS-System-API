@@ -1,7 +1,8 @@
 ﻿using MediatR;
 using WMS.Domain.Entities;
+using WMS.Domain.Repositories;
 
-namespace WMS.Application.Commands
+namespace WMS.Application.Products.Queries
 {
     internal class GetAllProductsQueryHandler : IRequestHandler<GetAllProductsQuery, IEnumerable<Product>>
     {

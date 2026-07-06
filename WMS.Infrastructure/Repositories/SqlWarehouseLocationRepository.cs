@@ -1,0 +1,44 @@
+﻿using Microsoft.EntityFrameworkCore;
+using WMS.Domain.Entities;
+using WMS.Domain.Repositories;
+
+namespace WMS.Infrastructure.Repositories
+{
+    public class SqlWarehouseLocationRepository : IWarehouseLocationRepository
+    {
+        private readonly WmsDbContext _wmsDbContext;
+
+        public SqlWarehouseLocationRepository(WmsDbContext wmsDbContext)
+        {
+            _wmsDbContext = wmsDbContext;
+        }
+
+        public async Task AddAsync(WarehouseLocation warehouseLocation)
+        {
+            _wmsDbContext.WarehouseLocations.Add(warehouseLocation);
+            await _wmsDbContext.SaveChangesAsync();
+        }
+
+        public async Task DeleteAsync(WarehouseLocation warehouseLocation)
+        {
+           _wmsDbContext.WarehouseLocations.Remove(warehouseLocation);
+            await _wmsDbContext.SaveChangesAsync();
+        }
+
+        public async Task<IEnumerable<WarehouseLocation>> GetAllAsync()
+        {
+            return await _wmsDbContext.WarehouseLocations.ToListAsync();
+        }
+
+        public async Task<WarehouseLocation?> GetWarehouseByIdAsync(Guid id)
+        {
+            return await _wmsDbContext.WarehouseLocations.FindAsync(id);
+        }
+
+        public async Task UpdateDetailsAsync(WarehouseLocation warehouseLocation, string code, string description)
+        {
+            warehouseLocation.UpdateDetails(code, description);
+            await _wmsDbContext.SaveChangesAsync();
+        }
+    }
+}

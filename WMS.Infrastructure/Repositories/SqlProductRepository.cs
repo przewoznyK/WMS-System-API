@@ -1,8 +1,8 @@
-﻿using WMS.Application;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using WMS.Domain.Entities;
+using WMS.Domain.Repositories;
 
-namespace WMS.Infrastructure
+namespace WMS.Infrastructure.Repositories
 {
     public class SqlProductRepository : IProductRepository
     {

@@ -1,7 +1,8 @@
 ﻿using MediatR;
 using WMS.Domain.Exceptions;
+using WMS.Domain.Repositories;
 
-namespace WMS.Application.Commands.Products.Queries
+namespace WMS.Application.Products.Commands
 {
     internal class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
     {

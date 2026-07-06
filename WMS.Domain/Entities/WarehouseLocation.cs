@@ -12,5 +12,13 @@
             Code = code;
             Description = description;
         }
+
+        public void UpdateDetails(string code, string description)
+        {
+            ArgumentException.ThrowIfNullOrWhiteSpace(code);
+
+            Code = code;
+            Description = description;
+        }
     }
 }

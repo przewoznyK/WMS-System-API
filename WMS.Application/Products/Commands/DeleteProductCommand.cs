@@ -1,6 +1,6 @@
 ﻿using MediatR;
 
-namespace WMS.Application.Commands.Products.Queries
+namespace WMS.Application.Products.Commands
 {
     public record DeleteProductCommand(Guid Id) : IRequest;
 }

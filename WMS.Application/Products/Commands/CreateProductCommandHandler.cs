@@ -1,7 +1,8 @@
 ﻿using MediatR;
 using WMS.Domain.Entities;
+using WMS.Domain.Repositories;
 
-namespace WMS.Application.Commands
+namespace WMS.Application.Products.Commands
 {
     internal class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Guid>
     {
@@ -15,7 +16,7 @@ namespace WMS.Application.Commands
         {
             Product newProduct = new(request.Sku, request.Name, request.Description);
             await _productRepository.AddAsync(newProduct);
-            
+
             return newProduct.Id;
         }
     }

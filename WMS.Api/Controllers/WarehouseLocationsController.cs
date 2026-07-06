@@ -1,23 +1,23 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
-using WMS.Application.Products.Commands;
-using WMS.Application.Products.Queries;
+using WMS.Application.WarehouseLocations.Commands;
+using WMS.Application.WarehouseLocations.Queries;
 
 namespace WMS.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class ProductsController : ControllerBase
+    public class WarehouseLocationsController : ControllerBase
     {
         private readonly IMediator _mediator;
 
-        public ProductsController(IMediator mediator)
+        public WarehouseLocationsController(IMediator mediator)
         {
             _mediator = mediator;
         }
 
         [HttpPost]
-        public async Task<IActionResult> CreateAsync(CreateProductCommand command)
+        public async Task<IActionResult> CreateAsync(CreateWarehouseLocationCommand command)
         {
            var productId = await _mediator.Send(command);
             return Ok(productId);
@@ -26,26 +26,26 @@ namespace WMS.Api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
-            await _mediator.Send(new DeleteProductCommand(id));
+            await _mediator.Send(new DeleteWarehouseLocationCommand(id));
             return NoContent();
         }
 
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
-            var products = await _mediator.Send(new GetAllProductsQuery());
+            var products = await _mediator.Send(new GetAllWarehouseLocationsQuery());
             return Ok(products);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProductByIdAsync(Guid id)
         {
-            var product = await _mediator.Send(new GetProductByIdQuery(id));
+            var product = await _mediator.Send(new GetWarehouseLocationByIdQuery(id));
             return Ok(product);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(Guid id, UpdateProductCommand command)
+        public async Task<IActionResult> UpdateAsync(Guid id, UpdateWarehouseLocationCommand command)
         {
             var commandWithId = command with { Id = id };
 
