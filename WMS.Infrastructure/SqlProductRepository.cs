@@ -1,6 +1,6 @@
 ﻿using WMS.Application;
-using WMS.Domain;
 using Microsoft.EntityFrameworkCore;
+using WMS.Domain.Entities;
 
 namespace WMS.Infrastructure
 {

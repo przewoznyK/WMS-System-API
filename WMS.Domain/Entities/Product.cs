@@ -1,6 +1,6 @@
 ﻿using WMS.Domain.Exceptions;
 
-namespace WMS.Domain
+namespace WMS.Domain.Entities
 {
     public class Product
     {

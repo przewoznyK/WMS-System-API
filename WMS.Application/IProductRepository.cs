@@ -1,4 +1,4 @@
-﻿using WMS.Domain;
+﻿using WMS.Domain.Entities;
 
 namespace WMS.Application
 {

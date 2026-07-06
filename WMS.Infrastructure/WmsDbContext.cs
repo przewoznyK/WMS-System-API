@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using WMS.Domain;
+using WMS.Domain.Entities;
 
 namespace WMS.Infrastructure
 {
@@ -11,5 +11,16 @@ namespace WMS.Infrastructure
         }
 
         public DbSet<Product> Products { get; set; }
+        public DbSet<WarehouseLocation> WarehouseLocations { get; set; }
+        public DbSet<Stock> Stocks { get; set; }
+        public DbSet<StockMovement> StockMovements { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Product>().HasIndex(x => x.Sku).IsUnique();
+            modelBuilder.Entity<WarehouseLocation>().HasIndex(x => x.Code).IsUnique();
+            modelBuilder.Entity<Stock>().HasIndex(x => new { x.ProductId, x.LocationId }).IsUnique();
+        }
     }
 }

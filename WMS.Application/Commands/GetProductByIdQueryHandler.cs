@@ -1,5 +1,5 @@
 ﻿using MediatR;
-using WMS.Domain;
+using WMS.Domain.Entities;
 using WMS.Domain.Exceptions;
 
 namespace WMS.Application.Commands
