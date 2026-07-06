@@ -2,10 +2,12 @@
 {
     public abstract class WmsException : Exception
     {
+        public string Title { get; }
         public int StatusCode { get; }
 
-        public WmsException(string message, int statusCode) : base(message)
+        protected WmsException(string title, string message, int statusCode) : base(message)
         {
+            Title = title;
             StatusCode = statusCode;
         }
     }

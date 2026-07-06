@@ -40,5 +40,11 @@ namespace WMS.Infrastructure.Repositories
             warehouseLocation.UpdateDetails(code, description);
             await _wmsDbContext.SaveChangesAsync();
         }
+
+        public async Task<bool> ExistsByCodeAsync(string code)
+        {
+            return await _wmsDbContext.WarehouseLocations
+                .AnyAsync(p => p.Code == code);
+        }
     }
 }

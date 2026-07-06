@@ -1,5 +1,6 @@
 ﻿using MediatR;
 using WMS.Domain.Entities;
+using WMS.Domain.Exceptions;
 using WMS.Domain.Repositories;
 
 namespace WMS.Application.WarehouseLocations.Queries
@@ -19,7 +20,7 @@ namespace WMS.Application.WarehouseLocations.Queries
 
             if (warehouseLocation == null)
             {
-                throw new KeyNotFoundException($"WarehouseLocation with ID {request.Id} was not found.");
+                throw new WmsNotFoundException(nameof(Product), request.Id);
             }
 
             return warehouseLocation;

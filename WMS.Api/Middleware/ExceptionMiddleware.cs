@@ -22,11 +22,12 @@ namespace WMS.Api.Middleware
             }
             catch (Exception ex)
             {
-                if(ex is WmsException wmsException)
+                context.Response.ContentType = "application/json";
+
+                if (ex is WmsException wmsException)
                 {
-                    context.Response.ContentType = "application/json";
                     context.Response.StatusCode = wmsException.StatusCode;
-                    var error = new { message = "Aplication error", details = wmsException.Message };
+                    var error = new { title = wmsException.Title, details = wmsException.Message };
                     await context.Response.WriteAsync(JsonSerializer.Serialize(error));
                 }
                 else
@@ -34,7 +35,7 @@ namespace WMS.Api.Middleware
                     _logger.LogError(ex, "Unexpected server error");
 
                     context.Response.StatusCode = 500;
-                    var error = new { message = "Internal server error", details = ex.Message };
+                    var error = new { title = "Server Error", details = "An unexpected error occurred." };
                     await context.Response.WriteAsync(JsonSerializer.Serialize(error));
                 }
             }

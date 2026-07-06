@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using WMS.Domain.Entities;
 using WMS.Domain.Exceptions;
 using WMS.Domain.Repositories;
 
@@ -19,7 +20,7 @@ namespace WMS.Application.WarehouseLocations.Commands
 
             if (product == null)
             {
-                throw new ProductNotFoundException("Warehouse location not found");
+                throw new WmsNotFoundException(nameof(Product), request.Id);
             }
 
             await _warehouseLocationRepository.DeleteAsync(product);

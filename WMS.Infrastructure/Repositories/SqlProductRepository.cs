@@ -40,5 +40,11 @@ namespace WMS.Infrastructure.Repositories
             product.UpdateDetails(name, description);
             await _wmsDbContext.SaveChangesAsync();
         }
+
+        public async Task<bool> ExistsBySkuAsync(string sku)
+        {
+            return await _wmsDbContext.Products
+                .AnyAsync(p => p.Sku == sku);
+        }
     }
 }

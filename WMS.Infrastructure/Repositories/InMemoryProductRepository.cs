@@ -1,4 +1,5 @@
-﻿using WMS.Domain.Entities;
+﻿using Microsoft.EntityFrameworkCore;
+using WMS.Domain.Entities;
 using WMS.Domain.Repositories;
 
 namespace WMS.Infrastructure.Repositories
@@ -17,6 +18,12 @@ namespace WMS.Infrastructure.Repositories
         {
             _products.Remove(product);
             return Task.CompletedTask;
+        }
+
+        public Task<bool> ExistsBySkuAsync(string sku)
+        {
+            var exists = _products.Any(p => p.Sku == sku);
+            return Task.FromResult(exists);
         }
 
         public Task<IEnumerable<Product>> GetAllAsync()

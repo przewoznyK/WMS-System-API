@@ -1,0 +1,10 @@
+﻿namespace WMS.Domain.Exceptions
+{
+    public class WmsNotFoundException : WmsException
+    {
+        public WmsNotFoundException(string resourceName, object key)
+                : base("Resource Not Found", $"{resourceName} with ID {key} was not found.", 404)
+        {
+        }
+    }
+}

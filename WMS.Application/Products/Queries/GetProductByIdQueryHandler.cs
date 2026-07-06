@@ -16,11 +16,11 @@ namespace WMS.Application.Products.Queries
 
         public async Task<Product> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetProductByIdAsync(request.id);
+            var product = await _productRepository.GetProductByIdAsync(request.Id);
 
             if (product == null)
             {
-                throw new ProductNotFoundException("Product not found");
+                throw new WmsNotFoundException(nameof(Product), request.Id);
             }
 
             return product;

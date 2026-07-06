@@ -1,4 +1,6 @@
-﻿namespace WMS.Domain.Entities
+﻿using WMS.Domain.Exceptions;
+
+namespace WMS.Domain.Entities
 {
     public class WarehouseLocation
     {
@@ -15,7 +17,10 @@
 
         public void UpdateDetails(string code, string description)
         {
-            ArgumentException.ThrowIfNullOrWhiteSpace(code);
+            if (string.IsNullOrWhiteSpace(code))
+            {
+                throw new WmsNullOrEmptyException(nameof(code));
+            }
 
             Code = code;
             Description = description;

@@ -14,7 +14,7 @@ namespace WMS.Domain.Entities
         {
             if (quantityChange == 0)
             {
-                throw new InvalidMovementQuantityException("Stock movement quantity cannot be zero.");
+                throw new WmsBusinessRuleException("Stock movement quantity cannot be zero.");
             }
 
             Id = Guid.NewGuid();

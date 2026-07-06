@@ -9,5 +9,6 @@ namespace WMS.Domain.Repositories
         public Task<IEnumerable<Product>> GetAllAsync();
         public Task<Product?> GetProductByIdAsync(Guid id);
         public Task UpdateDetailsAsync(Product product, string name, string description);
+        public Task<bool> ExistsBySkuAsync(string code);
     }
 }

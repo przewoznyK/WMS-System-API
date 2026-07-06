@@ -15,12 +15,12 @@ namespace WMS.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(sku))
             {
-                throw new InvalidProductDataException("SKU cannot be null");
+                throw new WmsNullOrEmptyException(nameof(sku));
             }
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new InvalidProductDataException("Name cannot be null");
+                throw new WmsNullOrEmptyException(nameof(name));
             }
 
             Id = Guid.NewGuid();
@@ -33,7 +33,7 @@ namespace WMS.Domain.Entities
         {
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new InvalidProductDataException("Name cannot be null");
+                throw new WmsNullOrEmptyException(nameof(name));
             }
 
             Name = name;

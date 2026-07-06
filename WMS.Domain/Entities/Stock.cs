@@ -13,7 +13,7 @@ namespace WMS.Domain.Entities
         {
             if (quantity < 0)
             {
-                throw new InvalidStockQuantityException("Stock quantity cannot be negative.");
+                throw new WmsBusinessRuleException("Stock quantity cannot be negative.");
             }
 
             Id = Guid.NewGuid();
