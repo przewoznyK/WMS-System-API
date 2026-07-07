@@ -24,7 +24,6 @@ builder.Services.AddScoped<StockService>();
 builder.Services.AddDbContext<WmsDbContext>(options => options.UseSqlite("Data Source=wms.db"));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateProductCommand).Assembly));
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(CreateWarehouseLocationCommand).Assembly));
-
 var app = builder.Build();
 app.UseMiddleware<ExceptionMiddleware>();
 

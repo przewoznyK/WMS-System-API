@@ -20,7 +20,10 @@ namespace WMS.Infrastructure.Repositories
 
         public async Task<IEnumerable<Stock>> GetAllAsync()
         {
-            return await _wmsDbContext.Stocks.ToListAsync();
+            return await _wmsDbContext.Stocks
+             .Include(s => s.Product)
+             .Include(s => s.Location)
+             .ToListAsync();
         }
 
         public async Task<Stock?> GetByProductAndLocationAsync(Guid productId, Guid locationId)

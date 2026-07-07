@@ -9,6 +9,9 @@ namespace WMS.Domain.Entities
         public Guid LocationId { get; private set; }
         public int Quantity { get; private set; }
 
+        public Product Product { get; private set; }
+        public WarehouseLocation Location { get; private set; }
+
         public Stock(Guid productId, Guid locationId, int quantity)
         {
             if (quantity < 0)

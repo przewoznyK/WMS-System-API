@@ -17,21 +17,28 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("Get all")]
+        [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
             var stocks = await _mediator.Send(new GetAllStocksQuery());
             return Ok(stocks);
         }
 
-        [HttpPost("Move product")]
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetAllViewsAsync()
+        {
+            var stocks = await _mediator.Send(new GetAllStocksViewsQuery());
+            return Ok(stocks);
+        }
+
+        [HttpPost("move")]
         public async Task<IActionResult> MoveProduct([FromBody] MoveProductCommand command)
         {
             await _mediator.Send(command);
             return NoContent();
         }
 
-        [HttpPost("Receive")]
+        [HttpPost("receive")]
         public async Task<IActionResult> ReceiveStock([FromBody] ReceiveStockCommand command)
         {
             var stockId = await _mediator.Send(command);
