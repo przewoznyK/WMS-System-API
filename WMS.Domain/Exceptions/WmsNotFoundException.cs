@@ -6,5 +6,9 @@
                 : base("Resource Not Found", $"{resourceName} with ID {key} was not found.", 404)
         {
         }
+        public WmsNotFoundException(string message)
+        : base("Resource Not Found", message, 404)
+        {
+        }
     }
 }

@@ -5,16 +5,16 @@ using WMS.Domain.Repositories;
 
 namespace WMS.Application.Products.Commands
 {
-    internal class UpdateProductCommandHandler : IRequestHandler<UpdateProductCommand>
+    internal class UpdateDetailsProductCommandHandler : IRequestHandler<UpdateDetailsProductCommand>
     {
         private readonly IProductRepository _productRepository;
 
-        public UpdateProductCommandHandler(IProductRepository productRepository)
+        public UpdateDetailsProductCommandHandler(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
 
-        public async Task Handle(UpdateProductCommand request, CancellationToken cancellationToken)
+        public async Task Handle(UpdateDetailsProductCommand request, CancellationToken cancellationToken)
         {
             var product = await _productRepository.GetProductByIdAsync(request.Id);
 

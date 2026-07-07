@@ -21,5 +21,30 @@ namespace WMS.Domain.Entities
             LocationId = locationId;
             Quantity = quantity;
         }
+
+        public void IncreaseQuantity(int value)
+        {
+            if (value <= 0)
+            {
+                throw new WmsBusinessRuleException("Increase value must be greater than zero.");
+            }
+
+            Quantity += value;
+        }
+
+        public void DecreaseQuantity(int value)
+        {
+            if (value <= 0)
+            {
+                throw new WmsBusinessRuleException("Decrease value must be greater than zero.");
+            }
+
+            if (Quantity < value)
+            {
+                throw new WmsBusinessRuleException("Can't take more quantity than is in the stock.");
+            }
+
+            Quantity -= value;
+        }
     }
 }

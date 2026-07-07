@@ -16,36 +16,36 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         public async Task<IActionResult> CreateAsync(CreateWarehouseLocationCommand command)
         {
            var productId = await _mediator.Send(command);
             return Ok(productId);
         }
 
-        [HttpDelete("{id}")]
+        [HttpDelete("Delete {id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
             await _mediator.Send(new DeleteWarehouseLocationCommand(id));
             return NoContent();
         }
 
-        [HttpGet]
+        [HttpGet("Get all")]
         public async Task<IActionResult> GetAllAsync()
         {
             var products = await _mediator.Send(new GetAllWarehouseLocationsQuery());
             return Ok(products);
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("Get product by id {id}")]
         public async Task<IActionResult> GetProductByIdAsync(Guid id)
         {
             var product = await _mediator.Send(new GetWarehouseLocationByIdQuery(id));
             return Ok(product);
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateAsync(Guid id, UpdateWarehouseLocationCommand command)
+        [HttpPut("Update details {id}")]
+        public async Task<IActionResult> UpdateDetailsAsync(Guid id, UpdateDetailsWarehouseLocationCommand command)
         {
             var commandWithId = command with { Id = id };
 
