@@ -30,9 +30,15 @@ namespace WMS.Infrastructure.Repositories
             return Task.FromResult<IEnumerable<Product>>(_products);
         }
 
-        public Task<Product?> GetProductByIdAsync(Guid id)
+        public Task<Product?> GetByIdAsync(Guid id)
         {
             var product = _products.FirstOrDefault(x => x.Id == id);
+            return Task.FromResult(product);
+        }
+
+        public Task<Product?> GetBySkuAsync(string sku)
+        {
+            var product = _products.FirstOrDefault(x => x.Sku == sku);
             return Task.FromResult(product);
         }
 

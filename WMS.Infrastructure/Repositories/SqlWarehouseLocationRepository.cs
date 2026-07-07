@@ -30,9 +30,14 @@ namespace WMS.Infrastructure.Repositories
             return await _wmsDbContext.WarehouseLocations.ToListAsync();
         }
 
-        public async Task<WarehouseLocation?> GetWarehouseByIdAsync(Guid id)
+        public async Task<WarehouseLocation?> GetByIdAsync(Guid id)
         {
             return await _wmsDbContext.WarehouseLocations.FindAsync(id);
+        }
+
+        public async Task<WarehouseLocation?> GetByCodeAsync(string code)
+        {
+            return await _wmsDbContext.WarehouseLocations.FirstOrDefaultAsync(l => l.Code == code);
         }
 
         public async Task UpdateDetailsAsync(WarehouseLocation warehouseLocation, string code, string description)

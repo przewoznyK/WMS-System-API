@@ -16,7 +16,7 @@ namespace WMS.Application.WarehouseLocations.Commands
 
         public async Task Handle(UpdateDetailsWarehouseLocationCommand request, CancellationToken cancellationToken)
         {
-            var warehouseLocation = await _warehouseLocationRepository.GetWarehouseByIdAsync(request.Id);
+            var warehouseLocation = await _warehouseLocationRepository.GetByIdAsync(request.Id);
 
             if (warehouseLocation == null)
             {

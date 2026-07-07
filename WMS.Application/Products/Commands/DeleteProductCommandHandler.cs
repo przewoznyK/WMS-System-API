@@ -16,7 +16,7 @@ namespace WMS.Application.Products.Commands
 
         public async Task Handle(DeleteProductCommand request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetProductByIdAsync(request.Id);
+            var product = await _productRepository.GetByIdAsync(request.Id);
 
             if (product == null)
             {
