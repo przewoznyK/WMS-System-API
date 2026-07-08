@@ -1,10 +1,9 @@
 ﻿using MediatR;
-using WMS.Domain.Entities;
 using WMS.Domain.Repositories;
 
 namespace WMS.Application.WarehouseLocations.Queries
 {
-    internal class GetAllWarehouseLocationsQueryHandler : IRequestHandler<GetAllWarehouseLocationsQuery, IEnumerable<WarehouseLocation>>
+    internal class GetAllWarehouseLocationsQueryHandler : IRequestHandler<GetAllWarehouseLocationsQuery, IEnumerable<string>>
     {
         private readonly IWarehouseLocationRepository _warehouseLocationRepository;
 
@@ -13,9 +12,9 @@ namespace WMS.Application.WarehouseLocations.Queries
             _warehouseLocationRepository = warehouseLocationRepository;
         }
 
-        public async Task<IEnumerable<WarehouseLocation>> Handle(GetAllWarehouseLocationsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<string>> Handle(GetAllWarehouseLocationsQuery request, CancellationToken cancellationToken)
         {
-            return await _warehouseLocationRepository.GetAllAsync();
+            return await _warehouseLocationRepository.GetLocationsAsync();
         }
     }
 }

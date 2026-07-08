@@ -36,10 +36,20 @@ namespace WMS.Infrastructure.Repositories
             return Task.FromResult(product);
         }
 
+        public Task<Product?> GetByNameAsync(string name)
+        {
+            return Task.FromResult(_products.FirstOrDefault(x => x.Name == name));
+        }
+
         public Task<Product?> GetBySkuAsync(string sku)
         {
             var product = _products.FirstOrDefault(x => x.Sku == sku);
             return Task.FromResult(product);
+        }
+
+        public Task<IEnumerable<string>> GetNamesAsync()
+        {
+            return Task.FromResult(_products.Select(p => p.Name));
         }
 
         public Task UpdateDetailsAsync(Product product, string name, string description)

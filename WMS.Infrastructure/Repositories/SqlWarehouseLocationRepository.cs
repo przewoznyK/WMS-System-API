@@ -19,15 +19,22 @@ namespace WMS.Infrastructure.Repositories
             await _wmsDbContext.SaveChangesAsync();
         }
 
+        public async Task<IEnumerable<WarehouseLocation>> GetAllAsync()
+        {
+            return await _wmsDbContext.WarehouseLocations.ToListAsync();
+        }
+
         public async Task DeleteAsync(WarehouseLocation warehouseLocation)
         {
            _wmsDbContext.WarehouseLocations.Remove(warehouseLocation);
             await _wmsDbContext.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<WarehouseLocation>> GetAllAsync()
+        public async Task<IEnumerable<string>> GetLocationsAsync()
         {
-            return await _wmsDbContext.WarehouseLocations.ToListAsync();
+            return await _wmsDbContext.WarehouseLocations
+              .Select(x => x.Code)
+              .ToListAsync();
         }
 
         public async Task<WarehouseLocation?> GetByIdAsync(Guid id)

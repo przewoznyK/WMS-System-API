@@ -2,5 +2,5 @@
 
 namespace WMS.Application.Stocks.Commands
 {
-    public record ReceiveStockCommand(string Sku, string LocationCode, int Quantity) : IRequest<Guid>;
+    public record ReceiveStockCommand(string ProductName, string LocationCode, int Quantity) : IRequest<Guid>;
 }

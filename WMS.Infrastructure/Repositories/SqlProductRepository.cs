@@ -40,6 +40,18 @@ namespace WMS.Infrastructure.Repositories
             return await _wmsDbContext.Products.FirstOrDefaultAsync(l => l.Sku == sku);
         }
 
+        public async Task<Product?> GetByNameAsync(string name)
+        {
+            return await _wmsDbContext.Products.FirstOrDefaultAsync(l => l.Name == name);
+        }
+
+        public async Task<IEnumerable<string>> GetNamesAsync()
+        {
+            return await _wmsDbContext.Products
+                .Select(p => p.Name)
+                .ToListAsync();
+        }
+
         public async Task UpdateDetailsAsync(Product product, string name, string description)
         {
             product.UpdateDetails(name, description);

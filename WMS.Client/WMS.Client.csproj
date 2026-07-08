@@ -7,6 +7,10 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="MudBlazor" Version="9.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\WMS.Application\WMS.Application.csproj" />
   </ItemGroup>
 

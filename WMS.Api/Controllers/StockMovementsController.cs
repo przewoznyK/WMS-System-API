@@ -15,7 +15,7 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
-        [HttpGet("Get all")]
+        [HttpGet("all")]
         public async Task<IActionResult> GetAllAsync()
         {
             var stocks = await _mediator.Send(new GetAllStockMovementsQuery());
