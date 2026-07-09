@@ -59,5 +59,12 @@ namespace WMS.Api.Controllers
             await _mediator.Send(commandWithId);
             return NoContent();
         }
+
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetAllViewsAsync()
+        {
+            var products = await _mediator.Send(new GetAllProductsViewsQuery());
+            return Ok(products);
+        }
     }
 }

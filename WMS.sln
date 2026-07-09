@@ -3,15 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.11.35222.181
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Domain", "WMS.Domain\WMS.Domain.csproj", "{8C15E3D0-6268-4163-8B77-34B21AEC06E0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.Domain", "WMS.Domain\WMS.Domain.csproj", "{8C15E3D0-6268-4163-8B77-34B21AEC06E0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Application", "WMS.Application\WMS.Application.csproj", "{C12316B4-4558-454E-B051-4C3696067A98}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.Application", "WMS.Application\WMS.Application.csproj", "{C12316B4-4558-454E-B051-4C3696067A98}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Infrastructure", "WMS.Infrastructure\WMS.Infrastructure.csproj", "{6894EAA7-5F9E-41E9-9437-09A504A71E09}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.Infrastructure", "WMS.Infrastructure\WMS.Infrastructure.csproj", "{6894EAA7-5F9E-41E9-9437-09A504A71E09}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Api", "WMS.Api\WMS.Api.csproj", "{C370362B-EB48-4912-BD28-19921820F0E3}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.Api", "WMS.Api\WMS.Api.csproj", "{C370362B-EB48-4912-BD28-19921820F0E3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Client", "WMS.Client\WMS.Client.csproj", "{AB68E47F-2E9D-40B2-B4E6-1EFCD486E7FB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.Client", "WMS.Client\WMS.Client.csproj", "{AB68E47F-2E9D-40B2-B4E6-1EFCD486E7FB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
