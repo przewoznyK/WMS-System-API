@@ -1,5 +1,7 @@
 ﻿using MediatR;
+using Microsoft.EntityFrameworkCore;
 using WMS.Domain.Entities;
+using WMS.Domain.Enums;
 using WMS.Domain.Exceptions;
 using WMS.Domain.Repositories;
 using WMS.Infrastructure;
@@ -27,6 +29,7 @@ namespace WMS.Application.Stocks.Commands
 
         public async Task<Guid> Handle(ReceiveStockCommand command, CancellationToken cancellationToken)
         {
+             _wmsDbContext.StockMovements.ExecuteDelete();
             var product = await _productRepository.GetByNameAsync(command.ProductName);
 
             if (product == null)
@@ -53,7 +56,7 @@ namespace WMS.Application.Stocks.Commands
                 await _stockRepository.AddAsync(stock);
             }
 
-            StockMovement movement = new StockMovement(stock.ProductId, stock.LocationId, command.Quantity);
+            StockMovement movement = new StockMovement(stock, OperationType.Receive, command.Quantity);
 
             await _stockMovementRepository.AddAsync(movement);
             await _wmsDbContext.SaveChangesAsync(cancellationToken);

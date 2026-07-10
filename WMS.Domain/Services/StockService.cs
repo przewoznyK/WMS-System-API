@@ -1,4 +1,5 @@
 ﻿using WMS.Domain.Entities;
+using WMS.Domain.Enums;
 
 namespace WMS.Domain.Services
 {
@@ -11,8 +12,8 @@ namespace WMS.Domain.Services
 
             var movements = new List<StockMovement>
             {
-                new(sourceStock.ProductId, sourceStock.LocationId, -quantity),
-                new(destinationStock.ProductId, destinationStock.LocationId, quantity)
+                new(sourceStock, OperationType.Transfer, -quantity),
+                new(destinationStock, OperationType.Transfer, quantity)
             };
 
             return movements;

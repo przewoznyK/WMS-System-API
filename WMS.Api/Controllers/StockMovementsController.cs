@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.StockMovements.Queries;
+using WMS.Application.Stocks.Queries;
 
 namespace WMS.Api.Controllers
 {
@@ -18,7 +19,14 @@ namespace WMS.Api.Controllers
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAsync()
         {
-            var stocks = await _mediator.Send(new GetAllStockMovementsQuery());
+            var stockMovements = await _mediator.Send(new GetAllStockMovementsQuery());
+            return Ok(stockMovements);
+        }
+
+        [HttpGet("summary")]
+        public async Task<IActionResult> GetAllViewsAsync()
+        {
+            var stocks = await _mediator.Send(new GetAllStocksViewsQuery());
             return Ok(stocks);
         }
     }

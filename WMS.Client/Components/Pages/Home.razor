@@ -148,7 +148,7 @@ else
     {
         try
         {
-            stocks = await Http.GetFromJsonAsync<List<StockDto>>("api/stocks/summary");
+            stocks = await Http.GetFromJsonAsync<List<StockDto>>("api/stocks/summary") ?? new List<StockDto>();
         }
         catch (Exception ex)
         {
