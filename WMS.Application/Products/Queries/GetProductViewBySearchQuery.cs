@@ -1,7 +1,7 @@
 ﻿using MediatR;
-using WMS.Application.Products.Dtos;
+using WMS.Application.Products.Response;
 
 namespace WMS.Application.Products.Queries
 {
-    public record GetProductViewBySearchQuery(string searchTerm) : IRequest<ProductDto>;
+    public record GetProductViewBySearchQuery(string searchTerm) : IRequest<ProductResponse>;
 }

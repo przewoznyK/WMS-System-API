@@ -4,6 +4,6 @@
     {
         public string? Title { get; set; }
         public string? Details { get; set; }
-        public Dictionary<string, string[]> Errors { get; set; }
+        public Dictionary<string, string[]> Errors { get; set; } = [];
     }
 }

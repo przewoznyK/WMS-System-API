@@ -1,12 +1,12 @@
 ﻿using MediatR;
-using WMS.Application.Products.Dtos;
+using WMS.Application.Products.Response;
 using WMS.Domain.Entities;
 using WMS.Domain.Exceptions;
 using WMS.Domain.Repositories;
 
 namespace WMS.Application.Products.Queries
 {
-    internal class GetProductViewBySearchQueryHandler : IRequestHandler<GetProductViewBySearchQuery, ProductDto>
+    internal class GetProductViewBySearchQueryHandler : IRequestHandler<GetProductViewBySearchQuery, ProductResponse>
     {
         private readonly IProductRepository _productRepository;
 
@@ -15,7 +15,7 @@ namespace WMS.Application.Products.Queries
             _productRepository = productRepository;
         }
 
-        public async Task<ProductDto> Handle(GetProductViewBySearchQuery request, CancellationToken cancellationToken)
+        public async Task<ProductResponse> Handle(GetProductViewBySearchQuery request, CancellationToken cancellationToken)
         {
             var product = await _productRepository.GetBySearch(request.searchTerm);
 
@@ -24,7 +24,7 @@ namespace WMS.Application.Products.Queries
                 throw new WmsNotFoundException(nameof(Product), request.searchTerm);
             }
 
-            return new ProductDto
+            return new ProductResponse
             {
                 Sku = product.Sku,
                 Name = product.Name,

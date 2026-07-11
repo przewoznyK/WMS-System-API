@@ -1,10 +1,16 @@
 ﻿@page "/"
+@implements IDisposable
 @using MudBlazor
-@using WMS.Application.Stocks.Dtos
+@using WMS.Application.Stocks.Request
+@using WMS.Application.Stocks.Response
 @using System.Net.Http.Json
 @using WMS.Client.Responses
+@using WMS.Client.Services
 @inject HttpClient Http
 @inject ISnackbar Snackbar
+@inject ClientService ClientService
+@inject ILogger<Home> Logger
+
 <MudThemeProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
@@ -12,13 +18,13 @@
 <PageTitle>WMS Dashboard</PageTitle>
 
 <h3>Receive New Stock</h3>
-<EditForm Model="stockForm" OnValidSubmit="HandleSubmit" FormName="AddStockForm">
+<EditForm Model="_receiveStockRequest" OnValidSubmit="HandleSubmit" FormName="ReceiveStockForm">
     <DataAnnotationsValidator />
 
     <div class="mb-3">
         <label>Product Name:</label>
         <MudAutocomplete T="string" 
-                         @bind-Value="stockForm.ProductName" 
+                         @bind-Value="_receiveStockRequest.ProductName" 
                          SearchFunc="@SearchProductNames"
                          ResetValueOnEmptyText="true"
                          CoerceText="true" 
@@ -26,13 +32,13 @@
                          Placeholder="Enter or select a product name..."
                          Variant="Variant.Outlined" 
                          Margin="Margin.Dense" />
-        <ValidationMessage For="@(() => stockForm.ProductName)" class="text-danger" />
+        <ValidationMessage For="@(() => _receiveStockRequest.ProductName)" class="text-danger" />
     </div>
 
     <div class="mb-3">
         <label>Location Code:</label>
         <MudAutocomplete T="string" 
-                         @bind-Value="stockForm.LocationCode" 
+                         @bind-Value="_receiveStockRequest.LocationCode" 
                          SearchFunc="@SearchLocations"
                          ResetValueOnEmptyText="true"
                          CoerceText="true" 
@@ -40,13 +46,13 @@
                          Placeholder="Enter or select a location..."
                          Variant="Variant.Outlined" 
                          Margin="Margin.Dense" />
-        <ValidationMessage For="@(() => stockForm.LocationCode)" class="text-danger" />
+        <ValidationMessage For="@(() => _receiveStockRequest.LocationCode)" class="text-danger" />
     </div>
 
     <div class="mb-3">
         <label>Quantity:</label>
-        <InputNumber @bind-Value="stockForm.Quantity" class="form-control" />
-        <ValidationMessage For="@(() => stockForm.Quantity)" class="text-danger" />
+        <InputNumber @bind-Value="_receiveStockRequest.Quantity" class="form-control" />
+        <ValidationMessage For="@(() => _receiveStockRequest.Quantity)" class="text-danger" />
     </div>
 
     <button type="submit" class="btn btn-primary">Receive Stock</button>
@@ -56,13 +62,13 @@
 
 <h1>Current stock level</h1>
 
-@if (stocks == null)
+@if (_stocksResponse == null)
 {
-    <p><em>Loading warehouse data...</em></p>
+        <p><em>Loading warehouse data...</em></p>
 }
-else if (!stocks.Any())
+else if (!_stocksResponse.Any())
 {
-    <p>Warehouse is empty.</p>
+        <p>Warehouse is empty.</p>
 }
 else
 {
@@ -75,7 +81,7 @@ else
             </tr>
         </thead>
         <tbody>
-        @foreach (var stock in stocks)
+        @foreach (var stock in _stocksResponse)
         {
             <tr>
                 <td>@stock.ProductName</td>
@@ -88,104 +94,60 @@ else
 }
 
 @code {
-    private List<StockDto>? stocks;
-    [SupplyParameterFromForm]
-    private ReceiveStockDto stockForm { get; set; } = new();
+    private List<StockResponse>? _stocksResponse;
 
-    private List<string> availableLocations = new();
-    private List<string> availableProductNames = new();
+    [SupplyParameterFromForm]
+    private ReceiveStockRequest _receiveStockRequest { get; set; } = new();
+
+    private List<string> _availableLocations = new();
+    private List<string> _availableProductNames = new();
+    private readonly CancellationTokenSource _cts = new();
 
     protected override async Task OnInitializedAsync()
     {
         await LoadStocksAsync();
-        await LoadProductNamesAsync();
-        await LoadLocationsAsync();
-    }
-
-    private async Task LoadProductNamesAsync()
-    {
-        try
-        {
-            availableProductNames = await Http.GetFromJsonAsync<List<string>>("api/Products/names") ?? new List<string>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error retrieving product names: {ex.Message}");
-        }
+        _availableProductNames = await ClientService.GetListAsync<string>("api/products/names", _cts.Token);
+        _availableLocations = await ClientService.GetListAsync<string>("api/warehouseLocations/locations", _cts.Token);
     }
 
     private Task<IEnumerable<string>> SearchProductNames(string value, CancellationToken token)
     {
         if (string.IsNullOrEmpty(value))
-            return Task.FromResult<IEnumerable<string>>(availableProductNames);
+            return Task.FromResult<IEnumerable<string>>(_availableProductNames);
 
-        var filteredList = availableProductNames.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        var filteredList = _availableProductNames.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
         return Task.FromResult<IEnumerable<string>>(filteredList);
-    }
-
-    private async Task LoadLocationsAsync()
-    {
-        try
-        {
-            availableLocations = await Http.GetFromJsonAsync<List<string>>("api/WarehouseLocations/locations") ?? new List<string>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error retrieving locations: {ex.Message}");
-        }
     }
 
     private Task<IEnumerable<string>> SearchLocations(string value, CancellationToken token)
     {
         if (string.IsNullOrEmpty(value))
-            return Task.FromResult<IEnumerable<string>>(availableLocations);
+            return Task.FromResult<IEnumerable<string>>(_availableLocations);
 
-        var filteredList = availableLocations.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        var filteredList = _availableLocations.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
         return Task.FromResult<IEnumerable<string>>(filteredList);
     }
 
     private async Task LoadStocksAsync()
     {
-        try
-        {
-            stocks = await Http.GetFromJsonAsync<List<StockDto>>("api/stocks/summary") ?? new List<StockDto>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading data: {ex.Message}");
-        }
+        _stocksResponse = await ClientService.GetListAsync<StockResponse>("api/stocks/summary", _cts.Token);
     }
 
     private async Task HandleSubmit()
     {
-        var response = await Http.PostAsJsonAsync("api/stocks/receive", stockForm);
+        var isSuccess = await ClientService.PostAsync("api/stocks/receive", _receiveStockRequest, _cts.Token);
 
-        if (response.IsSuccessStatusCode)
+        if (isSuccess)
         {
-            stockForm = new ReceiveStockDto();
+            _receiveStockRequest = new ReceiveStockRequest();
             await LoadStocksAsync();
             Snackbar.Add("Stock added successfully!", Severity.Success);
         }
-        else
-        {
-            var errorJson = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Raw Error: {errorJson}");
+    }
 
-            try
-            {
-                var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var apiError = System.Text.Json.JsonSerializer.Deserialize<ApiError>(errorJson, options);
-
-                string errorMessage = !string.IsNullOrEmpty(apiError?.Details) ? apiError.Details :
-                                      !string.IsNullOrEmpty(apiError?.Title) ? apiError.Title :
-                                      "Undefined server error.";
-
-                Snackbar.Add(errorMessage, Severity.Error);
-            }
-            catch
-            {
-                Snackbar.Add("An error occurred while connecting to the API.", Severity.Error);
-            }
-        }
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
     }
 }

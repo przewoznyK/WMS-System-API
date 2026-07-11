@@ -1,8 +1,8 @@
 ﻿using WMS.Domain.Enums;
 
-namespace WMS.Application.StockMovements.Dtos
+namespace WMS.Application.StockMovements.Response
 {
-    public class StockMovementDto
+    public class StockMovementResponse
     {
         public Guid Id { get; set; }
         public Guid ProductId { get; set; }
@@ -12,7 +12,7 @@ namespace WMS.Application.StockMovements.Dtos
         public string ProductName { get; set; } = string.Empty;
         public string LocationCode { get; set; } = string.Empty;
 
-        public OperationType OperationType { get; private set; }
+        public OperationType OperationType { get; set; }
         public int QuantityChange { get; set; }
         public DateTime CreatedAt { get; set; }
     }

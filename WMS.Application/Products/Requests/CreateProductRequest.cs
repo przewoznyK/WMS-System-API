@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WMS.Application.Products.Dtos
+namespace WMS.Application.Products.Request
 {
-    public class AddProductDto
+    public class CreateProductRequest
     {
         [Required(ErrorMessage = "The Sku field cannot be empty.")]
         public string Sku { get; set; } = string.Empty;

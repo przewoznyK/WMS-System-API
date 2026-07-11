@@ -26,7 +26,7 @@ namespace WMS.Api.Controllers
         [HttpGet("summary")]
         public async Task<IActionResult> GetAllViewsAsync()
         {
-            var stocks = await _mediator.Send(new GetAllStocksViewsQuery());
+            var stocks = await _mediator.Send(new GetAllStockMovementsViewsQuery());
             return Ok(stocks);
         }
     }

@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using WMS.Application.StockMovements.Dtos;
+using WMS.Application.StockMovements.Response;
 using WMS.Domain.Repositories;
 
 namespace WMS.Application.Stocks.Queries
 {
-    internal class GetAllStockMovementsViewsQueryHandler : IRequestHandler<GetAllStockMovementsViewsQuery, IEnumerable<StockMovementDto>>
+    internal class GetAllStockMovementsViewsQueryHandler : IRequestHandler<GetAllStockMovementsViewsQuery, IEnumerable<StockMovementResponse>>
     {
         private readonly IStockMovementRepository _stockMovementRepository;
 
@@ -13,11 +13,11 @@ namespace WMS.Application.Stocks.Queries
             _stockMovementRepository = stockMovementRepository;
         }
 
-        public async Task<IEnumerable<StockMovementDto>> Handle(GetAllStockMovementsViewsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<StockMovementResponse>> Handle(GetAllStockMovementsViewsQuery request, CancellationToken cancellationToken)
         {
             var stockMovements = await _stockMovementRepository.GetAllAsync();
 
-            var result = stockMovements.Select(s => new StockMovementDto
+            var result = stockMovements.Select(s => new StockMovementResponse
             {
                 Id = s.Id,
                 ProductId = s.ProductId,
@@ -25,6 +25,7 @@ namespace WMS.Application.Stocks.Queries
                 ProductSku = s.ProductSku,
                 ProductName = s.ProductName,
                 LocationCode = s.LocationCode,
+                OperationType = s.OperationType,
                 QuantityChange = s.QuantityChange,
                 CreatedAt = s.CreatedAt
             });

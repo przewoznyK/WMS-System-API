@@ -1,5 +1,6 @@
 using WMS.Client.Components;
-using MudBlazor.Services; 
+using MudBlazor.Services;
+using WMS.Client.Services;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,6 +9,8 @@ builder.Services.AddRazorComponents()
 
 builder.Services.AddScoped(sp => new HttpClient{ BaseAddress = new Uri("https://localhost:7052")} );
 builder.Services.AddMudServices();
+builder.Services.AddScoped<ClientService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

@@ -1,0 +1,108 @@
+﻿@page "/stockmovements"
+@implements IDisposable
+@using MudBlazor
+@using WMS.Application.StockMovements.Response
+@using WMS.Client.Services
+@inject ClientService ClientService
+@inject ILogger<StockMovements> Logger
+
+<MudThemeProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+<PageTitle>Stock Movements</PageTitle>
+
+<MudTable Items="@_movements" 
+          Hover="true" 
+          Dense="true"
+          Filter="new Func<StockMovementResponse, bool>(FilterFunc)">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Stock Movements</MudText>
+        <MudSpacer />
+        <MudTextField @bind-Value="_searchString" 
+                      Placeholder="Search..." 
+                      Adornment="Adornment.Start" 
+                      AdornmentIcon="@Icons.Material.Filled.Search" 
+                      IconSize="Size.Medium" 
+                      Class="mt-0" />
+    </ToolBarContent>
+
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.CreatedAt)" InitialDirection="SortDirection.Descending">Data</MudTableSortLabel></MudTh>
+        <MudTh>SKU</MudTh>
+        <MudTh>Product Name</MudTh>
+        <MudTh>Location</MudTh>
+        <MudTh>Operation Type</MudTh>
+        <MudTh>Quantity</MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Data">@context.CreatedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
+
+        <MudTd DataLabel="SKU">@context.ProductSku</MudTd>
+
+        <MudTd DataLabel="Product Name">@context.ProductName</MudTd>
+
+        <MudTd DataLabel="Location">@context.LocationCode</MudTd>
+
+        <MudTd DataLabel="OperationType">
+            <MudChip T="string" 
+                     Color="@GetOperationColor(context.OperationType.ToString())" 
+                     Size="Size.Small" 
+                     Variant="Variant.Filled">
+                @context.OperationType.ToString()
+            </MudChip>
+        </MudTd>
+
+        <MudTd DataLabel="Quantity">
+            <MudText Color="@(context.QuantityChange > 0 ? Color.Success : context.QuantityChange < 0 ? Color.Error : Color.Default)" Typo="Typo.body2">
+                @(context.QuantityChange > 0 ? $"+{context.QuantityChange}" : context.QuantityChange.ToString())
+            </MudText>
+        </MudTd>
+    </RowTemplate>
+
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    private List<StockMovementResponse> _movements = new();
+    private string _searchString = "";
+
+    private readonly CancellationTokenSource _cts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _movements = await ClientService.GetListAsync<StockMovementResponse>("api/stockmovements/summary", _cts.Token);
+    }
+
+    private bool FilterFunc(StockMovementResponse element)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString)) return true;
+
+        if (element.ProductSku?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true) return true;
+        if (element.ProductName?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true) return true;
+        if (element.LocationCode?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true) return true;
+        if (element.OperationType.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase)) return true;
+
+        return false;
+    }
+
+    private Color GetOperationColor(string operationType)
+    {
+        return (operationType?.ToLowerInvariant() ?? string.Empty) switch
+        {
+            "receive" => Color.Success,
+            "issue" => Color.Error,
+            "transfer" => Color.Info,
+            "adjustment" => Color.Primary,
+            _ => Color.Default
+        };
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

@@ -1,6 +1,6 @@
-﻿namespace WMS.Application.Stocks.Dtos
+﻿namespace WMS.Application.Stocks.Response
 {
-    public class StockDto
+    public class StockResponse
     {
         public string ProductSku { get; set; } = string.Empty;
         public string ProductName { get; set; } = string.Empty;

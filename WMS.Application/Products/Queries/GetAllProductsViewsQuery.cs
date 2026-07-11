@@ -1,8 +1,8 @@
 ﻿using MediatR;
-using WMS.Application.Products.Dtos;
+using WMS.Application.Products.Response;
 
 namespace WMS.Application.Products.Queries
 {
-    public record GetAllProductsViewsQuery() : IRequest<IEnumerable<ProductDto>>;
+    public record GetAllProductsViewsQuery() : IRequest<IEnumerable<ProductResponse>>;
 
 }

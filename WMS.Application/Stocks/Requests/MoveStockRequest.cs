@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WMS.Application.Stocks.Dtos
+namespace WMS.Application.Stocks.Request
 {
     public class MoveStockRequest
     {

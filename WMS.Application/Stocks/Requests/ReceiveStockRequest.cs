@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace WMS.Application.Stocks.Dtos
+namespace WMS.Application.Stocks.Request
 {
-    public class ReceiveStockDto
+    public class ReceiveStockRequest
     {
         [Required(ErrorMessage = "The Product name field cannot be empty.")]
         public string ProductName { get; set; } = string.Empty;

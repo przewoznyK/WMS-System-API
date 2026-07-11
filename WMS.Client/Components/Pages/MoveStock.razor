@@ -1,11 +1,13 @@
 ﻿@page "/stock/move"
+@implements IDisposable
 @using MudBlazor
-@using WMS.Application.Products.Dtos
-@using WMS.Application.Stocks.Dtos
-@using System.Net.Http.Json
-@using WMS.Client.Responses
-@inject HttpClient Http
+@using WMS.Application.Products.Response
+@using WMS.Application.Stocks.Request
+@using WMS.Application.Stocks.Response
+@using WMS.Client.Services
+@inject ClientService ClientService
 @inject ISnackbar Snackbar
+@inject ILogger<MoveStock> Logger
 
 <MudThemeProvider />
 <MudSnackbarProvider />
@@ -20,7 +22,7 @@
 
     <MudCardContent>
         <div class="mb-3">
-            <MudTextField @bind-Value="addTransferProductForm.SearchTerm" 
+            <MudTextField @bind-Value="_moveStockRequest.SearchTerm" 
                           Label="Enter Product SKU or Name" 
                           Variant="Variant.Outlined" 
                           Margin="Margin.Dense" 
@@ -32,21 +34,21 @@
             </MudButton>
         </div>
 
-        @if (searchProduct != null)
+        @if (_searchProduct != null)
         {
                 <MudDivider Class="my-4" />
 
                 <MudText Typo="Typo.subtitle1" Color="Color.Success" Class="mb-3">
-                    Product found: @searchProduct.Name (@searchProduct.Sku)
+                    Product found: @_searchProduct.Name (@_searchProduct.Sku)
                 </MudText>
 
-                <EditForm Model="addTransferProductForm" OnValidSubmit="TransferProduct" FormName="AddTransferForm">
+                <EditForm Model="_moveStockRequest" OnValidSubmit="TransferProduct" FormName="AddTransferForm">
                     <DataAnnotationsValidator />
 
                     <div class="mb-3">
                         <label>Source Location Code:</label>
-                        <MudAutocomplete T="StockDto" 
-                                         Value="selectedSourceStock"
+                            <MudAutocomplete T="StockResponse" 
+                                         Value="_selectedSourceStock"
                                          ValueChanged="OnStockSelected"
                                          SearchFunc="@SearchLocationsBySku"
                                          ToStringFunc="@(stock => stock?.LocationCode)" 
@@ -64,32 +66,32 @@
                                 </div>
                             </ItemTemplate>
                         </MudAutocomplete>
-                        <ValidationMessage For="@(() => addTransferProductForm.SourceLocationCode)" class="text-danger" />
+                        <ValidationMessage For="@(() => _moveStockRequest.SourceLocationCode)" class="text-danger" />
                     </div>
 
                     <div class="mb-3">
                         <label>Quantity to Transfer:</label>
-                        <MudNumericField @bind-Value="addTransferProductForm.Quantity"
+                        <MudNumericField @bind-Value="_moveStockRequest.Quantity"
                                          Min="1"
-                                         Max="@(selectedSourceStock?.Quantity ?? int.MaxValue)"
-                                         Disabled="@(selectedSourceStock == null)"
+                                         Max="@(_selectedSourceStock?.Quantity ?? int.MaxValue)"
+                                         Disabled="@(_selectedSourceStock == null)"
                                          Variant="Variant.Outlined" 
                                          Margin="Margin.Dense"
                                          Adornment="Adornment.End"
-                                         AdornmentText="@(selectedSourceStock != null ? $"Max: {selectedSourceStock.Quantity} pcs." : "")" />
-                        <ValidationMessage For="@(() => addTransferProductForm.Quantity)" class="text-danger" />
+                                         AdornmentText="@(_selectedSourceStock != null ? $"Max: {_selectedSourceStock.Quantity} pcs." : "")" />
+                        <ValidationMessage For="@(() => _moveStockRequest.Quantity)" class="text-danger" />
                     </div>
 
                     <div class="mb-3">
                         <label>Destination Location Code:</label>
                         <MudAutocomplete T="string"
-                                         @bind-Value="addTransferProductForm.DestinationLocationCode"
+                                         @bind-Value="_moveStockRequest.DestinationLocationCode"
                                          SearchFunc="@SearchLocations"
                                          Placeholder="Enter or select a destination location code..."
                                          Variant="Variant.Outlined" 
                                          Margin="Margin.Dense">
                         </MudAutocomplete>
-                        <ValidationMessage For="@(() => addTransferProductForm.DestinationLocationCode)" class="text-danger" />
+                        <ValidationMessage For="@(() => _moveStockRequest.DestinationLocationCode)" class="text-danger" />
                     </div>
 
                     <MudButton ButtonType="ButtonType.Submit" Class="mt-4" Variant="Variant.Filled" Color="Color.Primary">
@@ -102,22 +104,24 @@
 
 @code {
     [SupplyParameterFromForm]
-    private MoveStockRequest addTransferProductForm { get; set; } = new();
+    private MoveStockRequest _moveStockRequest { get; set; } = new();
 
-    private ProductDto? searchProduct;
-    private StockDto? selectedSourceStock;
-    private List<StockDto> availableStocks = new();
-    private List<string> availableLocations = new();
+    private ProductResponse? _searchProduct;
+    private StockResponse? _selectedSourceStock;
+    private List<StockResponse> _availableStocks = new();
+    private List<string> _availableLocations = new();
 
-    private IMask locationMask = new PatternMask("XX-00-00")
+    private readonly CancellationTokenSource _cts = new();
+
+    private IMask _locationMask = new PatternMask("XX-00-00")
+    {
+        MaskChars = new[]
         {
-            MaskChars = new[]
-            {
             new MaskChar('X', @"[A-Za-z]"),
             new MaskChar('0', @"[0-9]")
         },
-            Transformation = c => char.ToUpperInvariant(c)
-        };
+        Transformation = c => char.ToUpperInvariant(c)
+    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -126,25 +130,18 @@
 
     private async Task LoadLocationsAsync()
     {
-        try
-        {
-            availableLocations = await Http.GetFromJsonAsync<List<string>>("api/WarehouseLocations/locations") ?? new List<string>();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error retrieving locations: {ex.Message}");
-        }
+        _availableLocations = await ClientService.GetListAsync<string>("api/WarehouseLocations/locations", _cts.Token);
     }
 
     private Task<IEnumerable<string>> SearchLocations(string value, CancellationToken token)
     {
-        var validLocations = availableLocations
-            .Where(loc => !string.Equals(loc, addTransferProductForm.SourceLocationCode, StringComparison.InvariantCultureIgnoreCase));
+        var validLocations = _availableLocations
+            .Where(loc => !string.Equals(loc, _moveStockRequest.SourceLocationCode, StringComparison.OrdinalIgnoreCase));
 
         if (string.IsNullOrEmpty(value))
             return Task.FromResult(validLocations);
 
-        var filteredList = validLocations.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        var filteredList = validLocations.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
         return Task.FromResult(filteredList);
     }
 
@@ -158,104 +155,82 @@
 
     private async Task FindProduct()
     {
-        if (string.IsNullOrWhiteSpace(addTransferProductForm.SearchTerm)) return;
+        if (string.IsNullOrWhiteSpace(_moveStockRequest.SearchTerm)) return;
 
-        try
+        _searchProduct = await ClientService.GetAsync<ProductResponse>($"api/products/search/{_moveStockRequest.SearchTerm}", _cts.Token);
+
+        if (_searchProduct != null)
         {
-            searchProduct = await Http.GetFromJsonAsync<ProductDto>($"api/products/search/{addTransferProductForm.SearchTerm}");
             await LoadStocksAsync();
         }
-        catch
+        else
         {
-            searchProduct = null;
-            availableStocks.Clear();
-            Snackbar.Add("Product not found", Severity.Error);
+            _availableStocks.Clear();
+            _selectedSourceStock = null;
+            Snackbar.Add("Product not found", Severity.Warning);
         }
     }
 
     private async Task LoadStocksAsync()
     {
-        try
-        {
-            if (searchProduct == null || string.IsNullOrWhiteSpace(searchProduct.Sku)) return;
+        if (_searchProduct == null || string.IsNullOrWhiteSpace(_searchProduct.Sku)) return;
 
-            availableStocks = await Http.GetFromJsonAsync<List<StockDto>>($"api/stocks/by-product-sku/{searchProduct.Sku}") ?? new List<StockDto>();
-            addTransferProductForm.ProductSku = searchProduct.Sku;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error retrieving locations: {ex.Message}");
-        }
+        _availableStocks = await ClientService.GetListAsync<StockResponse>($"api/stocks/by-product-sku/{_searchProduct.Sku}", _cts.Token);
+        _moveStockRequest.ProductSku = _searchProduct.Sku;
     }
 
-    private Task<IEnumerable<StockDto>> SearchLocationsBySku(string value, CancellationToken token)
+    private Task<IEnumerable<StockResponse>> SearchLocationsBySku(string value, CancellationToken token)
     {
         if (string.IsNullOrEmpty(value))
         {
-            return Task.FromResult<IEnumerable<StockDto>>(availableStocks);
+            return Task.FromResult<IEnumerable<StockResponse>>(_availableStocks);
         }
 
-        var filteredList = availableStocks
-            .Where(x => x.LocationCode != null && x.LocationCode.Contains(value, StringComparison.InvariantCultureIgnoreCase));
+        var filteredList = _availableStocks
+            .Where(x => x.LocationCode != null && x.LocationCode.Contains(value, StringComparison.OrdinalIgnoreCase));
 
-        return Task.FromResult<IEnumerable<StockDto>>(filteredList);
+        return Task.FromResult<IEnumerable<StockResponse>>(filteredList);
     }
 
-    private void OnStockSelected(StockDto stock)
+    private void OnStockSelected(StockResponse stock)
     {
-        selectedSourceStock = stock;
-        addTransferProductForm.SourceLocationCode = stock?.LocationCode ?? string.Empty;
+        _selectedSourceStock = stock;
+        _moveStockRequest.SourceLocationCode = stock?.LocationCode ?? string.Empty;
 
-        if (string.Equals(addTransferProductForm.DestinationLocationCode, addTransferProductForm.SourceLocationCode, StringComparison.InvariantCultureIgnoreCase))
+        if (string.Equals(_moveStockRequest.DestinationLocationCode, _moveStockRequest.SourceLocationCode, StringComparison.OrdinalIgnoreCase))
         {
-            addTransferProductForm.DestinationLocationCode = string.Empty;
+            _moveStockRequest.DestinationLocationCode = string.Empty;
         }
 
-        if (addTransferProductForm.Quantity <= 0 && stock != null && stock.Quantity > 0)
+        if (_moveStockRequest.Quantity <= 0 && stock != null && stock.Quantity > 0)
         {
-            addTransferProductForm.Quantity = 1;
+            _moveStockRequest.Quantity = 1;
         }
 
-        if (stock != null && addTransferProductForm.Quantity > stock.Quantity)
+        if (stock != null && _moveStockRequest.Quantity > stock.Quantity)
         {
-            addTransferProductForm.Quantity = stock.Quantity;
+            _moveStockRequest.Quantity = stock.Quantity;
         }
     }
 
     private async Task TransferProduct()
     {
-        Console.WriteLine(System.Text.Json.JsonSerializer.Serialize(addTransferProductForm));
-        var response = await Http.PostAsJsonAsync("api/stocks/move", addTransferProductForm);
+        var isSuccess = await ClientService.PostAsync("api/stocks/move", _moveStockRequest, _cts.Token);
 
-        if (response.IsSuccessStatusCode)
+        if (isSuccess)
         {
             await LoadStocksAsync();
-            addTransferProductForm = new MoveStockRequest();
-            searchProduct = null;
-            selectedSourceStock = null;
-            availableStocks.Clear();
-            Snackbar.Add("Stock added successfully!", Severity.Success);
+            _moveStockRequest = new MoveStockRequest();
+            _searchProduct = null;
+            _selectedSourceStock = null;
+            _availableStocks.Clear();
+            Snackbar.Add("Stock transferred successfully!", Severity.Success);
         }
-        else
-        {
-            var errorJson = await response.Content.ReadAsStringAsync();
-            Console.WriteLine($"Raw Error: {errorJson}");
+    }
 
-            try
-            {
-                var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-                var apiError = System.Text.Json.JsonSerializer.Deserialize<ApiError>(errorJson, options);
-
-                string errorMessage = !string.IsNullOrEmpty(apiError?.Details) ? apiError.Details :
-                                      !string.IsNullOrEmpty(apiError?.Title) ? apiError.Title :
-                                      "Undefined server error.";
-
-                Snackbar.Add(errorMessage, Severity.Error);
-            }
-            catch
-            {
-                Snackbar.Add("An error occurred while connecting to the API.", Severity.Error);
-            }
-        }
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
     }
 }

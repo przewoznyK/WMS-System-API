@@ -1,10 +1,10 @@
 ﻿using MediatR;
-using WMS.Application.Products.Dtos;
+using WMS.Application.Products.Response;
 using WMS.Domain.Repositories;
 
 namespace WMS.Application.Products.Queries
 {
-    internal class GetAllProductsViewsQueryHandler : IRequestHandler<GetAllProductsViewsQuery, IEnumerable<ProductDto>>
+    internal class GetAllProductsViewsQueryHandler : IRequestHandler<GetAllProductsViewsQuery, IEnumerable<ProductResponse>>
     {
         private readonly IProductRepository _productRepository;
 
@@ -13,11 +13,11 @@ namespace WMS.Application.Products.Queries
             _productRepository = productRepository;
         }
 
-        public async Task<IEnumerable<ProductDto>> Handle(GetAllProductsViewsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<ProductResponse>> Handle(GetAllProductsViewsQuery request, CancellationToken cancellationToken)
         {
             var products = await _productRepository.GetAllAsync();
 
-            return products.Select(s => new ProductDto
+            return products.Select(s => new ProductResponse
             {
                 Sku = s.Sku,
                 Name = s.Name,
