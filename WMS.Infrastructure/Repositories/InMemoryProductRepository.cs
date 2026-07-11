@@ -57,5 +57,11 @@ namespace WMS.Infrastructure.Repositories
             product.UpdateDetails(name, description);
             return Task.CompletedTask;
         }
+
+        public Task<Product?> GetBySearch(string searchTerm)
+        {
+            var product = _products.FirstOrDefault(p => p.Sku == searchTerm || p.Name.Contains(searchTerm));
+            return Task.FromResult(product);
+        }
     }
 }

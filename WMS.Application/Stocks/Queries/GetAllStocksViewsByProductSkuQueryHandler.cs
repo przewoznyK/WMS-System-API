@@ -4,18 +4,18 @@ using WMS.Domain.Repositories;
 
 namespace WMS.Application.Stocks.Queries
 {
-    internal class GetAllStocksViewsQueryHandler : IRequestHandler<GetAllStocksViewsQuery, IEnumerable<StockDto>>
+    internal class GetAllStocksViewsByProductSkuQueryHandler : IRequestHandler<GetAllStocksViewsByProductSkuQuery, IEnumerable<StockDto>>
     {
         private readonly IStockRepository _stockRepository;
 
-        public GetAllStocksViewsQueryHandler(IStockRepository stockRepository)
+        public GetAllStocksViewsByProductSkuQueryHandler(IStockRepository stockRepository)
         {
             _stockRepository = stockRepository;
         }
 
-        public async Task<IEnumerable<StockDto>> Handle(GetAllStocksViewsQuery request, CancellationToken cancellationToken)
+        public async Task<IEnumerable<StockDto>> Handle(GetAllStocksViewsByProductSkuQuery request, CancellationToken cancellationToken)
         {
-            var stocks = await _stockRepository.GetAllAsync();
+            var stocks = await _stockRepository.GetAllByProductSkuAsync(request.sku);
 
             return stocks.Select(s => new StockDto
             {

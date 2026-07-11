@@ -32,7 +32,7 @@ namespace WMS.Api.Controllers
         }
 
         [HttpPost("move")]
-        public async Task<IActionResult> MoveProduct([FromBody] MoveProductCommand command)
+        public async Task<IActionResult> MoveProduct([FromBody] MoveStockCommand command)
         {
             await _mediator.Send(command);
             return NoContent();
@@ -43,6 +43,13 @@ namespace WMS.Api.Controllers
         {
             var stockId = await _mediator.Send(command);
             return Ok(stockId);
+        }
+        
+        [HttpGet("by-product-sku/{sku}")]
+        public async Task<IActionResult> GetAllViewsByProductSkuAsync(string sku)
+        {
+            var stocks = await _mediator.Send(new GetAllStocksViewsByProductSkuQuery(sku));
+            return Ok(stocks);
         }
     }
 }

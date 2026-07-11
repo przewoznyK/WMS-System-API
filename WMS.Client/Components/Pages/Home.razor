@@ -58,33 +58,33 @@
 
 @if (stocks == null)
 {
-        <p><em>Loading warehouse data...</em></p>
+    <p><em>Loading warehouse data...</em></p>
 }
 else if (!stocks.Any())
 {
-        <p>Warehouse is empty.</p>
+    <p>Warehouse is empty.</p>
 }
 else
 {
-        <table class="table">
-            <thead>
-                <tr>
-                    <th>Product Name</th>
-                    <th>Location Code</th>
-                    <th>Quantity</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var stock in stocks)
-            {
-                        <tr>
-                            <td>@stock.ProductName</td>
-                            <td>@stock.LocationCode</td>
-                            <td>@stock.Quantity</td>
-                        </tr>
-            }
-            </tbody>
-        </table>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Location Code</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var stock in stocks)
+        {
+            <tr>
+                <td>@stock.ProductName</td>
+                <td>@stock.LocationCode</td>
+                <td>@stock.Quantity</td>
+            </tr>
+        }
+        </tbody>
+    </table>
 }
 
 @code {
@@ -164,7 +164,6 @@ else
         {
             stockForm = new ReceiveStockDto();
             await LoadStocksAsync();
-            Console.WriteLine("Stock received successfully!");
             Snackbar.Add("Stock added successfully!", Severity.Success);
         }
         else

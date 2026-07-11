@@ -13,5 +13,6 @@ namespace WMS.Domain.Repositories
         public Task<Product?> GetByNameAsync(string name);
         public Task UpdateDetailsAsync(Product product, string name, string description);
         public Task<bool> ExistsBySkuAsync(string code);
+        public Task<Product?> GetBySearch(string searchTerm);
     }
 }

@@ -2,8 +2,9 @@
 {
     public class StockDto
     {
-        public string ProductName { get; set; }
-        public string LocationCode { get; set; }
+        public string ProductSku { get; set; } = string.Empty;
+        public string ProductName { get; set; } = string.Empty;
+        public string LocationCode { get; set; } = string.Empty;
         public int Quantity { get; set; }
     }
 }

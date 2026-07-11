@@ -51,6 +51,13 @@ namespace WMS.Api.Controllers
             return Ok(product);
         }
 
+        [HttpGet("search/{searchTerm}")]
+        public async Task<IActionResult> SearchProduct(string searchTerm)
+        {
+            var product = await _mediator.Send(new GetProductViewBySearchQuery(searchTerm));
+            return Ok(product);
+        }
+
         [HttpPut("update-details-{id}")]
         public async Task<IActionResult> UpdateDetailsAsync(Guid id, UpdateDetailsProductCommand command)
         {

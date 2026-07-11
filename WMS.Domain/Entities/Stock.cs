@@ -12,16 +12,33 @@ namespace WMS.Domain.Entities
         public Product Product { get; private set; }
         public WarehouseLocation Location { get; private set; }
 
-        public Stock(Guid productId, Guid locationId, int quantity)
+        public Stock()
         {
+
+        }
+
+        public Stock(Product product, WarehouseLocation location, int quantity)
+        {
+            if (product == null)
+            {
+                throw new WmsNullOrEmptyException(nameof(product));
+            }
+
+            if (location == null)
+            {
+                throw new WmsNullOrEmptyException(nameof(location));
+            }
+
             if (quantity < 0)
             {
                 throw new WmsBusinessRuleException("Stock quantity cannot be negative.");
             }
 
             Id = Guid.NewGuid();
-            ProductId = productId;
-            LocationId = locationId;
+            ProductId = product.Id;
+            LocationId = location.Id;
+            Product = product;
+            Location = location;
             Quantity = quantity;
         }
 

@@ -44,7 +44,7 @@ namespace WMS.Application.Stocks.Commands
                 throw new WmsNotFoundException("WarehouseLocation", command.LocationCode);
             }
 
-            var stock = await _stockRepository.GetByProductAndLocationAsync(product.Id, location.Id);
+            var stock = await _stockRepository.GetByProductIdAndLocationAsync(product.Id, location.Id);
 
             if (stock != null)
             {
@@ -52,7 +52,7 @@ namespace WMS.Application.Stocks.Commands
             }
             else
             {
-                stock = new Stock(product.Id, location.Id, command.Quantity);
+                stock = new Stock(product, location, command.Quantity);
                 await _stockRepository.AddAsync(stock);
             }
 

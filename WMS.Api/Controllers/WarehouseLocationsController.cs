@@ -19,8 +19,8 @@ namespace WMS.Api.Controllers
         [HttpPost("create")]
         public async Task<IActionResult> CreateAsync(CreateWarehouseLocationCommand command)
         {
-           var productId = await _mediator.Send(command);
-            return Ok(productId);
+           var locationId = await _mediator.Send(command);
+            return Ok(locationId);
         }
 
         [HttpDelete("delete-{id}")]
@@ -33,15 +33,15 @@ namespace WMS.Api.Controllers
         [HttpGet("locations")]
         public async Task<IActionResult> GetAllAsync()
         {
-            var products = await _mediator.Send(new GetAllWarehouseLocationsQuery());
-            return Ok(products);
+            var locations = await _mediator.Send(new GetAllWarehouseLocationsQuery());
+            return Ok(locations);
         }
 
         [HttpGet("by-id-{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
-            var product = await _mediator.Send(new GetWarehouseLocationByIdQuery(id));
-            return Ok(product);
+            var location = await _mediator.Send(new GetWarehouseLocationByIdQuery(id));
+            return Ok(location);
         }
 
         [HttpPut("update-details-{id}")]
