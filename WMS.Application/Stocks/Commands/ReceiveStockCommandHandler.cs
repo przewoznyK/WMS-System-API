@@ -1,10 +1,8 @@
 ﻿using MediatR;
-using Microsoft.EntityFrameworkCore;
 using WMS.Domain.Entities;
 using WMS.Domain.Enums;
 using WMS.Domain.Exceptions;
 using WMS.Domain.Repositories;
-using WMS.Infrastructure;
 
 namespace WMS.Application.Stocks.Commands
 {
@@ -14,22 +12,20 @@ namespace WMS.Application.Stocks.Commands
         private readonly IWarehouseLocationRepository _warehouseLocationRepository;
         private readonly IStockRepository _stockRepository;
         private readonly IStockMovementRepository _stockMovementRepository;
-        private readonly WmsDbContext _wmsDbContext;
+        private readonly IUnitOfWork _unitOfWork;
 
         public ReceiveStockCommandHandler(IProductRepository productRepository, IWarehouseLocationRepository warehouseLocationRepository, IStockRepository stockRepository,
-            IStockMovementRepository stockMovementRepository,
-            WmsDbContext wmsDbContext)
+            IStockMovementRepository stockMovementRepository, IUnitOfWork unitOfWork)
         {
             _productRepository = productRepository;
             _warehouseLocationRepository = warehouseLocationRepository;
             _stockRepository = stockRepository;
             _stockMovementRepository = stockMovementRepository;
-            _wmsDbContext = wmsDbContext;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Guid> Handle(ReceiveStockCommand command, CancellationToken cancellationToken)
         {
-             _wmsDbContext.StockMovements.ExecuteDelete();
             var product = await _productRepository.GetByNameAsync(command.ProductName);
 
             if (product == null)
@@ -53,13 +49,13 @@ namespace WMS.Application.Stocks.Commands
             else
             {
                 stock = new Stock(product, location, command.Quantity);
-                await _stockRepository.AddAsync(stock);
+                await _stockRepository.Add(stock);
             }
 
             StockMovement movement = new StockMovement(stock, OperationType.Receive, command.Quantity);
 
-            await _stockMovementRepository.AddAsync(movement);
-            await _wmsDbContext.SaveChangesAsync(cancellationToken);
+            await _stockMovementRepository.Add(movement);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return stock.Id;
         }

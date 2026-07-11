@@ -8,22 +8,25 @@ namespace WMS.Application.WarehouseLocations.Commands
     internal class DeleteWarehouseLocationCommandHandler : IRequestHandler<DeleteWarehouseLocationCommand>
     {
         private readonly IWarehouseLocationRepository _warehouseLocationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteWarehouseLocationCommandHandler(IWarehouseLocationRepository warehouseLocationRepository)
+        public DeleteWarehouseLocationCommandHandler(IWarehouseLocationRepository warehouseLocationRepository, IUnitOfWork unitOfWork)
         {
             _warehouseLocationRepository = warehouseLocationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(DeleteWarehouseLocationCommand request, CancellationToken cancellationToken)
         {
-            var product = await _warehouseLocationRepository.GetByIdAsync(request.Id);
+            var location = await _warehouseLocationRepository.GetByIdAsync(request.Id);
 
-            if (product == null)
+            if (location == null)
             {
-                throw new WmsNotFoundException(nameof(Product), request.Id);
+                throw new WmsNotFoundException(nameof(WarehouseLocation), request.Id);
             }
 
-            await _warehouseLocationRepository.DeleteAsync(product);
+            await _warehouseLocationRepository.Delete(location);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

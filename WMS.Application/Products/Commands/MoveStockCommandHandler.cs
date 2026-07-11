@@ -1,9 +1,8 @@
 ﻿using MediatR;
 using WMS.Domain.Entities;
+using WMS.Domain.Enums;
 using WMS.Domain.Exceptions;
 using WMS.Domain.Repositories;
-using WMS.Domain.Services;
-using WMS.Infrastructure;
 
 namespace WMS.Application.Products.Commands
 {
@@ -12,16 +11,14 @@ namespace WMS.Application.Products.Commands
         private readonly IStockRepository _stockRepository;
         private readonly IStockMovementRepository _stockMovementRepository;
         private readonly IWarehouseLocationRepository _warehouseLocationRepository;
-        private readonly StockService _stockService;
-        private readonly WmsDbContext _wmsDbContext;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public MoveStockCommandHandler(IStockRepository stockRepository, IStockMovementRepository stockMovementRepository, IWarehouseLocationRepository warehouseLocationRepository, StockService stockService, WmsDbContext wmsDbContext)
+        public MoveStockCommandHandler(IStockRepository stockRepository, IStockMovementRepository stockMovementRepository, IWarehouseLocationRepository warehouseLocationRepository, IUnitOfWork unitOfWork)
         {
             _stockRepository = stockRepository;
             _stockMovementRepository = stockMovementRepository;
             _warehouseLocationRepository = warehouseLocationRepository;
-            _stockService = stockService;
-            _wmsDbContext = wmsDbContext;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(MoveStockCommand request, CancellationToken cancellationToken)
@@ -49,20 +46,23 @@ namespace WMS.Application.Products.Commands
                 }
 
                 destStock = new Stock(sourceStock.Product, destinationLocation, 0);
-                await _stockRepository.AddAsync(destStock);
+                await _stockRepository.Add(destStock);
             }
 
-            string productName = sourceStock.Product.Name;
-            var movements = _stockService.MoveProduct(sourceStock, destStock, request.Quantity);
-            
+            sourceStock.DecreaseQuantity(request.Quantity);
+            destStock.IncreaseQuantity(request.Quantity);
+
+            var sourceMovement = new StockMovement(sourceStock, OperationType.Transfer, -request.Quantity);
+            var destMovement = new StockMovement(destStock, OperationType.Transfer, request.Quantity);
+
+            await _stockMovementRepository.AddRangeAsync(new[] { sourceMovement, destMovement });
+
             if (sourceStock.Quantity == 0)
             {
-                await _stockRepository.DeleteAsync(sourceStock);
+                await _stockRepository.Delete(sourceStock);
             }
 
-            await _stockMovementRepository.AddRangeAsync(movements);
-
-            await _wmsDbContext.SaveChangesAsync(cancellationToken);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

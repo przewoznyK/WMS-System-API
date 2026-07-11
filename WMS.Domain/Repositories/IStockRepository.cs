@@ -4,11 +4,11 @@ namespace WMS.Domain.Repositories
 {
     public interface IStockRepository
     {
-        public Task AddAsync(Stock stock);
-        public Task DeleteAsync(Stock stock);
-        public Task<IEnumerable<Stock>> GetAllAsync();
-        public Task<IEnumerable<Stock>> GetAllByProductSkuAsync(string sku);
-        public Task<Stock?> GetByProductIdAndLocationAsync(Guid productId, Guid locationId);
-        public Task<Stock?> GetByProductSkuAndLocationCodeAsync(string sku, string locationSku);
+        Task Add(Stock stock);
+        Task Delete(Stock stock);
+        Task<IEnumerable<Stock>> GetAllAsync();
+        Task<IEnumerable<Stock>> GetAllByProductSkuAsync(string sku);
+        Task<Stock?> GetByProductIdAndLocationAsync(Guid productId, Guid locationId);
+        Task<Stock?> GetByProductSkuAndLocationCodeAsync(string productSku, string locationCode);
     }
 }

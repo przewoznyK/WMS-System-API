@@ -12,9 +12,10 @@ namespace WMS.Domain.Entities
         public Product Product { get; private set; }
         public WarehouseLocation Location { get; private set; }
 
-        public Stock()
+        private Stock() 
         {
-
+            Product = null!;
+            Location = null!;
         }
 
         public Stock(Product product, WarehouseLocation location, int quantity)

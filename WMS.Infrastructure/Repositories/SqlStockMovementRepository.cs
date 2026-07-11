@@ -13,9 +13,10 @@ namespace WMS.Infrastructure.Repositories
             _wmsDbContext = wmsDbContext;
         }
 
-        public async Task AddAsync(StockMovement movement)
+        public Task Add(StockMovement movement)
         {
-            await _wmsDbContext.StockMovements.AddAsync(movement);
+            _wmsDbContext.StockMovements.Add(movement);
+            return Task.CompletedTask;
         }
 
         public async Task AddRangeAsync(IEnumerable<StockMovement> movements)

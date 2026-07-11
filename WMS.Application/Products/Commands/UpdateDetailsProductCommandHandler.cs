@@ -8,10 +8,12 @@ namespace WMS.Application.Products.Commands
     internal class UpdateDetailsProductCommandHandler : IRequestHandler<UpdateDetailsProductCommand>
     {
         private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public UpdateDetailsProductCommandHandler(IProductRepository productRepository)
+        public UpdateDetailsProductCommandHandler(IProductRepository productRepository, IUnitOfWork unitOfWork)
         {
             _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(UpdateDetailsProductCommand request, CancellationToken cancellationToken)
@@ -23,7 +25,8 @@ namespace WMS.Application.Products.Commands
                 throw new WmsNotFoundException(nameof(Product), request.Id);
             }
 
-            await _productRepository.UpdateDetailsAsync(product, request.Name, request.Description);
+            product.UpdateDetails(request.Name, request.Description);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

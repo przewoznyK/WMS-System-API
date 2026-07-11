@@ -8,10 +8,12 @@ namespace WMS.Application.Products.Commands
     internal class DeleteProductCommandHandler : IRequestHandler<DeleteProductCommand>
     {
         private readonly IProductRepository _productRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public DeleteProductCommandHandler(IProductRepository productRepository)
+        public DeleteProductCommandHandler(IProductRepository productRepository, IUnitOfWork unitOfWork)
         {
             _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task Handle(DeleteProductCommand request, CancellationToken cancellationToken)
@@ -23,7 +25,8 @@ namespace WMS.Application.Products.Commands
                 throw new WmsNotFoundException(nameof(Product), request.Id);
             }
 
-            await _productRepository.DeleteAsync(product);
+            await _productRepository.Delete(product);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }
 }

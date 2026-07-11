@@ -8,6 +8,12 @@ namespace WMS.Domain.Entities
         public string Code { get; private set; }
         public string Description { get; private set; }
 
+        private WarehouseLocation() 
+        {
+            Code = null!;
+            Description = null!;
+        }
+
         public WarehouseLocation(string code, string description = "")
         {
             Id = Guid.NewGuid();

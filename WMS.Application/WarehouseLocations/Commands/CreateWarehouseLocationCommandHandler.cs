@@ -8,10 +8,12 @@ namespace WMS.Application.WarehouseLocations.Commands
     internal class CreateWarehouseLocationCommandHandler : IRequestHandler<CreateWarehouseLocationCommand, Guid>
     {
         private readonly IWarehouseLocationRepository _warehouseLocationRepository;
+        private readonly IUnitOfWork _unitOfWork;
 
-        public CreateWarehouseLocationCommandHandler(IWarehouseLocationRepository warehouseLocationRepository)
+        public CreateWarehouseLocationCommandHandler(IWarehouseLocationRepository warehouseLocationRepository, IUnitOfWork unitOfWork)
         {
             _warehouseLocationRepository = warehouseLocationRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Guid> Handle(CreateWarehouseLocationCommand request, CancellationToken cancellationToken)
@@ -24,7 +26,8 @@ namespace WMS.Application.WarehouseLocations.Commands
             }
 
             WarehouseLocation newWarehouseLocation = new(request.Code, request.Description);
-            await _warehouseLocationRepository.AddAsync(newWarehouseLocation);
+            await _warehouseLocationRepository.Add(newWarehouseLocation);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return newWarehouseLocation.Id;
         }

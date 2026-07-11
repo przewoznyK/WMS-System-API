@@ -13,10 +13,16 @@ namespace WMS.Infrastructure.Repositories
             _wmsDbContext = wmsDbContext;
         }
 
-        public async Task AddAsync(WarehouseLocation warehouseLocation)
+        public Task Add(WarehouseLocation warehouseLocation)
         {
             _wmsDbContext.WarehouseLocations.Add(warehouseLocation);
-            await _wmsDbContext.SaveChangesAsync();
+            return Task.CompletedTask;
+        }
+
+        public Task Delete(WarehouseLocation warehouseLocation)
+        {
+           _wmsDbContext.WarehouseLocations.Remove(warehouseLocation);
+            return Task.CompletedTask;
         }
 
         public async Task<IEnumerable<WarehouseLocation>> GetAllAsync()
@@ -24,11 +30,6 @@ namespace WMS.Infrastructure.Repositories
             return await _wmsDbContext.WarehouseLocations.ToListAsync();
         }
 
-        public async Task DeleteAsync(WarehouseLocation warehouseLocation)
-        {
-           _wmsDbContext.WarehouseLocations.Remove(warehouseLocation);
-            await _wmsDbContext.SaveChangesAsync();
-        }
 
         public async Task<IEnumerable<string>> GetLocationsAsync()
         {

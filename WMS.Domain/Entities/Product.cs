@@ -9,7 +9,12 @@ namespace WMS.Domain.Entities
         public string Name { get; private set; }
         public string Description { get; private set; }
 
-        private Product() { }
+        private Product() 
+        {
+            Sku = null!;
+            Name = null!;
+            Description = null!;
+        }
 
         public Product(string sku, string name, string description = "")
         {

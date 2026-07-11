@@ -23,8 +23,6 @@ namespace WMS.Application.Products.Queries
             {
                 throw new WmsNotFoundException(nameof(Product), request.searchTerm);
             }
-            else
-                Console.WriteLine("Znalezion ");
 
             return new ProductDto
             {

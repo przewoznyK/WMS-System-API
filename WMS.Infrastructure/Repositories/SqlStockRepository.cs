@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Infrastructure;
 using WMS.Domain.Entities;
 using WMS.Domain.Repositories;
 
@@ -14,12 +13,13 @@ namespace WMS.Infrastructure.Repositories
             _wmsDbContext = wmsDbContext;
         }
 
-        public async Task AddAsync(Stock stock)
+        public Task Add(Stock stock)
         {
-            await _wmsDbContext.Stocks.AddAsync(stock);
+            _wmsDbContext.Stocks.Add(stock);
+            return Task.CompletedTask;
         }
 
-        public Task DeleteAsync(Stock stock)
+        public Task Delete(Stock stock)
         {
             _wmsDbContext.Stocks.Remove(stock);
             return Task.CompletedTask;

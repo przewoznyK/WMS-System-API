@@ -7,13 +7,10 @@ namespace WMS.Application.Stocks.Queries
     internal class GetAllStockMovementsViewsQueryHandler : IRequestHandler<GetAllStockMovementsViewsQuery, IEnumerable<StockMovementDto>>
     {
         private readonly IStockMovementRepository _stockMovementRepository;
-        private readonly IProductRepository _productRepository;
-        private readonly IWarehouseLocationRepository _warehouseLocationRepository;
-        public GetAllStockMovementsViewsQueryHandler(IStockMovementRepository stockMovementRepository, IProductRepository productRepository, IWarehouseLocationRepository warehouseLocationRepository)
+
+        public GetAllStockMovementsViewsQueryHandler(IStockMovementRepository stockMovementRepository)
         {
             _stockMovementRepository = stockMovementRepository;
-            _productRepository = productRepository;
-            _warehouseLocationRepository = warehouseLocationRepository;
         }
 
         public async Task<IEnumerable<StockMovementDto>> Handle(GetAllStockMovementsViewsQuery request, CancellationToken cancellationToken)

@@ -4,15 +4,14 @@ namespace WMS.Domain.Repositories
 {
     public interface IProductRepository
     {
-        public Task AddAsync(Product product);
-        public Task DeleteAsync(Product product);
-        public Task<IEnumerable<Product>> GetAllAsync();
-        public Task<IEnumerable<string>> GetNamesAsync();
-        public Task<Product?> GetByIdAsync(Guid id);
-        public Task<Product?> GetBySkuAsync(string sku);
-        public Task<Product?> GetByNameAsync(string name);
-        public Task UpdateDetailsAsync(Product product, string name, string description);
-        public Task<bool> ExistsBySkuAsync(string code);
-        public Task<Product?> GetBySearch(string searchTerm);
+        Task Add(Product product);
+        Task Delete(Product product);
+        Task<IEnumerable<Product>> GetAllAsync();
+        Task<IEnumerable<string>> GetNamesAsync();
+        Task<Product?> GetByIdAsync(Guid id);
+        Task<Product?> GetBySkuAsync(string sku);
+        Task<Product?> GetByNameAsync(string name);
+        Task<bool> ExistsBySkuAsync(string code);
+        Task<Product?> GetBySearch(string searchTerm);
     }
 }

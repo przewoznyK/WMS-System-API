@@ -20,7 +20,7 @@ namespace WMS.Application.WarehouseLocations.Queries
 
             if (warehouseLocation == null)
             {
-                throw new WmsNotFoundException(nameof(Product), request.Id);
+                throw new WmsNotFoundException(nameof(WarehouseLocation), request.Id);
             }
 
             return warehouseLocation;

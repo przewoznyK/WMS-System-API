@@ -16,7 +16,12 @@ namespace WMS.Domain.Entities
         public int QuantityChange { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
-        private StockMovement() { }
+        private StockMovement() 
+        {
+            ProductSku = null!;
+            ProductName = null!;
+            LocationCode = null!;
+        }
 
         public StockMovement(Stock stock, OperationType operationType, int quantityChange)
         {

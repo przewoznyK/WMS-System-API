@@ -8,9 +8,12 @@ namespace WMS.Application.Products.Commands
     internal class CreateProductCommandHandler : IRequestHandler<CreateProductCommand, Guid>
     {
         private readonly IProductRepository _productRepository;
-        public CreateProductCommandHandler(IProductRepository productRepository)
+        private readonly IUnitOfWork _unitOfWork;
+
+        public CreateProductCommandHandler(IProductRepository productRepository, IUnitOfWork unitOfWork)
         {
             _productRepository = productRepository;
+            _unitOfWork = unitOfWork;
         }
 
         public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
@@ -23,7 +26,9 @@ namespace WMS.Application.Products.Commands
             }
 
             Product newProduct = new(request.Sku, request.Name, request.Description);
-            await _productRepository.AddAsync(newProduct);
+
+            await _productRepository.Add(newProduct);
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return newProduct.Id;
         }

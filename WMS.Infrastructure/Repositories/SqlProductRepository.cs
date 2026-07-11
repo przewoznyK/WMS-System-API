@@ -13,16 +13,16 @@ namespace WMS.Infrastructure.Repositories
             _wmsDbContext = wmsDbContext;
         }
 
-        public async Task AddAsync(Product product)
+        public Task Add(Product product)
         {
             _wmsDbContext.Products.Add(product);
-            await _wmsDbContext.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
-        public async Task DeleteAsync(Product product)
+        public Task Delete(Product product)
         {
             _wmsDbContext.Products.Remove(product);
-            await _wmsDbContext.SaveChangesAsync();
+            return Task.CompletedTask;
         }
 
         public async Task<IEnumerable<Product>> GetAllAsync()
@@ -50,12 +50,6 @@ namespace WMS.Infrastructure.Repositories
             return await _wmsDbContext.Products
                 .Select(p => p.Name)
                 .ToListAsync();
-        }
-
-        public async Task UpdateDetailsAsync(Product product, string name, string description)
-        {
-            product.UpdateDetails(name, description);
-            await _wmsDbContext.SaveChangesAsync();
         }
 
         public async Task<bool> ExistsBySkuAsync(string sku)
