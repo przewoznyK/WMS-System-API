@@ -6,22 +6,22 @@ using WMS.Domain.Repositories;
 
 namespace WMS.Application.Products.Queries
 {
-    internal class GetProductViewBySearchQueryHandler : IRequestHandler<GetProductViewBySearchQuery, ProductResponse>
+    internal class GetProductBySkuOrNameQueryHandler : IRequestHandler<GetProductBySkuOrNameQuery, ProductResponse>
     {
         private readonly IProductRepository _productRepository;
 
-        public GetProductViewBySearchQueryHandler(IProductRepository productRepository)
+        public GetProductBySkuOrNameQueryHandler(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
 
-        public async Task<ProductResponse> Handle(GetProductViewBySearchQuery request, CancellationToken cancellationToken)
+        public async Task<ProductResponse> Handle(GetProductBySkuOrNameQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetBySearch(request.searchTerm);
+            var product = await _productRepository.GetBySkuOrNameAsync(request.SkuOrName);
 
             if (product == null)
             {
-                throw new WmsNotFoundException(nameof(Product), request.searchTerm);
+                throw new WmsNotFoundException(nameof(Product), request.SkuOrName);
             }
 
             return new ProductResponse

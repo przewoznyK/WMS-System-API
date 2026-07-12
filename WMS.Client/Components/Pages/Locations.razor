@@ -3,9 +3,10 @@
 @using MudBlazor
 @using WMS.Application.WarehouseLocations.Dtos
 @using WMS.Client.Services
-@inject ClientService ClientService
+@using WMS.Client.Services.Interfaces
+@inject UiUtilityService UiUtilityService
 @inject ISnackbar Snackbar
-@inject ILogger<Locations> Logger
+@inject IWarehouseLocationService WarehouseLocationService
 
 <MudThemeProvider />
 <MudSnackbarProvider />
@@ -23,7 +24,7 @@
                       Placeholder="AA-02-10"
                       Variant="Variant.Outlined" 
                       Margin="Margin.Dense"
-                      Mask="@_locationMask"
+                      Mask="@UiUtilityService.LocationMask"
                       Immediate="true" />
         <ValidationMessage For="@(() => _addLocationRequest.Code)" class="text-danger" />
     </div>
@@ -45,11 +46,11 @@
 
 <h1>Current locations</h1>
 
-@if (_availableLocations == null)
+@if (_availableLocationCodes == null)
 {
     <p><em>Loading warehouse data...</em></p>
 }
-else if (!_availableLocations.Any())
+else if (!_availableLocationCodes.Any())
 {
     <p>Warehouse is empty.</p>
 }
@@ -62,7 +63,7 @@ else
             </tr>
         </thead>
         <tbody>
-        @foreach (var location in _availableLocations)
+        @foreach (var location in _availableLocationCodes)
         {
             <tr>
                 <td>@location</td>
@@ -73,41 +74,26 @@ else
 }
 
 @code {
-    private List<string>? _availableLocations;
+    private IEnumerable<string>? _availableLocationCodes;
 
     [SupplyParameterFromForm]
-    private AddLocationRequest _addLocationRequest { get; set; } = new();
+    private CreateWarehouseLocationRequest _addLocationRequest { get; set; } = new();
 
     private readonly CancellationTokenSource _cts = new();
 
-    private IMask _locationMask = new PatternMask("XX-00-00")
-    {
-        MaskChars = new[]
-        {
-            new MaskChar('X', @"[A-Za-z]"),
-            new MaskChar('0', @"[0-9]")
-        },
-        Transformation = c => char.ToUpperInvariant(c)
-    };
-
     protected override async Task OnInitializedAsync()
     {
-        await LoadLocationsAsync();
-    }
-
-    private async Task LoadLocationsAsync()
-    {
-        _availableLocations = await ClientService.GetListAsync<string>("api/warehouseLocations/locations", _cts.Token);
+        _availableLocationCodes = await WarehouseLocationService.GetCodesAsync(_cts.Token);
     }
 
     private async Task HandleSubmit()
     {
-        var isSuccess = await ClientService.PostAsync("api/warehouseLocations/create", _addLocationRequest, _cts.Token);
+        var isSuccess = await WarehouseLocationService.CreateAsync(_addLocationRequest, _cts.Token);
 
         if (isSuccess)
         {
-            _addLocationRequest = new AddLocationRequest();
-            await LoadLocationsAsync();
+            _addLocationRequest = new CreateWarehouseLocationRequest();
+            _availableLocationCodes = await WarehouseLocationService.GetCodesAsync(_cts.Token);
             Snackbar.Add("Location added successfully!", Severity.Success);
         }
     }

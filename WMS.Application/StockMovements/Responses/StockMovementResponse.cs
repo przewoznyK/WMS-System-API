@@ -15,5 +15,8 @@ namespace WMS.Application.StockMovements.Response
         public OperationType OperationType { get; set; }
         public int QuantityChange { get; set; }
         public DateTime CreatedAt { get; set; }
+
+        public IssueType? IssueType { get; set; }
+        public string? ReferenceNumber { get; set; }
     }
 }

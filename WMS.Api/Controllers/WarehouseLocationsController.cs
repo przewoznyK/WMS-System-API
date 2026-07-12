@@ -30,10 +30,10 @@ namespace WMS.Api.Controllers
             return NoContent();
         }
 
-        [HttpGet("locations")]
-        public async Task<IActionResult> GetAllAsync()
+        [HttpGet("location-codes")]
+        public async Task<IActionResult> GetCodesAsync()
         {
-            var locations = await _mediator.Send(new GetAllWarehouseLocationsQuery());
+            var locations = await _mediator.Send(new GetAllWarehouseLocationCodesQuery());
             return Ok(locations);
         }
 

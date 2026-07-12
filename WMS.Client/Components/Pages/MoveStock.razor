@@ -1,13 +1,16 @@
-﻿@page "/stock/move"
+﻿@page "/stocks/move"
 @implements IDisposable
 @using MudBlazor
 @using WMS.Application.Products.Response
 @using WMS.Application.Stocks.Request
 @using WMS.Application.Stocks.Response
 @using WMS.Client.Services
-@inject ClientService ClientService
+@using WMS.Client.Services.Interfaces
+@inject UiUtilityService UiUtilityService
 @inject ISnackbar Snackbar
-@inject ILogger<MoveStock> Logger
+@inject IStockService StockService
+@inject IProductService ProductService
+@inject IWarehouseLocationService WarehouseLocationService
 
 <MudThemeProvider />
 <MudSnackbarProvider />
@@ -86,7 +89,7 @@
                         <label>Destination Location Code:</label>
                         <MudAutocomplete T="string"
                                          @bind-Value="_moveStockRequest.DestinationLocationCode"
-                                         SearchFunc="@SearchLocations"
+                                         SearchFunc="@((value, _) => UiUtilityService.FilterLocationCodes(_availableLocationCodes, value))"
                                          Placeholder="Enter or select a destination location code..."
                                          Variant="Variant.Outlined" 
                                          Margin="Margin.Dense">
@@ -108,20 +111,10 @@
 
     private ProductResponse? _searchProduct;
     private StockResponse? _selectedSourceStock;
-    private List<StockResponse> _availableStocks = new();
-    private List<string> _availableLocations = new();
+    private IEnumerable<StockResponse>? _availableStocks;
+    private IEnumerable<string>? _availableLocationCodes;
 
     private readonly CancellationTokenSource _cts = new();
-
-    private IMask _locationMask = new PatternMask("XX-00-00")
-    {
-        MaskChars = new[]
-        {
-            new MaskChar('X', @"[A-Za-z]"),
-            new MaskChar('0', @"[0-9]")
-        },
-        Transformation = c => char.ToUpperInvariant(c)
-    };
 
     protected override async Task OnInitializedAsync()
     {
@@ -130,19 +123,7 @@
 
     private async Task LoadLocationsAsync()
     {
-        _availableLocations = await ClientService.GetListAsync<string>("api/WarehouseLocations/locations", _cts.Token);
-    }
-
-    private Task<IEnumerable<string>> SearchLocations(string value, CancellationToken token)
-    {
-        var validLocations = _availableLocations
-            .Where(loc => !string.Equals(loc, _moveStockRequest.SourceLocationCode, StringComparison.OrdinalIgnoreCase));
-
-        if (string.IsNullOrEmpty(value))
-            return Task.FromResult(validLocations);
-
-        var filteredList = validLocations.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
-        return Task.FromResult(filteredList);
+        _availableLocationCodes = await WarehouseLocationService.GetCodesAsync(_cts.Token);
     }
 
     private async Task HandleFindProductKeyPress(KeyboardEventArgs e)
@@ -157,7 +138,7 @@
     {
         if (string.IsNullOrWhiteSpace(_moveStockRequest.SearchTerm)) return;
 
-        _searchProduct = await ClientService.GetAsync<ProductResponse>($"api/products/search/{_moveStockRequest.SearchTerm}", _cts.Token);
+        _searchProduct = await ProductService.GetBySkuOrNameAsync(_moveStockRequest.SearchTerm, _cts.Token);
 
         if (_searchProduct != null)
         {
@@ -165,7 +146,7 @@
         }
         else
         {
-            _availableStocks.Clear();
+            _availableStocks = null;
             _selectedSourceStock = null;
             Snackbar.Add("Product not found", Severity.Warning);
         }
@@ -173,18 +154,20 @@
 
     private async Task LoadStocksAsync()
     {
-        if (_searchProduct == null || string.IsNullOrWhiteSpace(_searchProduct.Sku)) return;
+        if (_searchProduct == null || string.IsNullOrWhiteSpace(_searchProduct.Sku))
+            return;
 
-        _availableStocks = await ClientService.GetListAsync<StockResponse>($"api/stocks/by-product-sku/{_searchProduct.Sku}", _cts.Token);
+        _availableStocks = await StockService.SearchBySkuAsync(_searchProduct.Sku, _cts.Token);
         _moveStockRequest.ProductSku = _searchProduct.Sku;
     }
 
     private Task<IEnumerable<StockResponse>> SearchLocationsBySku(string value, CancellationToken token)
     {
+        if (_availableStocks == null)
+            return Task.FromResult<IEnumerable<StockResponse>>(Array.Empty<StockResponse>());
+
         if (string.IsNullOrEmpty(value))
-        {
             return Task.FromResult<IEnumerable<StockResponse>>(_availableStocks);
-        }
 
         var filteredList = _availableStocks
             .Where(x => x.LocationCode != null && x.LocationCode.Contains(value, StringComparison.OrdinalIgnoreCase));
@@ -215,7 +198,7 @@
 
     private async Task TransferProduct()
     {
-        var isSuccess = await ClientService.PostAsync("api/stocks/move", _moveStockRequest, _cts.Token);
+        var isSuccess = await StockService.MoveAsync(_moveStockRequest, _cts.Token);
 
         if (isSuccess)
         {
@@ -223,7 +206,7 @@
             _moveStockRequest = new MoveStockRequest();
             _searchProduct = null;
             _selectedSourceStock = null;
-            _availableStocks.Clear();
+            _availableStocks = null;
             Snackbar.Add("Stock transferred successfully!", Severity.Success);
         }
     }

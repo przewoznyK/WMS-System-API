@@ -51,10 +51,10 @@ namespace WMS.Api.Controllers
             return Ok(product);
         }
 
-        [HttpGet("search/{searchTerm}")]
-        public async Task<IActionResult> SearchProduct(string searchTerm)
+        [HttpGet("by-sku-or-name/{skuOrName}")]
+        public async Task<IActionResult> GetBySkuOrNameAsync(string skuOrName)
         {
-            var product = await _mediator.Send(new GetProductViewBySearchQuery(searchTerm));
+            var product = await _mediator.Send(new GetProductBySkuOrNameQuery(skuOrName));
             return Ok(product);
         }
 

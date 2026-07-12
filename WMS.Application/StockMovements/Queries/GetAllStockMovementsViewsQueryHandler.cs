@@ -27,7 +27,9 @@ namespace WMS.Application.Stocks.Queries
                 LocationCode = s.LocationCode,
                 OperationType = s.OperationType,
                 QuantityChange = s.QuantityChange,
-                CreatedAt = s.CreatedAt
+                CreatedAt = s.CreatedAt,
+                IssueType = s.IssueType,
+                ReferenceNumber = s.ReferenceNumber
             });
 
             return result.ToList();

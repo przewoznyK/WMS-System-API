@@ -4,9 +4,10 @@
 @using WMS.Application.Products.Response
 @using WMS.Application.Products.Request
 @using WMS.Client.Services
-@inject ClientService ClientService
+@using WMS.Client.Services.Interfaces
 @inject ISnackbar Snackbar
-@inject ILogger<Products> Logger
+@inject IStockService StockService
+@inject IProductService ProductService
 
 <MudThemeProvider />
 <MudSnackbarProvider />
@@ -86,7 +87,7 @@ else
 }
 
 @code {
-    private List<ProductResponse>? _availableProducts;
+    private IEnumerable<ProductResponse>? _availableProducts;
 
     [SupplyParameterFromForm]
     private CreateProductRequest _createProductRequest { get; set; } = new();
@@ -95,22 +96,17 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadProductsAsync();
-    }
-
-    private async Task LoadProductsAsync()
-    {
-        _availableProducts = await ClientService.GetListAsync<ProductResponse>("api/products/summary", _cts.Token);
+        _availableProducts = await ProductService.GetSummaryAsync(_cts.Token);
     }
 
     private async Task HandleSubmit()
     {
-        var isSuccess = await ClientService.PostAsync("api/products/create", _createProductRequest, _cts.Token);
+        var isSuccess = await ProductService.CreateAsync(_createProductRequest, _cts.Token);
 
         if (isSuccess)
         {
             _createProductRequest = new CreateProductRequest();
-            await LoadProductsAsync();
+            _availableProducts = await ProductService.GetSummaryAsync(_cts.Token);
             Snackbar.Add("Product added successfully!", Severity.Success);
         }
     }

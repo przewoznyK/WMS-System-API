@@ -1,6 +1,8 @@
 using WMS.Client.Components;
 using MudBlazor.Services;
 using WMS.Client.Services;
+using WMS.Client.Services.Interfaces;
+using WMS.Client.Services.Implementations;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -8,8 +10,13 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped(sp => new HttpClient{ BaseAddress = new Uri("https://localhost:7052")} );
+builder.Services.AddScoped<ApiClientService>();
+builder.Services.AddScoped<UiUtilityService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IStockMovementService, StockMovementService>();
+builder.Services.AddScoped<IStockService, StockService>();
+builder.Services.AddScoped<IWarehouseLocationService, WarehouseLocationService>();
 builder.Services.AddMudServices();
-builder.Services.AddScoped<ClientService>();
 
 var app = builder.Build();
 

@@ -3,13 +3,13 @@
 @using MudBlazor
 @using WMS.Application.Stocks.Request
 @using WMS.Application.Stocks.Response
-@using System.Net.Http.Json
-@using WMS.Client.Responses
 @using WMS.Client.Services
-@inject HttpClient Http
+@using WMS.Client.Services.Interfaces
+@inject UiUtilityService UiUtilityService
 @inject ISnackbar Snackbar
-@inject ClientService ClientService
-@inject ILogger<Home> Logger
+@inject IStockService StockService
+@inject IProductService ProductService
+@inject IWarehouseLocationService WarehouseLocationService
 
 <MudThemeProvider />
 <MudSnackbarProvider />
@@ -39,7 +39,7 @@
         <label>Location Code:</label>
         <MudAutocomplete T="string" 
                          @bind-Value="_receiveStockRequest.LocationCode" 
-                         SearchFunc="@SearchLocations"
+                         SearchFunc="@((value, token) => UiUtilityService.FilterLocationCodes(_availableLocations, value))"
                          ResetValueOnEmptyText="true"
                          CoerceText="true" 
                          CoerceValue="true"
@@ -64,11 +64,11 @@
 
 @if (_stocksResponse == null)
 {
-        <p><em>Loading warehouse data...</em></p>
+    <p><em>Loading warehouse data...</em></p>
 }
 else if (!_stocksResponse.Any())
 {
-        <p>Warehouse is empty.</p>
+    <p>Warehouse is empty.</p>
 }
 else
 {
@@ -94,24 +94,27 @@ else
 }
 
 @code {
-    private List<StockResponse>? _stocksResponse;
+    private IEnumerable<StockResponse>? _stocksResponse;
 
     [SupplyParameterFromForm]
     private ReceiveStockRequest _receiveStockRequest { get; set; } = new();
 
-    private List<string> _availableLocations = new();
-    private List<string> _availableProductNames = new();
+    private IEnumerable<string>? _availableLocations;
+    private IEnumerable<string>? _availableProductNames;
     private readonly CancellationTokenSource _cts = new();
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadStocksAsync();
-        _availableProductNames = await ClientService.GetListAsync<string>("api/products/names", _cts.Token);
-        _availableLocations = await ClientService.GetListAsync<string>("api/warehouseLocations/locations", _cts.Token);
+        _stocksResponse = await StockService.GetSummaryAsync(_cts.Token);
+        _availableProductNames = await ProductService.GetNamesAsync(_cts.Token);
+        _availableLocations = await WarehouseLocationService.GetCodesAsync(_cts.Token);
     }
 
     private Task<IEnumerable<string>> SearchProductNames(string value, CancellationToken token)
     {
+        if (_availableProductNames == null)
+            return Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
+
         if (string.IsNullOrEmpty(value))
             return Task.FromResult<IEnumerable<string>>(_availableProductNames);
 
@@ -119,28 +122,14 @@ else
         return Task.FromResult<IEnumerable<string>>(filteredList);
     }
 
-    private Task<IEnumerable<string>> SearchLocations(string value, CancellationToken token)
-    {
-        if (string.IsNullOrEmpty(value))
-            return Task.FromResult<IEnumerable<string>>(_availableLocations);
-
-        var filteredList = _availableLocations.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
-        return Task.FromResult<IEnumerable<string>>(filteredList);
-    }
-
-    private async Task LoadStocksAsync()
-    {
-        _stocksResponse = await ClientService.GetListAsync<StockResponse>("api/stocks/summary", _cts.Token);
-    }
-
     private async Task HandleSubmit()
     {
-        var isSuccess = await ClientService.PostAsync("api/stocks/receive", _receiveStockRequest, _cts.Token);
+        var isSuccess = await StockService.ReceiveAsync(_receiveStockRequest, _cts.Token);
 
         if (isSuccess)
         {
             _receiveStockRequest = new ReceiveStockRequest();
-            await LoadStocksAsync();
+            _stocksResponse = await StockService.GetSummaryAsync(_cts.Token);
             Snackbar.Add("Stock added successfully!", Severity.Success);
         }
     }

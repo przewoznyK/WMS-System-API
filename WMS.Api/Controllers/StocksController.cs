@@ -51,5 +51,12 @@ namespace WMS.Api.Controllers
             var stocks = await _mediator.Send(new GetAllStocksViewsByProductSkuQuery(sku));
             return Ok(stocks);
         }
+
+        [HttpPost("issue")]
+        public async Task<IActionResult> IssueStock([FromBody] IssueStockCommand command)
+        {
+            var stockMovementId = await _mediator.Send(command);
+            return Ok(stockMovementId);
+        }
     }
 }

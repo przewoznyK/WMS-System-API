@@ -1,0 +1,179 @@
+﻿@page "/stocks/issue"
+@implements IDisposable
+@using MudBlazor
+@using WMS.Application.Stocks.Request
+@using WMS.Application.Stocks.Response
+@using WMS.Application.Products.Response
+@using WMS.Domain.Enums
+@using WMS.Client.Services
+@using WMS.Client.Services.Interfaces
+@inject UiUtilityService UiUtilityService
+@inject ISnackbar Snackbar
+@inject IStockService StockService
+@inject IProductService ProductService
+@inject IWarehouseLocationService WarehouseLocationService
+
+<MudThemeProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<PageTitle>Issue Stock</PageTitle>
+
+<h3>Issue Stock</h3>
+<EditForm Model="_issueStockRequest" OnValidSubmit="HandleSubmit" FormName="IssueStockForm">
+    <DataAnnotationsValidator />
+
+    <div class="mb-3">
+        <label>Product:</label>
+        <MudAutocomplete T="ProductResponse"
+                         Value="_selectedProduct"
+                         ValueChanged="OnProductSelected"
+                         SearchFunc="@SearchProducts"
+                         ToStringFunc="@(p => p == null ? null : $"{p.Sku} - {p.Name}")"
+                         ResetValueOnEmptyText="true"
+                         CoerceText="true"
+                         CoerceValue="true"
+                         Placeholder="Enter or select a product..."
+                         Variant="Variant.Outlined"
+                         Margin="Margin.Dense" />
+        <ValidationMessage For="@(() => _issueStockRequest.ProductSku)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <label>Location Code:</label>
+        <MudAutocomplete T="string" 
+                         @bind-Value="_issueStockRequest.LocationCode" 
+                         SearchFunc="@((value, _) => UiUtilityService.FilterLocationCodes(_availableLocationCodes, value))"
+                         ResetValueOnEmptyText="true"
+                         CoerceText="true" 
+                         CoerceValue="true"
+                         Placeholder="Enter or select a location..."
+                         Variant="Variant.Outlined" 
+                         Margin="Margin.Dense" />
+        <ValidationMessage For="@(() => _issueStockRequest.LocationCode)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <label>Quantity:</label>
+        <InputNumber @bind-Value="_issueStockRequest.Quantity" class="form-control" />
+        <ValidationMessage For="@(() => _issueStockRequest.Quantity)" class="text-danger" />
+    </div>
+
+    <div class="mb-3">
+        <label>Issue Reason:</label>
+        <MudSelect @bind-Value="_issueStockRequest.IssueType" Variant="Variant.Outlined" Margin="Margin.Dense">
+            @foreach (IssueType item in Enum.GetValues(typeof(IssueType)))
+            {
+                    <MudSelectItem Value="@item">@UiUtilityService.SplitPascalCase(item.ToString())</MudSelectItem>
+            }
+        </MudSelect>
+    </div>
+
+    <div class="mb-3">
+        <label>Reference Number (Optional):</label>
+        <InputText @bind-Value="_issueStockRequest.ReferenceNumber" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Issue Stock</button>
+</EditForm>
+
+<hr />
+
+<h1>Current stock level</h1>
+
+@if (_stocksResponse == null)
+{
+    <p><em>Loading warehouse data...</em></p>
+}
+else if (!_stocksResponse.Any())
+{
+    <p>Warehouse is empty.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Product Name</th>
+                <th>Location Code</th>
+                <th>Quantity</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var stock in _stocksResponse)
+        {
+            <tr>
+                <td>@stock.ProductName</td>
+                <td>@stock.LocationCode</td>
+                <td>@stock.Quantity</td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+
+@code {
+    private IEnumerable<StockResponse>? _stocksResponse;
+
+    [SupplyParameterFromForm]
+    private IssueStockRequest _issueStockRequest { get; set; } = new() { Quantity = 1 };
+
+    private ProductResponse? _selectedProduct;
+    private IEnumerable<ProductResponse>? _availableProducts;
+    private IEnumerable<string>? _availableLocationCodes;
+
+    private readonly CancellationTokenSource _cts = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStocksAsync();
+
+        _availableProducts = await ProductService.GetSummaryAsync(_cts.Token);
+        _availableLocationCodes = await WarehouseLocationService.GetCodesAsync(_cts.Token);
+    }
+
+    private Task<IEnumerable<ProductResponse>> SearchProducts(string value, CancellationToken token)
+    {
+        if (_availableProducts == null)
+            return Task.FromResult<IEnumerable<ProductResponse>>(Array.Empty<ProductResponse>());
+
+        if (string.IsNullOrEmpty(value))
+            return Task.FromResult<IEnumerable<ProductResponse>>(_availableProducts);
+
+        var filteredList = _availableProducts.Where(x =>
+            x.Sku.Contains(value, StringComparison.OrdinalIgnoreCase) ||
+            x.Name.Contains(value, StringComparison.OrdinalIgnoreCase));
+
+        return Task.FromResult<IEnumerable<ProductResponse>>(filteredList);
+    }
+
+    private async Task LoadStocksAsync()
+    {
+        _stocksResponse = await StockService.GetSummaryAsync(_cts.Token);
+    }
+
+    private void OnProductSelected(ProductResponse? product)
+    {
+        _selectedProduct = product;
+        _issueStockRequest.ProductSku = product?.Sku ?? string.Empty;
+    }
+
+    private async Task HandleSubmit()
+    {
+        var isSuccess = await StockService.IssueAsync(_issueStockRequest, _cts.Token);
+
+        if (isSuccess)
+        {
+            _issueStockRequest = new IssueStockRequest { Quantity = 1 };
+            _selectedProduct = null;
+            await LoadStocksAsync();
+            Snackbar.Add("Stock issued successfully!", Severity.Success);
+        }
+    }
+
+    public void Dispose()
+    {
+        _cts.Cancel();
+        _cts.Dispose();
+    }
+}

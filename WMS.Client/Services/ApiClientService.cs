@@ -4,22 +4,22 @@ using WMS.Client.Responses;
 
 namespace WMS.Client.Services
 {
-    public class ClientService
+    public class ApiClientService
     {
         private readonly HttpClient _http;
         private readonly ISnackbar _snackbar;
-        private readonly ILogger<ClientService> _logger;
+        private readonly ILogger<ApiClientService> _logger;
         private readonly JsonSerializerOptions _jsonOptions;
 
-        public ClientService(HttpClient http, ISnackbar snackbar, ILogger<ClientService> logger)
+        public ApiClientService(HttpClient http, ISnackbar snackbar, ILogger<ApiClientService> logger)
         {
             _http = http;
             _snackbar = snackbar;
             _logger = logger;
             _jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
         }
-
-        public async Task<List<T>> GetListAsync<T>(string endpoint, CancellationToken ct = default)
+        
+        public async Task<IEnumerable<T>> GetListAsync<T>(string endpoint, CancellationToken ct = default)
         {
             try
             {

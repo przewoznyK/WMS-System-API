@@ -58,7 +58,7 @@ namespace WMS.Infrastructure.Repositories
                 .AnyAsync(p => p.Sku == sku);
         }
 
-        public async Task<Product?> GetBySearch(string searchTerm)
+        public async Task<Product?> GetBySkuOrNameAsync(string searchTerm)
         {
             return await _wmsDbContext.Products.FirstOrDefaultAsync(p => p.Sku == searchTerm || p.Name == searchTerm);
         }

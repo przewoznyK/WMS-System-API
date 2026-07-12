@@ -58,7 +58,7 @@ namespace WMS.Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public Task<Product?> GetBySearch(string searchTerm)
+        public Task<Product?> GetBySkuOrNameAsync(string searchTerm)
         {
             var product = _products.FirstOrDefault(p => p.Sku == searchTerm || p.Name.Contains(searchTerm));
             return Task.FromResult(product);

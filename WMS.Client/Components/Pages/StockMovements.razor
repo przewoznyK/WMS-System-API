@@ -3,77 +3,109 @@
 @using MudBlazor
 @using WMS.Application.StockMovements.Response
 @using WMS.Client.Services
-@inject ClientService ClientService
-@inject ILogger<StockMovements> Logger
+@using WMS.Client.Services.Interfaces
+@inject UiUtilityService UiUtilityService
+@inject IStockMovementService StockMovementService
 
 <MudThemeProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
+
 <PageTitle>Stock Movements</PageTitle>
 
-<MudTable Items="@_movements" 
-          Hover="true" 
-          Dense="true"
-          Filter="new Func<StockMovementResponse, bool>(FilterFunc)">
+<MudTable Items="@_movements" Hover="true" Dense="true" Class="mt-4" Elevation="3" Filter="FilterFunc">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Stock Movements</MudText>
+        <MudText Typo="Typo.h5">Stock Movements</MudText>
         <MudSpacer />
-        <MudTextField @bind-Value="_searchString" 
-                      Placeholder="Search..." 
-                      Adornment="Adornment.Start" 
-                      AdornmentIcon="@Icons.Material.Filled.Search" 
-                      IconSize="Size.Medium" 
-                      Class="mt-0" />
+        <MudTextField @bind-Value="_searchString" Placeholder="Search..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Margin="Margin.Dense" Variant="Variant.Outlined" Clearable="true"></MudTextField>
     </ToolBarContent>
 
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.CreatedAt)" InitialDirection="SortDirection.Descending">Data</MudTableSortLabel></MudTh>
-        <MudTh>SKU</MudTh>
-        <MudTh>Product Name</MudTh>
-        <MudTh>Location</MudTh>
-        <MudTh>Operation Type</MudTh>
-        <MudTh>Quantity</MudTh>
+        <MudTh Style="width: 180px; white-space: nowrap;">
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.CreatedAt)" InitialDirection="SortDirection.Descending">
+                Data & User
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.ProductSku)">
+                SKU
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.ProductName)">
+                Product Name
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.LocationCode)">
+                Location
+            </MudTableSortLabel>
+        </MudTh>
+        <MudTh>Operation & Details</MudTh>
+        <MudTh Style="text-align: right;">
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.QuantityChange)">
+                Quantity
+            </MudTableSortLabel>
+        </MudTh>
     </HeaderContent>
 
     <RowTemplate>
-        <MudTd DataLabel="Data">@context.CreatedAt.ToString("yyyy-MM-dd HH:mm")</MudTd>
-
-        <MudTd DataLabel="SKU">@context.ProductSku</MudTd>
-
-        <MudTd DataLabel="Product Name">@context.ProductName</MudTd>
-
-        <MudTd DataLabel="Location">@context.LocationCode</MudTd>
-
-        <MudTd DataLabel="OperationType">
-            <MudChip T="string" 
-                     Color="@GetOperationColor(context.OperationType.ToString())" 
-                     Size="Size.Small" 
-                     Variant="Variant.Filled">
-                @context.OperationType.ToString()
-            </MudChip>
+        <MudTd DataLabel="Data & User">
+            <MudText Typo="Typo.body2">@context.CreatedAt.ToString("yyyy-MM-dd HH:mm")</MudText>
+            <MudText Typo="Typo.caption" Color="Color.Secondary" Style="display: flex; align-items: center; margin-top: 2px;">
+                <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" Style="font-size: 14px; margin-right: 4px;" />
+                Worker
+            </MudText>
         </MudTd>
 
-        <MudTd DataLabel="Quantity">
-            <MudText Color="@(context.QuantityChange > 0 ? Color.Success : context.QuantityChange < 0 ? Color.Error : Color.Default)" Typo="Typo.body2">
-                @(context.QuantityChange > 0 ? $"+{context.QuantityChange}" : context.QuantityChange.ToString())
+        <MudTd DataLabel="SKU">@context.ProductSku</MudTd>
+        <MudTd DataLabel="Product Name">@context.ProductName</MudTd>
+        <MudTd DataLabel="Location">@context.LocationCode</MudTd>
+
+        <MudTd DataLabel="Operation & Details">
+            <MudChip T="string" Color="@GetOperationColor(context.OperationType.ToString())" Size="Size.Small" Class="mb-1">
+                @context.OperationType.ToString()
+            </MudChip>
+
+            @if (context.OperationType.ToString() == "Issue")
+            {
+                    <div style="font-size: 0.75rem; color: #757575; line-height: 1.3;">
+                            Reason: <b>@UiUtilityService.SplitPascalCase(context.IssueType.ToString())</b>
+
+                    @if (!string.IsNullOrWhiteSpace(context.ReferenceNumber))
+                    {
+                                <br />
+                        <text>Ref: @context.ReferenceNumber</text>
+                    }
+                    </div>
+            }
+        </MudTd>
+
+        <MudTd DataLabel="Quantity" Style="text-align: right;">
+            <MudText Color="@(context.QuantityChange > 0 ? Color.Success : Color.Error)">
+                <b>@(context.QuantityChange > 0 ? $"+{context.QuantityChange}" : $"{context.QuantityChange}")</b>
             </MudText>
         </MudTd>
     </RowTemplate>
 
     <PagerContent>
-        <MudTablePager />
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
     </PagerContent>
 </MudTable>
 
 @code {
-    private List<StockMovementResponse> _movements = new();
+    private IEnumerable<StockMovementResponse>? _movements;
     private string _searchString = "";
 
     private readonly CancellationTokenSource _cts = new();
 
     protected override async Task OnInitializedAsync()
     {
-        _movements = await ClientService.GetListAsync<StockMovementResponse>("api/stockmovements/summary", _cts.Token);
+        var data = await StockMovementService.GetSummaryAsync(_cts.Token);
+        if (data != null)
+        {
+            _movements = data;
+        }
     }
 
     private bool FilterFunc(StockMovementResponse element)
@@ -83,6 +115,7 @@
         if (element.ProductSku?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true) return true;
         if (element.ProductName?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true) return true;
         if (element.LocationCode?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true) return true;
+        if (element.ReferenceNumber?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true) return true;
         if (element.OperationType.ToString().Contains(_searchString, StringComparison.OrdinalIgnoreCase)) return true;
 
         return false;

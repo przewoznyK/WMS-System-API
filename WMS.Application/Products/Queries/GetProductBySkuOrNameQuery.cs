@@ -3,5 +3,5 @@ using WMS.Application.Products.Response;
 
 namespace WMS.Application.Products.Queries
 {
-    public record GetProductViewBySearchQuery(string searchTerm) : IRequest<ProductResponse>;
+    public record GetProductBySkuOrNameQuery(string SkuOrName) : IRequest<ProductResponse>;
 }

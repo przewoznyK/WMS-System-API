@@ -2,7 +2,7 @@
 
 namespace WMS.Application.WarehouseLocations.Dtos
 {
-    public class AddLocationRequest
+    public class CreateWarehouseLocationRequest
     {
         [Required(ErrorMessage = "The Location Code field is required.")]
         [RegularExpression(@"^[A-Z]{2}-\d{2}-\d{2}$", ErrorMessage = "The format must comply with the pattern: AA-00-00.")]
