@@ -4,8 +4,6 @@ namespace WMS.Application.Stocks.Request
 {
     public class MoveStockRequest
     {
-        [Required(ErrorMessage = "The Search term field cannot be empty.")]
-        public string SearchTerm { get; set; } = string.Empty;
 
         [Required(ErrorMessage = "The Source Location Code field is required.")]
         [RegularExpression(@"^[A-Z]{2}-\d{2}-\d{2}$", ErrorMessage = "The format must comply with the pattern: AA-00-00.")]

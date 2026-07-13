@@ -1,0 +1,88 @@
+﻿@using WMS.Application.Stocks.Response
+@using WMS.Client.Services.Interfaces
+
+<MudAutocomplete T="StockResponse" 
+                Disabled="Disabled"
+                Label="Location Code"
+                Value="Value"
+                ValueChanged="OnStockSelected"
+                SearchFunc="@SearchStocksForProduct"
+                ToStringFunc="@(s => s?.LocationCode)"
+                Variant="Variant.Outlined" 
+                Margin="Margin.Dense"
+                Clearable="true"
+                ResetValueOnEmptyText="true">
+    <ItemTemplate Context="stock">
+        <div class="d-flex justify-space-between" style="width: 100%; gap: 20px;">
+            <MudText>@stock.LocationCode</MudText>
+            <MudText Color="Color.Info" Typo="Typo.caption">Available: <b>@stock.Quantity</b></MudText>
+        </div>
+    </ItemTemplate>
+</MudAutocomplete>
+
+@code {
+    [Inject]
+    private IStockService _stockService { get; set; } = null!;
+
+    [Parameter]
+    public StockResponse? Value { get; set; }
+
+    [Parameter]
+    public EventCallback<StockResponse?> ValueChanged { get; set; }
+
+    [Parameter]
+    public string? ProductSku { get; set; }
+
+    [Parameter]
+    public bool Disabled { get; set; }
+
+    private IEnumerable<StockResponse>? _stocksForProduct;
+
+    private async Task OnStockSelected(StockResponse? stock)
+    {
+        Value = stock;
+        await ValueChanged.InvokeAsync(stock);
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        Value = null;
+
+        if (string.IsNullOrWhiteSpace(ProductSku))
+        {
+            _stocksForProduct = [];
+            return;
+        }
+
+        _stocksForProduct = await _stockService.SearchBySkuAsync(ProductSku, default);
+    }
+
+    private Task<IEnumerable<StockResponse>> SearchStocksForProduct(string value, CancellationToken token)
+    {
+        if (_stocksForProduct == null)
+        {
+            return Task.FromResult<IEnumerable<StockResponse>>([]);
+        }
+
+        var search = NormalizeSearchValue(value);
+
+        return Task.FromResult(
+            _stocksForProduct.Where(x =>
+                NormalizeSearchValue(x.LocationCode)
+                    .Contains(search, StringComparison.OrdinalIgnoreCase)));
+    }
+
+    private string NormalizeSearchValue(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return string.Empty;
+        }
+
+        return new string(
+            value
+                .Where(char.IsLetterOrDigit)
+                .ToArray())
+            .ToUpperInvariant();
+    }
+}

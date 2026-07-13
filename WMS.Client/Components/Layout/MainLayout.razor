@@ -1,23 +1,74 @@
-﻿@inherits LayoutComponentBase
+﻿@using MudBlazor
+@inherits LayoutComponentBase
 
-<div class="page">
-    <div class="sidebar">
+<MudThemeProvider Theme="@_theme" IsDarkMode="@_isDarkMode" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Color="Color.Surface">
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+
+        <MudButton Href="/" Variant="Variant.Text" Color="Color.Primary" Class="px-2">
+            <MudIcon Icon="@Icons.Material.Filled.Widgets" Size="Size.Large" Class="mr-2" />
+            <MudText Typo="Typo.h5" Style="font-weight: 700; letter-spacing: 1px;">WMS</MudText>
+        </MudButton>
+
+        <MudSpacer />
+
+    <MudIconButton Icon="@(_isDarkMode ? Icons.Material.Filled.WbSunny : Icons.Material.Filled.DarkMode)" 
+                   Color="Color.Primary" 
+                   OnClick="@ToggleDarkMode" 
+                   Class="mr-2" />
+
+        <MudButton Variant="Variant.Text" Href="about">About</MudButton>
+    </MudAppBar>
+
+    <MudDrawer @bind-Open="_drawerOpen" Elevation="2" ClipMode="DrawerClipMode.Always" Variant="@DrawerVariant.Responsive">
         <NavMenu />
-    </div>
+    </MudDrawer>
 
-    <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
-
-        <article class="content px-4">
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="pt-8 px-6 pb-8">
             @Body
-        </article>
-    </main>
-</div>
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
 
-<div id="blazor-error-ui">
-    An unhandled error has occurred.
-    <a href="" class="reload">Reload</a>
-    <a class="dismiss">🗙</a>
-</div>
+@code {
+    bool _drawerOpen = true;
+    bool _isDarkMode = true;
+
+    void DrawerToggle() => _drawerOpen = !_drawerOpen;
+    void ToggleDarkMode() => _isDarkMode = !_isDarkMode;
+
+    private MudTheme _theme = new MudTheme()
+    {
+        PaletteLight = new PaletteLight()
+        {
+                Background = "#E8F0F7",
+                DrawerBackground = "#D6E3F0",
+                Surface = "#F8FAFC",
+                AppbarBackground = "#F8FAFC",
+
+                Primary = "#2C5282",
+                Secondary = "#2F855A",
+
+                TextPrimary = "#1A202C",
+                TextSecondary = "#4A5568"
+        },
+        PaletteDark = new PaletteDark()
+        {
+            Background = "#1A202C",
+            DrawerBackground = "#2D3748",
+            Surface = "#2D3748",
+            AppbarBackground = "#2D3748",
+
+            Primary = "#63B3ED",
+            TextPrimary = "#EDF2F7",
+            TextSecondary = "#A0AEC0",
+            Secondary = "#68D391"
+        }
+    };
+}

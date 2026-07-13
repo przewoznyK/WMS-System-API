@@ -1,0 +1,97 @@
+﻿@using WMS.Application.Stocks.Response
+
+<MudCard Elevation="2" Class="pa-4">
+    <MudTable Items="@Items"
+              Hover="true"
+              Dense="true"
+              Elevation="0"
+              Filter="FilterFunc"
+              AllowUnsorted="false"
+              InitialDirection="SortDirection.Ascending"
+              Loading="@(Items == null)">
+
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">
+                Current Stock Level
+            </MudText>
+
+            <MudSpacer />
+
+            <MudTextField 
+                @bind-Value="_searchString"
+                Placeholder="Search..."
+                Adornment="Adornment.Start"
+                AdornmentIcon="@Icons.Material.Filled.Search"
+                IconSize="Size.Medium"
+                Margin="Margin.Dense"
+                Variant="Variant.Outlined"
+                Clearable="true"
+                Immediate="true" />
+        </ToolBarContent>
+
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel 
+                    SortBy="new Func<StockResponse, object>(x => x.ProductName)">
+                    Product
+                </MudTableSortLabel>
+            </MudTh>
+
+            <MudTh>
+                <MudTableSortLabel 
+                    SortBy="new Func<StockResponse, object>(x => x.LocationCode)">
+                    Location
+                </MudTableSortLabel>
+            </MudTh>
+
+            <MudTh>
+                <MudTableSortLabel 
+                    SortBy="new Func<StockResponse, object>(x => x.Quantity)">
+                    Quantity
+                </MudTableSortLabel>
+            </MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd DataLabel="Product">
+                @context.ProductName
+            </MudTd>
+
+            <MudTd DataLabel="Location">
+                <MudChip T="string"
+                         Size="Size.Small"
+                         Variant="Variant.Outlined">
+                    @context.LocationCode
+                </MudChip>
+            </MudTd>
+
+            <MudTd DataLabel="Quantity">
+                @context.Quantity
+            </MudTd>
+        </RowTemplate>
+
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+
+    </MudTable>
+</MudCard>
+
+@code {
+    [Parameter]
+    public IEnumerable<StockResponse>? Items { get; set; }
+
+    private string _searchString = "";
+
+    private bool FilterFunc(StockResponse stock)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+        {
+            return true;
+        }
+
+        return
+            stock.ProductName?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true ||
+            stock.LocationCode?.Contains(_searchString, StringComparison.OrdinalIgnoreCase) == true;
+    }
+}

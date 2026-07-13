@@ -1,142 +1,99 @@
 ﻿@page "/"
-@implements IDisposable
 @using MudBlazor
-@using WMS.Application.Stocks.Request
-@using WMS.Application.Stocks.Response
-@using WMS.Client.Services
-@using WMS.Client.Services.Interfaces
-@inject UiUtilityService UiUtilityService
-@inject ISnackbar Snackbar
-@inject IStockService StockService
-@inject IProductService ProductService
-@inject IWarehouseLocationService WarehouseLocationService
-
-<MudThemeProvider />
-<MudSnackbarProvider />
-<MudPopoverProvider />
+@inject NavigationManager NavManager
 
 <PageTitle>WMS Dashboard</PageTitle>
 
-<h3>Receive New Stock</h3>
-<EditForm Model="_receiveStockRequest" OnValidSubmit="HandleSubmit" FormName="ReceiveStockForm">
-    <DataAnnotationsValidator />
+<MudText Typo="Typo.h4" Color="Color.Primary" Class="mb-2"><b>Warehouse Dashboard</b></MudText>
+<MudText Typo="Typo.subtitle1" Color="Color.Default" Class="mb-8">Select an operation to get started.</MudText>
 
-    <div class="mb-3">
-        <label>Product Name:</label>
-        <MudAutocomplete T="string" 
-                         @bind-Value="_receiveStockRequest.ProductName" 
-                         SearchFunc="@SearchProductNames"
-                         ResetValueOnEmptyText="true"
-                         CoerceText="true" 
-                         CoerceValue="true"
-                         Placeholder="Enter or select a product name..."
-                         Variant="Variant.Outlined" 
-                         Margin="Margin.Dense" />
-        <ValidationMessage For="@(() => _receiveStockRequest.ProductName)" class="text-danger" />
-    </div>
+<MudText Typo="Typo.h5" Color="Color.Secondary" Class="mb-4 mt-4"><b>Daily Operations</b></MudText>
+<MudGrid Class="mb-8">
 
-    <div class="mb-3">
-        <label>Location Code:</label>
-        <MudAutocomplete T="string" 
-                         @bind-Value="_receiveStockRequest.LocationCode" 
-                         SearchFunc="@((value, token) => UiUtilityService.FilterLocationCodes(_availableLocations, value))"
-                         ResetValueOnEmptyText="true"
-                         CoerceText="true" 
-                         CoerceValue="true"
-                         Placeholder="Enter or select a location..."
-                         Variant="Variant.Outlined" 
-                         Margin="Margin.Dense" />
-        <ValidationMessage For="@(() => _receiveStockRequest.LocationCode)" class="text-danger" />
-    </div>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2" Class="dashboard-tile" @onclick='() => NavigateTo("/stocks/receive")'>
+            <MudCardContent Class="d-flex flex-column align-center justify-center pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.MoveToInbox" Size="Size.Large" Color="Color.Success" Class="mb-3" />
+                <MudText Typo="Typo.h6" Align="Align.Center">Receive Stock</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">Receive items into warehouse</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
 
-    <div class="mb-3">
-        <label>Quantity:</label>
-        <InputNumber @bind-Value="_receiveStockRequest.Quantity" class="form-control" />
-        <ValidationMessage For="@(() => _receiveStockRequest.Quantity)" class="text-danger" />
-    </div>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2" Class="dashboard-tile" @onclick='() => NavigateTo("/stocks/issue")'>
+            <MudCardContent Class="d-flex flex-column align-center justify-center pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.Outbox" Size="Size.Large" Color="Color.Error" Class="mb-3" />
+                <MudText Typo="Typo.h6" Align="Align.Center">Issue Stock</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">Release items from warehouse</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
 
-    <button type="submit" class="btn btn-primary">Receive Stock</button>
-</EditForm>
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2" Class="dashboard-tile" @onclick='() => NavigateTo("/stocks/move")'>
+            <MudCardContent Class="d-flex flex-column align-center justify-center pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.SyncAlt" Size="Size.Large" Color="Color.Info" Class="mb-3" />
+                <MudText Typo="Typo.h6" Align="Align.Center">Transfer</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">Move items between locations</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
 
-<hr />
+    <MudItem xs="12" sm="6" md="3">
+        <MudCard Elevation="2" Class="dashboard-tile" @onclick='() => NavigateTo("/stockmovements")'>
+            <MudCardContent Class="d-flex flex-column align-center justify-center pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.History" Size="Size.Large" Color="Color.Default" Class="mb-3" />
+                <MudText Typo="Typo.h6" Align="Align.Center">Movements</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">View operations history</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
 
-<h1>Current stock level</h1>
+</MudGrid>
 
-@if (_stocksResponse == null)
-{
-    <p><em>Loading warehouse data...</em></p>
-}
-else if (!_stocksResponse.Any())
-{
-    <p>Warehouse is empty.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Product Name</th>
-                <th>Location Code</th>
-                <th>Quantity</th>
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var stock in _stocksResponse)
-        {
-            <tr>
-                <td>@stock.ProductName</td>
-                <td>@stock.LocationCode</td>
-                <td>@stock.Quantity</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+<MudDivider Class="my-6" />
+
+<MudText Typo="Typo.h5" Color="Color.Secondary" Class="mb-4"><b>Management & Administration</b></MudText>
+<MudGrid>
+
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Elevation="2" Class="dashboard-tile" @onclick='() => NavigateTo("/products")'>
+            <MudCardContent Class="d-flex flex-column align-center justify-center pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.Category" Size="Size.Large" Color="Color.Warning" Class="mb-3" />
+                <MudText Typo="Typo.h6" Align="Align.Center">Products</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">Manage product catalog</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Elevation="2" Class="dashboard-tile" @onclick='() => NavigateTo("/locations")'>
+            <MudCardContent Class="d-flex flex-column align-center justify-center pa-6">
+                <MudIcon Icon="@Icons.Material.Filled.Place" Size="Size.Large" Color="Color.Primary" Class="mb-3" />
+                <MudText Typo="Typo.h6" Align="Align.Center">Locations</MudText>
+                <MudText Typo="Typo.body2" Align="Align.Center" Color="Color.Secondary">Manage warehouse structure</MudText>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+
+</MudGrid>
+
+<style>
+    .dashboard-tile {
+        cursor: pointer;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        height: 100%;
+    }
+    .dashboard-tile:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+    }
+</style>
 
 @code {
-    private IEnumerable<StockResponse>? _stocksResponse;
-
-    [SupplyParameterFromForm]
-    private ReceiveStockRequest _receiveStockRequest { get; set; } = new();
-
-    private IEnumerable<string>? _availableLocations;
-    private IEnumerable<string>? _availableProductNames;
-    private readonly CancellationTokenSource _cts = new();
-
-    protected override async Task OnInitializedAsync()
+    private void NavigateTo(string url)
     {
-        _stocksResponse = await StockService.GetSummaryAsync(_cts.Token);
-        _availableProductNames = await ProductService.GetNamesAsync(_cts.Token);
-        _availableLocations = await WarehouseLocationService.GetCodesAsync(_cts.Token);
-    }
-
-    private Task<IEnumerable<string>> SearchProductNames(string value, CancellationToken token)
-    {
-        if (_availableProductNames == null)
-            return Task.FromResult<IEnumerable<string>>(Array.Empty<string>());
-
-        if (string.IsNullOrEmpty(value))
-            return Task.FromResult<IEnumerable<string>>(_availableProductNames);
-
-        var filteredList = _availableProductNames.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
-        return Task.FromResult<IEnumerable<string>>(filteredList);
-    }
-
-    private async Task HandleSubmit()
-    {
-        var isSuccess = await StockService.ReceiveAsync(_receiveStockRequest, _cts.Token);
-
-        if (isSuccess)
-        {
-            _receiveStockRequest = new ReceiveStockRequest();
-            _stocksResponse = await StockService.GetSummaryAsync(_cts.Token);
-            Snackbar.Add("Stock added successfully!", Severity.Success);
-        }
-    }
-
-    public void Dispose()
-    {
-        _cts.Cancel();
-        _cts.Dispose();
+        NavManager.NavigateTo(url);
     }
 }

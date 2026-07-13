@@ -1,6 +1,4 @@
 ﻿using WMS.Application.StockMovements.Response;
-using WMS.Application.Stocks.Request;
-using WMS.Application.Stocks.Response;
 using WMS.Client.Services.Interfaces;
 
 namespace WMS.Client.Services.Implementations

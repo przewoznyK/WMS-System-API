@@ -1,0 +1,82 @@
+﻿@using MudBlazor
+@using WMS.Application.Products.Request
+@using WMS.Client.Services.Interfaces
+@using WMS.Client.Components.Base
+
+@inherits CancellableComponentBase
+
+<MudCard Elevation="2" Class="pa-4 mb-6">
+
+    <EditForm Model="_createProductRequest"
+              OnSubmit="HandleSubmit"
+              FormName="AddProductForm">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudTextField @bind-Value="_createProductRequest.Sku"
+                              Label="SKU"
+                              Placeholder="Enter SKU..."
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense" />
+                <ValidationMessage For="@(() => _createProductRequest.Sku)"
+                                   class="text-danger" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudTextField @bind-Value="_createProductRequest.Name"
+                              Label="Product Name"
+                              Placeholder="Enter product name..."
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense" />
+
+                <ValidationMessage For="@(() => _createProductRequest.Name)"
+                                   class="text-danger" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudTextField @bind-Value="_createProductRequest.Description"
+                              Label="Description"
+                              Placeholder="Optional description..."
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Lines="3" />
+
+                <ValidationMessage For="@(() => _createProductRequest.Description)"
+                                   class="text-danger" />
+            </MudItem>
+            <MudItem xs="12" Class="d-flex justify-end">
+
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large">
+                    Add Product
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudCard>
+
+
+@code {
+    [Inject]
+    private IProductService _productService { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnSuccess { get; set; }
+
+    private CreateProductRequest _createProductRequest = new();
+
+    private async Task HandleSubmit()
+    {
+        var isSuccess = await _productService.CreateAsync(_createProductRequest, CancellationToken);
+
+        if (isSuccess)
+        {
+            _createProductRequest = new();
+
+            if (OnSuccess.HasDelegate)
+            {
+                await OnSuccess.InvokeAsync();
+            }
+        }
+    }
+}

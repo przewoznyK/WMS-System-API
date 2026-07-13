@@ -1,0 +1,69 @@
+﻿@using WMS.Application.Products.Response
+
+<MudCard Elevation="2" Class="pa-4">
+    <MudTable Items="@Items"
+              Hover="true"
+              Dense="true"
+              Elevation="0"
+              AllowUnsorted="false"
+              InitialDirection="SortDirection.Ascending"
+              Loading="@(Items == null)">
+
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">
+                Current Products
+            </MudText>
+
+            <MudSpacer />
+        </ToolBarContent>
+
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<ProductResponse, object>(x => x.Sku)">
+                    SKU
+                </MudTableSortLabel>
+            </MudTh>
+
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<ProductResponse, object>(x => x.Name)">
+                    Name
+                </MudTableSortLabel>
+            </MudTh>
+
+            <MudTh>
+                Description
+            </MudTh>
+        </HeaderContent>
+
+        <RowTemplate>
+            <MudTd DataLabel="SKU">
+                <MudChip T="string"
+                         Size="Size.Small"
+                         Variant="Variant.Outlined">
+                    @context.Sku
+                </MudChip>
+            </MudTd>
+
+            <MudTd DataLabel="Name">
+                @context.Name
+            </MudTd>
+
+            <MudTd DataLabel="Description">
+                @context.Description
+            </MudTd>
+        </RowTemplate>
+
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+
+    </MudTable>
+</MudCard>
+
+
+@code {
+
+    [Parameter]
+    public IEnumerable<ProductResponse>? Items { get; set; }
+
+}

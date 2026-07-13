@@ -1,106 +1,41 @@
 ﻿@page "/locations"
-@implements IDisposable
-@using MudBlazor
-@using WMS.Application.WarehouseLocations.Dtos
-@using WMS.Client.Services
+
+@using WMS.Client.Components.Forms
+@using WMS.Client.Components.Tables
 @using WMS.Client.Services.Interfaces
-@inject UiUtilityService UiUtilityService
-@inject ISnackbar Snackbar
-@inject IWarehouseLocationService WarehouseLocationService
+@using WMS.Client.Components.Base
 
-<MudThemeProvider />
-<MudSnackbarProvider />
-<MudPopoverProvider />
+@inherits CancellableComponentBase
 
-<PageTitle>WMS Dashboard</PageTitle>
+<CreateLocationForm 
+    OnSuccess="OnCreateLocationFormSuccess" />
 
-<h3>Add New Location</h3>
-<EditForm Model="_addLocationRequest" OnValidSubmit="HandleSubmit" FormName="AddLocationForm">
-    <DataAnnotationsValidator />
-
-    <div class="mb-3">
-        <label>Location Code:</label>
-        <MudTextField @bind-Value="_addLocationRequest.Code" 
-                      Placeholder="AA-02-10"
-                      Variant="Variant.Outlined" 
-                      Margin="Margin.Dense"
-                      Mask="@UiUtilityService.LocationMask"
-                      Immediate="true" />
-        <ValidationMessage For="@(() => _addLocationRequest.Code)" class="text-danger" />
-    </div>
-
-    <div class="mb-3">
-        <label>Description (Optional):</label>
-        <MudTextField @bind-Value="_addLocationRequest.Description" 
-                      Placeholder="Enter description (e.g. Rack for heavy items)..."
-                      Variant="Variant.Outlined" 
-                      Margin="Margin.Dense" 
-                      Lines="3" /> 
-        <ValidationMessage For="@(() => _addLocationRequest.Description)" class="text-danger" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Add location</button>
-</EditForm>
-
-<hr />
-
-<h1>Current locations</h1>
-
-@if (_availableLocationCodes == null)
-{
-    <p><em>Loading warehouse data...</em></p>
-}
-else if (!_availableLocationCodes.Any())
-{
-    <p>Warehouse is empty.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Location Code</th> 
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var location in _availableLocationCodes)
-        {
-            <tr>
-                <td>@location</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+<LocationTable 
+    Items="_locations" />
 
 @code {
-    private IEnumerable<string>? _availableLocationCodes;
+    [Inject]
+    private IWarehouseLocationService _warehouseLocationService { get; set; } = null!;
 
-    [SupplyParameterFromForm]
-    private CreateWarehouseLocationRequest _addLocationRequest { get; set; } = new();
+    [Inject]
+    private ISnackbar _snackbar { get; set; } = null!;
 
-    private readonly CancellationTokenSource _cts = new();
+    private IEnumerable<string>? _locations;
 
     protected override async Task OnInitializedAsync()
     {
-        _availableLocationCodes = await WarehouseLocationService.GetCodesAsync(_cts.Token);
+        await ReloadLocations();
     }
 
-    private async Task HandleSubmit()
+    private async Task ReloadLocations()
     {
-        var isSuccess = await WarehouseLocationService.CreateAsync(_addLocationRequest, _cts.Token);
-
-        if (isSuccess)
-        {
-            _addLocationRequest = new CreateWarehouseLocationRequest();
-            _availableLocationCodes = await WarehouseLocationService.GetCodesAsync(_cts.Token);
-            Snackbar.Add("Location added successfully!", Severity.Success);
-        }
+        _locations = await _warehouseLocationService.GetCodesAsync(CancellationToken);
     }
 
-    public void Dispose()
+    private async Task OnCreateLocationFormSuccess()
     {
-        _cts.Cancel();
-        _cts.Dispose();
+        await ReloadLocations();
+
+        _snackbar.Add("Location added successfully!", Severity.Success);
     }
 }

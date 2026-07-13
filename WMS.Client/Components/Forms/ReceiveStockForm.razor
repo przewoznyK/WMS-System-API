@@ -1,0 +1,97 @@
+﻿@using MudBlazor
+@using WMS.Application.Stocks.Request
+@using WMS.Application.Stocks.Response
+@using WMS.Application.Products.Response
+@using WMS.Client.Services
+@using WMS.Client.Services.Interfaces
+@using WMS.Client.Components.Selectors
+@using WMS.Client.Components.Base
+
+@inherits CancellableComponentBase
+
+<MudCard Elevation="2" Class="pa-4 mb-6">
+    <EditForm Model="_receiveStockRequest" OnSubmit="HandleSubmit" FormName="Receive Stock Form">
+        <DataAnnotationsValidator />
+        <MudGrid>
+
+            <MudItem xs="12" md="4">
+                <ProductSelector
+                    Value="_selectedProduct"
+                    ValueChanged="ProductChanged" />
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                <StockSelector
+                            ProductSku="@(_selectedProduct?.Sku)"
+                            Value="_selectedStock"
+                            ValueChanged="StockChanged"
+                            Disabled="@(_selectedProduct == null)" />
+            </MudItem>
+
+            <MudItem xs="12" md="2">
+                <MudNumericField @bind-Value="_receiveStockRequest.Quantity" 
+                 Label="Quantity" 
+                 Variant="Variant.Outlined" 
+                 Margin="Margin.Dense" 
+                 Min="1"
+                 Adornment="Adornment.End"
+                 AdornmentColor="Color.Info"
+                 AdornmentText="@(_selectedStock != null ? $"Available: {_selectedStock.Quantity}" : "")" />
+            </MudItem>
+
+            <MudItem xs="12" md="2" Class="d-flex align-center">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large">Receive</MudButton>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudCard>
+
+@code {
+    [Inject]
+    private IStockService _stockService { get; set; } = null!;
+
+	[Parameter]
+	public EventCallback OnSuccess { get; set; }
+    
+    private ProductResponse? _selectedProduct;
+    private StockResponse? _selectedStock;
+    private ReceiveStockRequest _receiveStockRequest = new()
+    {
+        Quantity = 1
+    };
+
+    private void ProductChanged(ProductResponse? product)
+    {
+        _selectedProduct = product;
+        _selectedStock = null;
+        _receiveStockRequest.ProductSku = product?.Sku ?? "";
+        _receiveStockRequest.LocationCode = "";
+    }
+
+    private void StockChanged(StockResponse? stock)
+    {
+        _selectedStock = stock;
+        _receiveStockRequest.LocationCode = stock?.LocationCode ?? "";
+    }
+
+    private async Task HandleSubmit()
+    {
+        var isSuccess = await _stockService.ReceiveAsync(_receiveStockRequest, CancellationToken);
+
+        if (isSuccess)
+        {
+            _receiveStockRequest = new ReceiveStockRequest
+            {
+                Quantity = 1
+            };
+
+            _selectedProduct = null;
+            _selectedStock = null;
+
+            if (OnSuccess.HasDelegate)
+            {
+                await OnSuccess.InvokeAsync();
+            }
+        }
+    }
+}

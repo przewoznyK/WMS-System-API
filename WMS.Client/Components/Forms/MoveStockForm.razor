@@ -1,0 +1,178 @@
+﻿@using MudBlazor
+@using WMS.Application.Products.Response
+@using WMS.Application.Stocks.Request
+@using WMS.Application.Stocks.Response
+@using WMS.Client.Services
+@using WMS.Client.Services.Interfaces
+@using WMS.Client.Components.Selectors
+@using WMS.Client.Components.Base
+
+@inherits CancellableComponentBase
+
+<MudCard Elevation="2" Class="pa-4 mb-6">
+    <EditForm Model="_moveStockRequest" 
+              OnSubmit="HandleSubmit" 
+              FormName="MoveStockForm">
+        <DataAnnotationsValidator />
+
+        <MudGrid>
+            <MudItem xs="12">
+                <ProductSelector Value="_selectedProduct"
+                                 ValueChanged="ProductChanged" />
+            </MudItem>
+
+            @if (_selectedProduct != null)
+            {
+                <MudItem xs="12" md="4">
+                    <MudAutocomplete T="StockResponse"
+                                        Label="Source Location"
+                                        Value="_selectedSourceStock"
+                                        ValueChanged="StockChanged"
+                                        SearchFunc="SearchStocks"
+                                        ToStringFunc="@(x => x?.LocationCode)"
+                                        Variant="Variant.Outlined"
+                                        Margin="Margin.Dense"
+                                        Clearable="true">
+                        <ItemTemplate Context="stock">
+                            <MudStack Row="true" Class="d-flex justify-space-between" Style="width:100%">
+                                <MudText>@stock.LocationCode</MudText>
+                                <MudText Color="Color.Info" Typo="Typo.caption">
+                                    Available: <b>@stock.Quantity</b>
+                                </MudText>
+                            </MudStack>
+                        </ItemTemplate>
+                    </MudAutocomplete>
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudNumericField @bind-Value="_moveStockRequest.Quantity"
+                                        Label="Quantity"
+                                        Variant="Variant.Outlined"
+                                        Margin="Margin.Dense"
+                                        Min="1"
+                                        Max="@MaxQuantity" />
+                </MudItem>
+
+                <MudItem xs="12" md="4">
+                    <MudAutocomplete T="string"
+                                        Label="Destination Location"
+                                        @bind-Value="_moveStockRequest.DestinationLocationCode"
+                                        SearchFunc="SearchDestinationLocations"
+                                        Variant="Variant.Outlined"
+                                        Margin="Margin.Dense"
+                                        Clearable="true" />
+                </MudItem>
+
+                <MudItem xs="12" Class="d-flex justify-end">
+                    <MudButton ButtonType="ButtonType.Submit"
+                                Variant="Variant.Filled"
+                                Color="Color.Primary"
+                                Size="Size.Large">
+                        Transfer Product
+                    </MudButton>
+                </MudItem>
+            }
+        </MudGrid>
+    </EditForm>
+</MudCard>
+
+@code {
+    [Inject]
+    private UiUtilityService _uiUtilityService { get; set; } = null!;
+
+    [Inject]
+    private IStockService _stockService { get; set; } = null!;
+
+    [Inject]
+    private IWarehouseLocationService _warehouseLocationService { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback<string> OnSuccess { get; set; }
+
+    private ProductResponse? _selectedProduct;
+    private StockResponse? _selectedSourceStock;
+    private IEnumerable<StockResponse>? _stocks;
+    private IEnumerable<string>? _locations;
+    private int MaxQuantity => _selectedSourceStock?.Quantity ?? 99999;
+
+    private MoveStockRequest _moveStockRequest = new()
+    {
+        Quantity = 1
+    };
+
+    protected override async Task OnInitializedAsync()
+    {
+        _locations = await _warehouseLocationService.GetCodesAsync(CancellationToken);
+    }
+
+    private async Task ProductChanged(ProductResponse? product)
+    {
+        _selectedProduct = product;
+
+        _moveStockRequest.ProductSku = product?.Sku ?? string.Empty;
+        _selectedSourceStock = null;
+        _moveStockRequest.SourceLocationCode = string.Empty;
+        _moveStockRequest.DestinationLocationCode = string.Empty;
+        _moveStockRequest.Quantity = 1;
+
+        if (product == null)
+        {
+            _stocks = null;
+        }
+        else
+        {
+            _stocks = await _stockService.SearchBySkuAsync(product.Sku, CancellationToken);
+        }
+    }
+
+    private void StockChanged(StockResponse? stock)
+    {
+        _selectedSourceStock = stock;
+
+        _moveStockRequest.SourceLocationCode = stock?.LocationCode ?? string.Empty;
+
+        if (_moveStockRequest.Quantity > MaxQuantity)
+        {
+            _moveStockRequest.Quantity = MaxQuantity;
+        }
+    }
+
+    private Task<IEnumerable<StockResponse>> SearchStocks(string value, CancellationToken _)
+    {
+        IEnumerable<StockResponse> result = _stocks ?? Enumerable.Empty<StockResponse>();
+
+        if (!string.IsNullOrWhiteSpace(value))
+        {
+            result = result.Where(x =>
+                x.LocationCode?.Contains(
+                    value,
+                    StringComparison.OrdinalIgnoreCase) == true);
+        }
+
+        return Task.FromResult(result);
+    }
+
+    private async Task<IEnumerable<string>> SearchDestinationLocations(string value, CancellationToken _)
+    {
+        return await _uiUtilityService.FilterLocationCodes(_locations, value, _moveStockRequest.SourceLocationCode);
+    }
+
+    private async Task HandleSubmit()
+    {
+        var success = await _stockService.MoveAsync(_moveStockRequest, CancellationToken);
+
+        if (!success)
+        {
+            return;
+        }
+
+        var sku = _selectedProduct?.Sku;
+        _moveStockRequest.DestinationLocationCode = string.Empty;
+        _moveStockRequest.Quantity = 1;
+
+        if (OnSuccess.HasDelegate && !string.IsNullOrWhiteSpace(sku))
+        {
+            await OnSuccess.InvokeAsync(sku);
+        }
+    }
+}

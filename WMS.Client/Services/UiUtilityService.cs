@@ -17,21 +17,34 @@ namespace WMS.Client.Services
 
         public string SplitPascalCase(string? text)
         {
-            if (string.IsNullOrWhiteSpace(text)) 
+            if (string.IsNullOrWhiteSpace(text))
+            {
                 return string.Empty;
+            }
 
             return Regex.Replace(text, "([a-z])([A-Z])", "$1 $2");
         }
 
-        public Task<IEnumerable<string>> FilterLocationCodes(IEnumerable<string>? locations, string value)
+        public Task<IEnumerable<string>> FilterLocationCodes(IEnumerable<string>? locations, string value, string? excludeValue = null)
         {
             if (locations == null)
+            {
                 return Task.FromResult(Enumerable.Empty<string>());
+            }
 
-            if (string.IsNullOrEmpty(value))
-                return Task.FromResult(locations);
+            var filtered = locations.AsEnumerable();
 
-            return Task.FromResult(locations.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase)));
+            if (!string.IsNullOrEmpty(excludeValue))
+            {
+                filtered = filtered.Where(x => !x.Equals(excludeValue, StringComparison.OrdinalIgnoreCase));
+            }
+
+            if (!string.IsNullOrEmpty(value))
+            {
+                filtered = filtered.Where(x => x.Contains(value, StringComparison.OrdinalIgnoreCase));
+            }
+
+            return Task.FromResult(filtered);
         }
     }
 }

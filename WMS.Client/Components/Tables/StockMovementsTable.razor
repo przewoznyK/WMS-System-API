@@ -1,0 +1,180 @@
+﻿@using MudBlazor
+@using WMS.Application.StockMovements.Response
+@using WMS.Client.Services
+@using WMS.Domain.Enums
+
+<MudTable Items="@Items"
+          Hover="true"
+          Dense="true"
+          Elevation="0"
+          Filter="FilterFunc"
+          AllowUnsorted="false"
+          InitialDirection="SortDirection.Ascending"
+          Loading="@(Items == null)">
+
+    <ToolBarContent>
+        <MudSpacer />
+        <MudTextField @bind-Value="_searchString"
+                      Placeholder="Search..."
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      IconSize="Size.Medium"
+                      Margin="Margin.Dense"
+                      Variant="Variant.Outlined"
+                      Clearable="true"
+                      Immediate="true" />
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.CreatedAt)">
+                Date & User
+            </MudTableSortLabel>
+        </MudTh>
+
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.ProductSku)">
+                SKU
+            </MudTableSortLabel>
+        </MudTh>
+
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.ProductName)">
+                Product
+            </MudTableSortLabel>
+        </MudTh>
+
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.LocationCode)">
+                Location
+            </MudTableSortLabel>
+        </MudTh>
+
+        <MudTh>
+            Operation & Details
+        </MudTh>
+
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.QuantityChange)">
+                Quantity
+            </MudTableSortLabel>
+        </MudTh>
+    </HeaderContent>
+
+    <RowTemplate>
+        <MudTd DataLabel="Date & User">
+            <MudStack Spacing="0">
+                <MudText Typo="Typo.body2">
+                    @context.CreatedAt.ToString("yyyy-MM-dd HH:mm")
+                </MudText>
+
+                <MudText Typo="Typo.caption"
+                         Color="Color.Secondary">
+                    <MudIcon Icon="@Icons.Material.Filled.Person"
+                             Size="Size.Small"
+                             Class="mr-1" />
+                    Worker
+                </MudText>
+            </MudStack>
+        </MudTd>
+
+        <MudTd DataLabel="SKU">
+            @context.ProductSku
+        </MudTd>
+
+        <MudTd DataLabel="Product">
+            @context.ProductName
+        </MudTd>
+
+        <MudTd DataLabel="Location">
+            <MudChip T="string"
+                     Size="Size.Small"
+                     Variant="Variant.Outlined">
+                @context.LocationCode
+            </MudChip>
+        </MudTd>
+
+        <MudTd DataLabel="Operation & Details">
+            <MudStack Spacing="1">
+                <MudChip T="string"
+                         Color="@GetOperationColor(context.OperationType)"
+                         Size="Size.Small"
+                         Variant="Variant.Filled">
+                    @context.OperationType
+                </MudChip>
+                @if (context.OperationType == OperationType.Issue)
+                {
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.caption">
+                            Reason:
+                            <MudText Component="span"
+                                     Typo="Typo.caption"
+                                     Style="font-weight:600;">
+                                            @_uiUtilityService.SplitPascalCase(context.IssueType.ToString())
+                            </MudText>
+                        </MudText>
+
+                                    @if (!string.IsNullOrWhiteSpace(context.ReferenceNumber))
+                                    {
+                                <MudText Typo="Typo.caption">
+                                    Ref: @context.ReferenceNumber
+                                </MudText>
+                                    }
+                    </MudStack>
+                }
+            </MudStack>
+        </MudTd>
+        <MudTd DataLabel="Quantity">
+            <MudText Color="@(context.QuantityChange > 0 ? Color.Success : Color.Error)"
+                     Class="d-flex justify-end">
+                @(context.QuantityChange > 0
+                        ? $"+{context.QuantityChange}"
+                        : context.QuantityChange.ToString())
+            </MudText>
+        </MudTd>
+    </RowTemplate>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
+    </PagerContent>
+
+</MudTable>
+
+@code {
+    [Inject]
+    private UiUtilityService _uiUtilityService { get; set; } = null!;
+
+    [Parameter]
+    public IEnumerable<StockMovementResponse>? Items { get; set; }
+
+    private string _searchString = "";
+
+    private bool FilterFunc(StockMovementResponse element)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+        {
+            return true;
+        }
+
+        var search = _searchString.Trim();
+
+        return
+            element.ProductSku?.Contains(search, StringComparison.OrdinalIgnoreCase) == true ||
+            element.ProductName?.Contains(search, StringComparison.OrdinalIgnoreCase) == true ||
+            element.LocationCode?.Contains(search, StringComparison.OrdinalIgnoreCase) == true ||
+            element.ReferenceNumber?.Contains(search, StringComparison.OrdinalIgnoreCase) == true ||
+            element.OperationType.ToString()
+                .Contains(search, StringComparison.OrdinalIgnoreCase);
+    }
+
+    private Color GetOperationColor(OperationType operationType)
+    {
+        return operationType switch
+        {
+            OperationType.Receive => Color.Success,
+            OperationType.Issue => Color.Error,
+            OperationType.Transfer => Color.Info,
+            OperationType.Adjustment => Color.Primary,
+            _ => Color.Default
+        };
+    }
+}

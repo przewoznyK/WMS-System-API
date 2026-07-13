@@ -1,0 +1,74 @@
+﻿@using MudBlazor
+@using WMS.Application.WarehouseLocations.Dtos
+@using WMS.Client.Services
+@using WMS.Client.Services.Interfaces
+@using WMS.Client.Components.Base
+
+@inherits CancellableComponentBase
+
+<MudCard Elevation="2" Class="pa-4 mb-6">
+    <EditForm Model="_request"
+              OnSubmit="HandleSubmit"
+              FormName="AddLocationForm">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_request.Code"
+                              Label="Location Code"
+                              Placeholder="AA-02-10"
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Mask="@_uiUtilityService.LocationMask"
+                              Immediate="true" />
+                <ValidationMessage For="@(() => _request.Code)"
+                                   class="text-danger" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudTextField @bind-Value="_request.Description"
+                              Label="Description"
+                              Placeholder="Optional description..."
+                              Variant="Variant.Outlined"
+                              Margin="Margin.Dense"
+                              Lines="3" />
+                <ValidationMessage For="@(() => _request.Description)"
+                                   class="text-danger" />
+            </MudItem>
+            <MudItem xs="12" Class="d-flex justify-end">
+                <MudButton ButtonType="ButtonType.Submit"
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large">
+                    Add Location
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudCard>
+
+@code {
+    [Inject]
+    private UiUtilityService _uiUtilityService { get; set; } = null!;
+
+    [Inject]
+    private IWarehouseLocationService _warehouseLocationService { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnSuccess { get; set; }
+
+    private CreateWarehouseLocationRequest _request = new();
+
+    private async Task HandleSubmit()
+    {
+        var isSuccess = await _warehouseLocationService.CreateAsync(_request, CancellationToken);
+
+        if (isSuccess)
+        {
+            _request = new();
+
+            if (OnSuccess.HasDelegate)
+            {
+                await OnSuccess.InvokeAsync();
+            }
+        }
+    }
+}

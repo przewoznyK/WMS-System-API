@@ -1,0 +1,42 @@
+﻿@using MudBlazor
+
+<MudCard Elevation="2" Class="pa-4">
+    <MudTable Items="@Items"
+              Hover="true"
+              Dense="true"
+              Elevation="0"
+              AllowUnsorted="false"
+              InitialDirection="SortDirection.Ascending"
+              Loading="@(Items == null)">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">
+                Current Locations
+            </MudText>
+            <MudSpacer />
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>
+                <MudTableSortLabel SortBy="new Func<string, object>(x => x)">
+                    Location Code
+                </MudTableSortLabel>
+            </MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Location Code">
+                <MudChip T="string"
+                         Size="Size.Small"
+                         Variant="Variant.Outlined">
+                    @context
+                </MudChip>
+            </MudTd>
+        </RowTemplate>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudCard>
+
+@code {
+    [Parameter]
+    public IEnumerable<string>? Items { get; set; }
+}

@@ -1,0 +1,121 @@
+﻿@using MudBlazor
+@using WMS.Application.Stocks.Request
+@using WMS.Application.Stocks.Response
+@using WMS.Application.Products.Response
+@using WMS.Domain.Enums
+@using WMS.Client.Services
+@using WMS.Client.Services.Interfaces
+@using WMS.Client.Components.Selectors
+@using WMS.Client.Components.Base
+
+@inherits CancellableComponentBase
+
+<MudCard Elevation="2" Class="pa-4 mb-6">
+    <EditForm Model="_issueStockRequest" 
+              OnSubmit="HandleSubmit"
+              FormName="IssueStockForm">
+        <DataAnnotationsValidator />
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <ProductSelector Value="_selectedProduct"
+                                 ValueChanged="ProductChanged" />
+            </MudItem>
+
+            <MudItem xs="12" md="6">
+                <StockSelector ProductSku="@(_selectedProduct?.Sku)"
+                               Value="_selectedStock"
+                               ValueChanged="StockChanged"
+                               Disabled="@(_selectedProduct == null)" />
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                <MudNumericField @bind-Value="_issueStockRequest.Quantity" 
+                                 Label="Quantity" 
+                                 Variant="Variant.Outlined" 
+                                 Margin="Margin.Dense" 
+                                 Min="1" 
+                                 Max="@(MaxQuantity > 0 ? MaxQuantity : int.MaxValue)"
+                                 Adornment="Adornment.End"
+                                 AdornmentColor="Color.Info"
+                                 AdornmentText="@(MaxQuantity > 0 ? $"Max: {MaxQuantity}" : "")" />
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                <MudSelect T="IssueType" Label="Issue Reason" @bind-Value="_issueStockRequest.IssueType" Variant="Variant.Outlined" Margin="Margin.Dense">
+                    @foreach (IssueType item in Enum.GetValues(typeof(IssueType)))
+                    {
+                        <MudSelectItem Value="@item">@_uiUtilityService.SplitPascalCase(item.ToString())</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" md="4">
+                <MudTextField @bind-Value="_issueStockRequest.ReferenceNumber" Label="Reference Number (Optional)" Variant="Variant.Outlined" Margin="Margin.Dense" />
+            </MudItem>
+
+            <MudItem xs="12" Class="d-flex justify-end">
+                <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary" Size="Size.Large">Issue</MudButton>
+            </MudItem>
+        </MudGrid>
+    </EditForm>
+</MudCard>
+
+@code{
+    [Inject]
+    private UiUtilityService _uiUtilityService { get; set; } = null!;
+
+    [Inject]
+    private IStockService _stockService { get; set; } = null!;
+
+    [Parameter]
+    public EventCallback OnSuccess { get; set; }
+
+    private ProductResponse? _selectedProduct;
+    private StockResponse? _selectedStock;
+    private int MaxQuantity => _selectedStock?.Quantity ?? 0;
+    private IssueStockRequest _issueStockRequest = new()
+    {
+        Quantity = 1
+    };
+
+    private void ProductChanged(ProductResponse? product)
+    {
+        _selectedProduct = product;
+        _issueStockRequest.ProductSku = product?.Sku ?? "";
+
+        _selectedStock = null;
+        _issueStockRequest.LocationCode = "";
+    }
+
+    private void StockChanged(StockResponse? stock)
+    {
+        _selectedStock = stock;
+
+        _issueStockRequest.LocationCode = stock?.LocationCode ?? "";
+
+        if (_issueStockRequest.Quantity > MaxQuantity && MaxQuantity > 0)
+        {
+            _issueStockRequest.Quantity = MaxQuantity;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        var isSuccess = await _stockService.IssueAsync(_issueStockRequest, CancellationToken);
+        if (isSuccess)
+        {
+            _issueStockRequest = new IssueStockRequest 
+            {
+                Quantity = 1 
+            };
+            
+            _selectedProduct = null;
+            _selectedStock = null;
+
+            if (OnSuccess.HasDelegate)
+            {
+                await OnSuccess.InvokeAsync();
+            }
+        }
+    }
+}

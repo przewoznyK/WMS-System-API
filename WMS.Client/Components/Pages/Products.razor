@@ -1,119 +1,50 @@
 ﻿@page "/products"
-@implements IDisposable
-@using MudBlazor
+
 @using WMS.Application.Products.Response
-@using WMS.Application.Products.Request
-@using WMS.Client.Services
+@using WMS.Client.Components.Forms
+@using WMS.Client.Components.Tables
 @using WMS.Client.Services.Interfaces
-@inject ISnackbar Snackbar
-@inject IStockService StockService
-@inject IProductService ProductService
+@using WMS.Client.Components.Base
 
-<MudThemeProvider />
-<MudSnackbarProvider />
-<MudPopoverProvider />
+@inherits CancellableComponentBase
 
-<PageTitle>WMS Dashboard</PageTitle>
+<PageTitle>Products</PageTitle>
 
-<h3>Add New Product</h3>
-<EditForm Model="_createProductRequest" OnValidSubmit="HandleSubmit" FormName="AddProductForm">
-    <DataAnnotationsValidator />
+<MudText Typo="Typo.h4"
+         Color="Color.Primary"
+         Class="mb-6">
+    Products
+</MudText>
 
-    <div class="mb-3">
-        <label>SKU:</label>
-        <MudTextField @bind-Value="_createProductRequest.Sku" 
-                      Placeholder="Enter SKU (e.g. PROD-001)..."
-                      Variant="Variant.Outlined" 
-                      Margin="Margin.Dense" 
-                      Immediate="true" />
-        <ValidationMessage For="@(() => _createProductRequest.Sku)" class="text-danger" />
-    </div>
+<CreateProductForm 
+    OnSuccess="OnCreateProductFormSuccess" />
 
-    <div class="mb-3">
-        <label>Product Name:</label>
-        <MudTextField @bind-Value="_createProductRequest.Name" 
-                      Placeholder="Enter product name..."
-                      Variant="Variant.Outlined" 
-                      Margin="Margin.Dense" />
-        <ValidationMessage For="@(() => _createProductRequest.Name)" class="text-danger" />
-    </div>
-
-    <div class="mb-3">
-        <label>Description (Optional):</label>
-        <MudTextField @bind-Value="_createProductRequest.Description" 
-                      Placeholder="Enter product description..."
-                      Variant="Variant.Outlined" 
-                      Margin="Margin.Dense" 
-                      Lines="3" />
-        <ValidationMessage For="@(() => _createProductRequest.Description)" class="text-danger" />
-    </div>
-
-    <button type="submit" class="btn btn-primary">Add Product</button>
-</EditForm>
-
-<hr />
-
-<h1>Current Products</h1>
-
-@if (_availableProducts == null)
-{
-    <p><em>Loading products...</em></p>
-}
-else if (!_availableProducts.Any())
-{
-    <p>No products available.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>SKU</th> 
-                <th>Name</th> 
-                <th>Description</th> 
-            </tr>
-        </thead>
-        <tbody>
-        @foreach (var product in _availableProducts)
-        {
-            <tr>
-                <td>@product.Sku</td>
-                <td>@product.Name</td>
-                <td>@product.Description</td>
-            </tr>
-        }
-        </tbody>
-    </table>
-}
+<ProductTable 
+    Items="_products" />
 
 @code {
-    private IEnumerable<ProductResponse>? _availableProducts;
+    [Inject]
+    private IProductService _productService { get; set; } = null!;
 
-    [SupplyParameterFromForm]
-    private CreateProductRequest _createProductRequest { get; set; } = new();
+    [Inject]
+    private ISnackbar _snackBar { get; set; } = null!;
 
-    private readonly CancellationTokenSource _cts = new();
+    private IEnumerable<ProductResponse>? _products;
 
     protected override async Task OnInitializedAsync()
     {
-        _availableProducts = await ProductService.GetSummaryAsync(_cts.Token);
+        await ReloadProducts();
     }
 
-    private async Task HandleSubmit()
+    private async Task ReloadProducts()
     {
-        var isSuccess = await ProductService.CreateAsync(_createProductRequest, _cts.Token);
-
-        if (isSuccess)
-        {
-            _createProductRequest = new CreateProductRequest();
-            _availableProducts = await ProductService.GetSummaryAsync(_cts.Token);
-            Snackbar.Add("Product added successfully!", Severity.Success);
-        }
+        _products = await _productService.GetSummaryAsync(CancellationToken);
     }
 
-    public void Dispose()
+    private async Task OnCreateProductFormSuccess()
     {
-        _cts.Cancel();
-        _cts.Dispose();
+        await ReloadProducts();
+
+        _snackBar.Add("Product added successfully!", Severity.Success);
     }
 }

@@ -23,6 +23,6 @@ namespace WMS.Application.Stocks.Request
         public IssueType IssueType { get; set; } = IssueType.SalesOrder;
 
         [MaxLength(50)]
-        public string? ReferenceNumber { get; set; }
+        public string ReferenceNumber { get; set; } = string.Empty;
     }
 }
