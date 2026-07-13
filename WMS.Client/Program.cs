@@ -16,6 +16,7 @@ builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IStockMovementService, StockMovementService>();
 builder.Services.AddScoped<IStockService, StockService>();
 builder.Services.AddScoped<IWarehouseLocationService, WarehouseLocationService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddMudServices();
 
 var app = builder.Build();

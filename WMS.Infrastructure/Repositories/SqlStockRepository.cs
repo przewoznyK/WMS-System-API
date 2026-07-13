@@ -55,6 +55,10 @@ namespace WMS.Infrastructure.Repositories
                     .Include(s => s.Location)
                     .FirstOrDefaultAsync(s => s.Product.Sku == sku && s.Location.Code == locationCode);
         }
-        
+
+        public Task<int> GetSumQuantityAsync()
+        {
+            return _wmsDbContext.Stocks.SumAsync(x => x.Quantity);
+        }
     }
 }

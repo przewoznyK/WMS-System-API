@@ -62,5 +62,10 @@ namespace WMS.Infrastructure.Repositories
         {
             return await _wmsDbContext.Products.FirstOrDefaultAsync(p => p.Sku == searchTerm || p.Name == searchTerm);
         }
+
+        public Task<int> GetCountAsync()
+        {
+            return _wmsDbContext.Products.CountAsync();
+        }
     }
 }

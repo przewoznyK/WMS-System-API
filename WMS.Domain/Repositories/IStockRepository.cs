@@ -10,5 +10,6 @@ namespace WMS.Domain.Repositories
         Task<IEnumerable<Stock>> GetAllByProductSkuAsync(string sku);
         Task<Stock?> GetByProductIdAndLocationAsync(Guid productId, Guid locationId);
         Task<Stock?> GetByProductSkuAndLocationCodeAsync(string productSku, string locationCode);
+        Task<int> GetSumQuantityAsync();
     }
 }

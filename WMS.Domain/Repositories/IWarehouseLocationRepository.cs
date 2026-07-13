@@ -11,5 +11,6 @@ namespace WMS.Domain.Repositories
         Task<WarehouseLocation?> GetByIdAsync(Guid id);
         Task<WarehouseLocation?> GetByCodeAsync(string code);
         Task<bool> ExistsByCodeAsync(string code);
+        Task<int> GetCountAsync();
     }
 }

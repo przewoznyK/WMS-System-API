@@ -28,5 +28,12 @@ namespace WMS.Infrastructure.Repositories
         {
             return await _wmsDbContext.StockMovements.ToListAsync();
         }
+
+        public Task<int> GetCountTodayAsync()
+        {
+            var today = DateTime.UtcNow.Date;
+
+            return _wmsDbContext.StockMovements.CountAsync(x => x.CreatedAt >= today);
+        }
     }
 }

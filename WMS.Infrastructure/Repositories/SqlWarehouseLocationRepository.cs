@@ -59,5 +59,10 @@ namespace WMS.Infrastructure.Repositories
             return await _wmsDbContext.WarehouseLocations
                 .AnyAsync(p => p.Code == code);
         }
+
+        public Task<int> GetCountAsync()
+        {
+            return _wmsDbContext.WarehouseLocations.CountAsync();
+        }
     }
 }

@@ -1,0 +1,63 @@
+﻿@page "/"
+@using MudBlazor
+@using WMS.Client.Components.Cards
+@using WMS.Application.Dashboard.Responses
+@using WMS.Client.Services.Interfaces
+
+@inject NavigationManager NavManager
+<MudGrid Class="mb-8">
+
+    <MudItem xs="12" sm="6" lg="3">
+
+        <DashboardStatCard
+            Title="Products"
+            Value="@_dashboard?.ProductCount.ToString()"
+            Icon="@Icons.Material.Filled.Category"
+            Color="Color.Primary" />
+
+    </MudItem>
+
+    <MudItem xs="12" sm="6" lg="3">
+
+        <DashboardStatCard
+            Title="Locations"
+            Value="@_dashboard?.LocationCount.ToString()"
+            Icon="@Icons.Material.Filled.Warehouse"
+            Color="Color.Info" />
+
+    </MudItem>
+
+    <MudItem xs="12" sm="6" lg="3">
+
+        <DashboardStatCard
+            Title="Stock Quantity"
+            Value="@_dashboard?.StockQuantity.ToString()"
+            Icon="@Icons.Material.Filled.Inventory"
+            Color="Color.Success" />
+
+    </MudItem>
+
+    <MudItem xs="12" sm="6" lg="3">
+
+        <DashboardStatCard
+            Title="Movements"
+            Value="@_dashboard?.TodayMovements.ToString()"
+            Icon="@Icons.Material.Filled.SwapHoriz"
+            Color="Color.Warning" />
+
+    </MudItem>
+
+</MudGrid>
+
+@code {
+    [Inject]
+    private IDashboardService _dashboardService { get; set; } = null!;
+
+    private DashboardSummaryResponse? _dashboard;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _dashboard = await _dashboardService.GetSummaryAsync(
+            CancellationToken.None);
+    }
+}

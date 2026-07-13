@@ -63,5 +63,10 @@ namespace WMS.Infrastructure.Repositories
             var product = _products.FirstOrDefault(p => p.Sku == searchTerm || p.Name.Contains(searchTerm));
             return Task.FromResult(product);
         }
+
+        public Task<int> GetCountAsync()
+        {
+            return Task.FromResult(_products.Count());
+        }
     }
 }

@@ -7,5 +7,6 @@ namespace WMS.Domain.Repositories
         Task Add(StockMovement movement);
         Task AddRangeAsync(IEnumerable<StockMovement> movements);
         Task<IEnumerable<StockMovement>> GetAllAsync();
+        Task<int> GetCountTodayAsync();
     }
 }
