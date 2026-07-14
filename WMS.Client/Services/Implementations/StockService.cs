@@ -1,5 +1,6 @@
 ﻿using WMS.Application.Stocks.Request;
 using WMS.Application.Stocks.Response;
+using WMS.Application.Stocks.Responses;
 using WMS.Client.Services.Interfaces;
 
 namespace WMS.Client.Services.Implementations
@@ -36,6 +37,11 @@ namespace WMS.Client.Services.Implementations
         public Task<bool> ReceiveAsync(ReceiveStockRequest request, CancellationToken ct)
         {
             return _apiClientService.PostAsync("api/stocks/receive", request, ct);
+        }
+
+        public Task<IEnumerable<LowStockProductResponse>> GetLowStockProductsAsync(CancellationToken ct)
+        {
+            return _apiClientService.GetListAsync<LowStockProductResponse>("api/stocks/low-stock-products", ct);
         }
     }
 }

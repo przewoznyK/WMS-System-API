@@ -1,0 +1,87 @@
+﻿@using MudBlazor
+@using WMS.Application.Products.Response
+@using WMS.Application.Stocks.Responses
+
+<MudTable Items="@Items"
+          Hover="true"
+          Dense="true"
+          Elevation="0">
+
+    <HeaderContent>
+
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<LowStockProductResponse, object>(x => x.ProductName)">
+                Product
+            </MudTableSortLabel>
+        </MudTh>
+
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<LowStockProductResponse, object>(x => x.ProductSku)">
+                SKU
+            </MudTableSortLabel>
+        </MudTh>
+
+        <MudTh>
+            <MudTableSortLabel SortBy="new Func<LowStockProductResponse, object>(x => x.Quantity)">
+                Quantity
+            </MudTableSortLabel>
+        </MudTh>
+
+        <MudTh>
+            Status
+        </MudTh>
+
+    </HeaderContent>
+
+    <RowTemplate>
+
+        <MudTd DataLabel="Product">
+            <MudText Typo="Typo.body2">
+                @context.ProductName
+            </MudText>
+        </MudTd>
+
+        <MudTd DataLabel="SKU">
+            <MudChip T="string"
+                     Size="Size.Small"
+                     Variant="Variant.Outlined">
+                @context.ProductSku
+            </MudChip>
+        </MudTd>
+
+        <MudTd DataLabel="Quantity">
+            <MudText Color="Color.Error"
+                     Style="font-weight:600">
+                @context.Quantity
+            </MudText>
+        </MudTd>
+
+        <MudTd DataLabel="Status">
+            <MudChip T="string"
+                     Color="Color.Warning"
+                     Size="Size.Small"
+                     Variant="Variant.Filled">
+                Low Stock
+            </MudChip>
+        </MudTd>
+
+    </RowTemplate>
+
+    <NoRecordsContent>
+        <MudText Class="pa-4">
+            No low stock products.
+        </MudText>
+    </NoRecordsContent>
+
+    <PagerContent>
+        <MudTablePager PageSizeOptions="new int[] { 5, 10, 25 }" />
+    </PagerContent>
+</MudTable>
+
+
+@code {
+
+    [Parameter]
+    public IEnumerable<LowStockProductResponse>? Items { get; set; }
+
+}

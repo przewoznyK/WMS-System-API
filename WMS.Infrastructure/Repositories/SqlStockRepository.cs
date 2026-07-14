@@ -60,5 +60,32 @@ namespace WMS.Infrastructure.Repositories
         {
             return _wmsDbContext.Stocks.SumAsync(x => x.Quantity);
         }
+
+        public Task<int> GetLowStockCountAsync(int threshold)
+        {
+            return _wmsDbContext.Stocks
+                .Where(x => x.Quantity <= threshold)
+                .CountAsync();
+        }
+
+        public async Task<IEnumerable<LowStockProduct>> GetLowStockAsync(int threshold, CancellationToken cancellationToken)
+        {
+            return await _wmsDbContext.Stocks
+                .Include(x => x.Product)
+                .GroupBy(x => new
+                {
+                    x.ProductId,
+                    x.Product.Sku,
+                    x.Product.Name
+                })
+                .Where(x => x.Sum(s => s.Quantity) <= threshold)
+                .Select(x => new LowStockProduct
+                {
+                    Sku = x.Key.Sku,
+                    Name = x.Key.Name,
+                    Quantity = x.Sum(s => s.Quantity)
+                })
+                .ToListAsync(cancellationToken);
+        }
     }
 }

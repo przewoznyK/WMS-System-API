@@ -6,5 +6,6 @@
         public int LocationCount { get; init; }
         public int StockQuantity { get; init; }
         public int TodayMovements { get; init; }
+        public int LowStockCount { get; set; }
     }
 }

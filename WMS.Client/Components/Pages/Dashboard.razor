@@ -2,62 +2,107 @@
 @using MudBlazor
 @using WMS.Client.Components.Cards
 @using WMS.Application.Dashboard.Responses
+@using WMS.Application.Stocks.Responses
 @using WMS.Client.Services.Interfaces
+@using WMS.Client.Components.Base
+@using WMS.Client.Components.Tables
+
+@inherits CancellableComponentBase
 
 @inject NavigationManager NavManager
+
 <MudGrid Class="mb-8">
+    @if (_dashboard == null)
+    {
+        <MudText>
+            Loading dashboard...
+        </MudText>
+    }
+    else
+    {
+        <MudItem xs="12" sm="6" lg="3">
 
-    <MudItem xs="12" sm="6" lg="3">
+            <DashboardStatCard
+                Title="Products"
+                Value="@_dashboard.ProductCount"
+                Icon="@Icons.Material.Filled.Category"
+                Color="Color.Primary" />
 
-        <DashboardStatCard
-            Title="Products"
-            Value="@_dashboard?.ProductCount.ToString()"
-            Icon="@Icons.Material.Filled.Category"
-            Color="Color.Primary" />
+        </MudItem>
 
-    </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
 
-    <MudItem xs="12" sm="6" lg="3">
+            <DashboardStatCard
+                Title="Locations"
+                Value="@_dashboard.LocationCount"
+                Icon="@Icons.Material.Filled.Warehouse"
+                Color="Color.Info" />
 
-        <DashboardStatCard
-            Title="Locations"
-            Value="@_dashboard?.LocationCount.ToString()"
-            Icon="@Icons.Material.Filled.Warehouse"
-            Color="Color.Info" />
+        </MudItem>
 
-    </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
 
-    <MudItem xs="12" sm="6" lg="3">
+            <DashboardStatCard
+                Title="Stock Quantity"
+                Value="@_dashboard.StockQuantity"
+                Icon="@Icons.Material.Filled.Inventory"
+                Color="Color.Success" />
 
-        <DashboardStatCard
-            Title="Stock Quantity"
-            Value="@_dashboard?.StockQuantity.ToString()"
-            Icon="@Icons.Material.Filled.Inventory"
-            Color="Color.Success" />
+        </MudItem>
 
-    </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
 
-    <MudItem xs="12" sm="6" lg="3">
+            <DashboardStatCard
+                Title="Movements"
+                Value="@_dashboard.TodayMovements"
+                Icon="@Icons.Material.Filled.SwapHoriz"
+                Color="Color.Secondary" />
 
-        <DashboardStatCard
-            Title="Movements"
-            Value="@_dashboard?.TodayMovements.ToString()"
-            Icon="@Icons.Material.Filled.SwapHoriz"
-            Color="Color.Warning" />
+        </MudItem>
 
-    </MudItem>
+        <MudItem xs="12" sm="6" lg="3">
 
+            <DashboardStatCard
+                Title="Low Stock"
+                Value="@_dashboard.LowStockCount"
+                Icon="@Icons.Material.Filled.Warning"
+                Color="Color.Warning" />
+
+        </MudItem>
+    }
 </MudGrid>
+
+@if (_lowStockProducts?.Any() == true)
+{
+        <MudText Typo="Typo.h5"
+                 Color="Color.Secondary"
+                 Class="mt-8 mb-4">
+            <b>Low Stock Alerts</b>
+        </MudText>
+
+
+        <MudCard Elevation="2"
+                 Class="pa-4">
+
+            <LowStockProductsTable Items="_lowStockProducts" />
+
+        </MudCard>
+}
 
 @code {
     [Inject]
     private IDashboardService _dashboardService { get; set; } = null!;
 
+    [Inject]
+    private IStockService _stockService { get; set; } = null!;
+
     private DashboardSummaryResponse? _dashboard;
+    private IEnumerable<LowStockProductResponse>? _lowStockProducts;
 
     protected override async Task OnInitializedAsync()
     {
-        _dashboard = await _dashboardService.GetSummaryAsync(
-            CancellationToken.None);
+        _dashboard = await _dashboardService.GetSummaryAsync(CancellationToken);
+        _lowStockProducts = await _stockService.GetLowStockProductsAsync(CancellationToken);
+        Console.WriteLine("sprawdzam "  + _lowStockProducts.Any());
     }
 }

@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using WMS.Application.Common.Settings;
 using WMS.Application.Dashboard.Queries;
 using WMS.Application.Dashboard.Responses;
 using WMS.Domain.Entities;
@@ -32,12 +33,10 @@ namespace WMS.Application.Products.Queries
             return new DashboardSummaryResponse
             {
                 ProductCount = await _productRepository.GetCountAsync(),
-
                 LocationCount = await _locationRepository.GetCountAsync(),
-
                 StockQuantity = await _stockRepository.GetSumQuantityAsync(),
-
-                TodayMovements = await _movementRepository.GetCountTodayAsync()
+                TodayMovements = await _movementRepository.GetCountTodayAsync(),
+                LowStockCount = await _stockRepository.GetLowStockCountAsync(DashboardSettings.LowStockThreshold),
             };
         }
     }

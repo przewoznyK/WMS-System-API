@@ -1,6 +1,8 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Mvc;
+using WMS.Application.Common.Settings;
 using WMS.Application.Products.Commands;
+using WMS.Application.Products.Queries;
 using WMS.Application.Stocks.Commands;
 using WMS.Application.Stocks.Queries;
 
@@ -57,6 +59,13 @@ namespace WMS.Api.Controllers
         {
             var stockMovementId = await _mediator.Send(command);
             return Ok(stockMovementId);
+        }
+
+        [HttpGet("low-stock-products")]
+        public async Task<IActionResult> GetLowStockProducts()
+        {
+            var result = await _mediator.Send(new GetLowStockProductsQuery(DashboardSettings.LowStockThreshold));
+            return Ok(result);
         }
     }
 }
