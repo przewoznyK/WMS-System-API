@@ -21,48 +21,55 @@ namespace WMS.Infrastructure.Repositories
 
         public Task Delete(WarehouseLocation warehouseLocation)
         {
-           _wmsDbContext.WarehouseLocations.Remove(warehouseLocation);
+            _wmsDbContext.WarehouseLocations.Remove(warehouseLocation);
             return Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<WarehouseLocation>> GetAllAsync()
-        {
-            return await _wmsDbContext.WarehouseLocations.ToListAsync();
-        }
-
-
-        public async Task<IEnumerable<string>> GetLocationsAsync()
+        public async Task<IEnumerable<WarehouseLocation>> GetAllAsync(CancellationToken cancellationToken)
         {
             return await _wmsDbContext.WarehouseLocations
-              .Select(x => x.Code)
-              .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<WarehouseLocation?> GetByIdAsync(Guid id)
+        public async Task<IEnumerable<string>> GetLocationsAsync(CancellationToken cancellationToken)
         {
-            return await _wmsDbContext.WarehouseLocations.FindAsync(id);
+            return await _wmsDbContext.WarehouseLocations
+                .Select(x => x.Code)
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<WarehouseLocation?> GetByCodeAsync(string code)
+        public async Task<WarehouseLocation?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _wmsDbContext.WarehouseLocations.FirstOrDefaultAsync(l => l.Code == code);
+            return await _wmsDbContext.WarehouseLocations
+                .FindAsync([id], cancellationToken);
         }
 
-        public async Task UpdateDetailsAsync(WarehouseLocation warehouseLocation, string code, string description)
+        public async Task<WarehouseLocation?> GetByCodeAsync(string code, CancellationToken cancellationToken)
+        {
+            return await _wmsDbContext.WarehouseLocations
+                .FirstOrDefaultAsync(
+                    l => l.Code == code,
+                    cancellationToken);
+        }
+
+        public async Task UpdateDetailsAsync(WarehouseLocation warehouseLocation, string code, string description, CancellationToken cancellationToken)
         {
             warehouseLocation.UpdateDetails(code, description);
-            await _wmsDbContext.SaveChangesAsync();
+            await _wmsDbContext.SaveChangesAsync(cancellationToken);
         }
 
-        public async Task<bool> ExistsByCodeAsync(string code)
+        public async Task<bool> ExistsByCodeAsync(string code, CancellationToken cancellationToken)
         {
             return await _wmsDbContext.WarehouseLocations
-                .AnyAsync(p => p.Code == code);
+                .AnyAsync(
+                    p => p.Code == code,
+                    cancellationToken);
         }
 
-        public Task<int> GetCountAsync()
+        public Task<int> GetCountAsync(CancellationToken cancellationToken)
         {
-            return _wmsDbContext.WarehouseLocations.CountAsync();
+            return _wmsDbContext.WarehouseLocations
+                .CountAsync(cancellationToken);
         }
     }
 }

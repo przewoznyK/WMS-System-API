@@ -1,9 +1,14 @@
 ﻿@using MudBlazor
 
-<MudCard Elevation="2" Class="h-100">
+<MudCard Elevation="2"
+         Class="h-100"
+         Style="@CardStyle"
+         @onclick="HandleClick"
+         @onmouseover="MouseEnter"
+         @onmouseout="MouseLeave">
 
-    <MudCardContent>
-
+<MudCardContent>
+    <MudStack Spacing="2">
         <MudStack Row="true"
                   Justify="Justify.SpaceBetween"
                   AlignItems="AlignItems.Center">
@@ -12,30 +17,42 @@
 
                 <MudText Typo="Typo.body2"
                          Color="Color.Secondary">
-                    @Title
+                        @Title
                 </MudText>
 
                 <MudText Typo="Typo.h4">
-                    @Value
+                        @Value
                 </MudText>
-
             </MudStack>
+            <MudStack Row="true"
+                      AlignItems="AlignItems.Center"
+                      Spacing="1">
+                <MudAvatar Color="@Color"
+                           Variant="Variant.Filled"
+                           Size="Size.Large">
 
-            <MudAvatar Color="@Color"
-                       Variant="Variant.Filled"
-                       Size="Size.Large">
-
-                <MudIcon Icon="@Icon" />
-
-            </MudAvatar>
-
+                    <MudIcon Icon="@Icon" />
+                </MudAvatar>
+                    @if (!string.IsNullOrWhiteSpace(Href))
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowOutward"
+                                 Size="Size.Small"
+                                 Color="Color.Default"
+                                 Style="margin-top:-36px;" />
+                    }
+            </MudStack>
         </MudStack>
-
-    </MudCardContent>
+    </MudStack>
+</MudCardContent>
 
 </MudCard>
-
 @code {
+
+    [Inject]
+    private NavigationManager NavigationManager { get; set; } = null!;
+
+    [Parameter]
+    public string? Href { get; set; }
 
     [Parameter]
     public string Title { get; set; } = string.Empty;
@@ -49,4 +66,35 @@
     [Parameter]
     public Color Color { get; set; } = Color.Primary;
 
+    private bool _isHovered;
+
+    private bool IsClickable =>
+        !string.IsNullOrWhiteSpace(Href);
+
+    private string CardStyle =>
+        IsClickable && _isHovered
+            ? "cursor:pointer; transform:translateY(-5px) scale(1.02); transition:all .2s ease; box-shadow:0 12px 24px rgba(0,0,0,.18);"
+            : IsClickable
+                ? "cursor:pointer; transition:all .2s ease;"
+                : "";
+
+    private void MouseEnter()
+    {
+        if (IsClickable)
+            _isHovered = true;
+    }
+
+    private void MouseLeave()
+    {
+        if (IsClickable)
+            _isHovered = false;
+    }
+ 
+    private void HandleClick()
+    {
+        if (!string.IsNullOrWhiteSpace(Href))
+        {
+            NavigationManager.NavigateTo(Href);
+        }
+    }
 }

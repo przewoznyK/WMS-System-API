@@ -16,7 +16,7 @@ namespace WMS.Application.Products.Queries
 
         public async Task<Product> Handle(GetProductByIdQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetByIdAsync(request.Id);
+            var product = await _productRepository.GetByIdAsync(request.Id, cancellationToken);
 
             if (product == null)
             {

@@ -32,11 +32,11 @@ namespace WMS.Application.Products.Queries
         {
             return new DashboardSummaryResponse
             {
-                ProductCount = await _productRepository.GetCountAsync(),
-                LocationCount = await _locationRepository.GetCountAsync(),
-                StockQuantity = await _stockRepository.GetSumQuantityAsync(),
-                TodayMovements = await _movementRepository.GetCountTodayAsync(),
-                LowStockCount = await _stockRepository.GetLowStockCountAsync(DashboardSettings.LowStockThreshold),
+                ProductCount = await _productRepository.GetCountAsync(cancellationToken),
+                LocationCount = await _locationRepository.GetCountAsync(cancellationToken),
+                StockQuantity = await _stockRepository.GetSumQuantityAsync(cancellationToken),
+                TodayMovements = await _movementRepository.GetCountTodayAsync(cancellationToken),
+                LowStockCount = await _stockRepository.GetLowStockCountAsync(DashboardSettings.LowStockThreshold, cancellationToken),
             };
         }
     }

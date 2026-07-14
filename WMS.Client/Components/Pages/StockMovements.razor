@@ -7,25 +7,17 @@
 
 @inherits CancellableComponentBase
 
-<PageTitle>
-    Stock Movements
-</PageTitle>
-
-
-<MudText Typo="Typo.h4"
-         Color="Color.Primary"
-         Class="mb-6">
-    Stock Movements
-</MudText>
-
-
-<StockMovementsTable 
-    Items="_movements" />
-
+<PageTitle>Stock Movements</PageTitle>
+<StockMovementsTable Items="_movements" 
+                     InitialSearch="@Search" />
 
 @code {
     [Inject]
     private IStockMovementService _stockMovementService { get; set; } = null!;
+
+    [Parameter]
+    [SupplyParameterFromQuery]
+    public string? Search { get; set; }
 
     private IEnumerable<StockMovementResponse>? _movements;
 

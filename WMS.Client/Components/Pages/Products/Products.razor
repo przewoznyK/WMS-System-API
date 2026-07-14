@@ -1,23 +1,13 @@
 ﻿@page "/products"
 
 @using WMS.Application.Products.Response
-@using WMS.Client.Components.Forms
+@using WMS.Client.Components.Base
 @using WMS.Client.Components.Tables
 @using WMS.Client.Services.Interfaces
-@using WMS.Client.Components.Base
 
 @inherits CancellableComponentBase
 
 <PageTitle>Products</PageTitle>
-
-<MudText Typo="Typo.h4"
-         Color="Color.Primary"
-         Class="mb-6">
-    Products
-</MudText>
-
-<CreateProductForm 
-    OnSuccess="OnCreateProductFormSuccess" />
 
 <ProductTable 
     Items="_products" />
@@ -25,9 +15,6 @@
 @code {
     [Inject]
     private IProductService _productService { get; set; } = null!;
-
-    [Inject]
-    private ISnackbar _snackBar { get; set; } = null!;
 
     private IEnumerable<ProductResponse>? _products;
 
@@ -39,12 +26,5 @@
     private async Task ReloadProducts()
     {
         _products = await _productService.GetSummaryAsync(CancellationToken);
-    }
-
-    private async Task OnCreateProductFormSuccess()
-    {
-        await ReloadProducts();
-
-        _snackBar.Add("Product added successfully!", Severity.Success);
     }
 }

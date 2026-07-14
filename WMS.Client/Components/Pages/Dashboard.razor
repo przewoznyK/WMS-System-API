@@ -2,7 +2,7 @@
 @using MudBlazor
 @using WMS.Client.Components.Cards
 @using WMS.Application.Dashboard.Responses
-@using WMS.Application.Stocks.Responses
+@using WMS.Application.StockMovements.Responses
 @using WMS.Client.Services.Interfaces
 @using WMS.Client.Components.Base
 @using WMS.Client.Components.Tables
@@ -26,7 +26,8 @@
                 Title="Products"
                 Value="@_dashboard.ProductCount"
                 Icon="@Icons.Material.Filled.Category"
-                Color="Color.Primary" />
+                Color="Color.Primary"
+                Href="/products" />
 
         </MudItem>
 
@@ -36,7 +37,8 @@
                 Title="Locations"
                 Value="@_dashboard.LocationCount"
                 Icon="@Icons.Material.Filled.Warehouse"
-                Color="Color.Info" />
+                Color="Color.Info"
+                Href="/locations" />
 
         </MudItem>
 
@@ -45,18 +47,19 @@
             <DashboardStatCard
                 Title="Stock Quantity"
                 Value="@_dashboard.StockQuantity"
-                Icon="@Icons.Material.Filled.Inventory"
-                Color="Color.Success" />
+                Color="Color.Success"
+                Href="/stocks" />
 
         </MudItem>
 
         <MudItem xs="12" sm="6" lg="3">
 
             <DashboardStatCard
-                Title="Movements"
+                Title="Today Movements"
                 Value="@_dashboard.TodayMovements"
                 Icon="@Icons.Material.Filled.SwapHoriz"
-                Color="Color.Secondary" />
+                Color="Color.Secondary"
+                    Href="@($"/stockmovements?search={DateTime.Today:yyyy-MM-dd}")" />
 
         </MudItem>
 
@@ -66,43 +69,112 @@
                 Title="Low Stock"
                 Value="@_dashboard.LowStockCount"
                 Icon="@Icons.Material.Filled.Warning"
-                Color="Color.Warning" />
+                Color="Color.Warning"
+                Href="stocks/low-stock"/>
 
         </MudItem>
     }
 </MudGrid>
 
-@if (_lowStockProducts?.Any() == true)
-{
-        <MudText Typo="Typo.h5"
-                 Color="Color.Secondary"
-                 Class="mt-8 mb-4">
-            <b>Low Stock Alerts</b>
-        </MudText>
+<MudItem xs="12">
 
+    <MudCard Elevation="2" Class="pa-4 mt-4">
 
-        <MudCard Elevation="2"
-                 Class="pa-4">
+        <MudStack Row="true"
+                  Justify="Justify.SpaceBetween"
+                  AlignItems="AlignItems.Center">
 
-            <LowStockProductsTable Items="_lowStockProducts" />
+            <MudText Typo="Typo.h5">
+                Stock Movement Activity
+            </MudText>
 
-        </MudCard>
-}
+            <MudButtonGroup Variant="Variant.Outlined">
+
+                <MudButton OnClick="@(() => LoadChartAsync(7))">
+                    7 Days
+                </MudButton>
+
+                <MudButton OnClick="@(() => LoadChartAsync(14))">
+                    14 Days
+                </MudButton>
+
+                <MudButton OnClick="@(() => LoadChartAsync(30))">
+                    30 Days
+                </MudButton>
+
+            </MudButtonGroup>
+
+        </MudStack>
+
+        <MudDivider Class="my-4" />
+
+        @if (_movementChart == null)
+        {
+                <MudProgressCircular Indeterminate="true" />
+        }
+        else
+        {
+                <!-- tutaj później wykres -->
+
+                <MudTable Items="_movementChart"
+                          Dense="true"
+                          Hover="true"
+                          Elevation="0">
+
+                    <HeaderContent>
+                        <MudTh>Date</MudTh>
+                        <MudTh>Receive</MudTh>
+                        <MudTh>Issue</MudTh>
+                        <MudTh>Transfer</MudTh>
+                    </HeaderContent>
+
+                    <RowTemplate>
+
+                        <MudTd>
+                        @context.Date.ToString("yyyy-MM-dd")
+                        </MudTd>
+
+                        <MudTd>
+                        @context.Receive
+                        </MudTd>
+
+                        <MudTd>
+                        @context.Issue
+                        </MudTd>
+
+                        <MudTd>
+                        @context.Transfer
+                        </MudTd>
+
+                    </RowTemplate>
+
+                </MudTable>
+        }
+
+    </MudCard>
+
+</MudItem>
 
 @code {
     [Inject]
     private IDashboardService _dashboardService { get; set; } = null!;
 
     [Inject]
-    private IStockService _stockService { get; set; } = null!;
+    private IStockMovementService _stockMovementService { get; set; } = null!;
 
     private DashboardSummaryResponse? _dashboard;
-    private IEnumerable<LowStockProductResponse>? _lowStockProducts;
+    private IEnumerable<MovementChartResponse>? _movementChart;
 
     protected override async Task OnInitializedAsync()
     {
         _dashboard = await _dashboardService.GetSummaryAsync(CancellationToken);
-        _lowStockProducts = await _stockService.GetLowStockProductsAsync(CancellationToken);
-        Console.WriteLine("sprawdzam "  + _lowStockProducts.Any());
+
+        _movementChart = await _stockMovementService.GetChartAsync(7, CancellationToken);
+    }
+
+    private async Task LoadChartAsync(int days)
+    {
+        _movementChart = await _stockMovementService
+            .GetChartAsync(days, CancellationToken);
     }
 }

@@ -7,24 +7,12 @@
 
 @inherits CancellableComponentBase
 
-<PageTitle>
-    Internal Stock Transfer
-</PageTitle>
-
-<MudText Typo="Typo.h4"
-         Color="Color.Primary"
-         Class="mb-6">
-    Internal Stock Transfer
-</MudText>
+<PageTitle> Internal Stock Transfer </PageTitle>
 
 <MoveStockForm OnSuccess="OnMoveStockFormSuccess" />
 
 @if (_selectedProductSku != null)
 {
-    <MudText Typo="Typo.h6" Class="mb-2">
-        History for Product: @_selectedProductSku
-    </MudText>
-
     <MudCard Elevation="2" Class="pa-4">
         <StockMovementsTable Items="_movements" />
     </MudCard>

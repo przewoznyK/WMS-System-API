@@ -1,0 +1,28 @@
+﻿@page "/stocks"
+@using WMS.Client.Components.Tables
+@using WMS.Client.Services.Interfaces
+@using WMS.Application.Stocks.Response
+@using WMS.Client.Components.Base
+
+@inherits CancellableComponentBase
+
+<PageTitle> Stocks</PageTitle>
+<StockTable Items="_stocks" />
+
+@code
+{
+    [Inject]
+    private IStockService _stockService { get; set; } = null!;
+
+    private IEnumerable<StockResponse>? _stocks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await ReloadStocks();
+    }
+
+    private async Task ReloadStocks()
+    {
+        _stocks = await _stockService.GetSummaryAsync(CancellationToken);
+    }
+}

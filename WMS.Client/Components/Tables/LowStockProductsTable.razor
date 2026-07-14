@@ -5,10 +5,28 @@
 <MudTable Items="@Items"
           Hover="true"
           Dense="true"
-          Elevation="0">
+          Elevation="0"
+          Filter="@(new Func<LowStockProductResponse, bool>(FilterFunc))">
+    <ToolBarContent>
+        <MudText Typo="Typo.h4"
+                 Color="Color.Primary"
+                 Class="mb-6">
+             Low Stock Products
+        </MudText>
+
+        <MudSpacer />
+
+        <MudTextField @bind-Value="_searchString"
+                      Immediate="true"
+                      Placeholder="Search products..."
+                      Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search"
+                      Variant="Variant.Outlined"
+                      Margin="Margin.Dense"
+                      Clearable="true" />
+    </ToolBarContent>
 
     <HeaderContent>
-
         <MudTh>
             <MudTableSortLabel SortBy="new Func<LowStockProductResponse, object>(x => x.ProductName)">
                 Product
@@ -30,11 +48,9 @@
         <MudTh>
             Status
         </MudTh>
-
     </HeaderContent>
 
     <RowTemplate>
-
         <MudTd DataLabel="Product">
             <MudText Typo="Typo.body2">
                 @context.ProductName
@@ -64,7 +80,6 @@
                 Low Stock
             </MudChip>
         </MudTd>
-
     </RowTemplate>
 
     <NoRecordsContent>
@@ -78,10 +93,22 @@
     </PagerContent>
 </MudTable>
 
-
 @code {
-
     [Parameter]
     public IEnumerable<LowStockProductResponse>? Items { get; set; }
 
+    private string _searchString = string.Empty;
+
+    private bool FilterFunc(LowStockProductResponse element)
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+        {
+            return true;
+        }
+
+        var search = _searchString.Trim();
+        return
+            element.ProductName?.Contains(search, StringComparison.OrdinalIgnoreCase) == true ||
+            element.ProductSku?.Contains(search, StringComparison.OrdinalIgnoreCase) == true;
+    }
 }

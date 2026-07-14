@@ -1,14 +1,10 @@
 ﻿@page "/locations"
 
-@using WMS.Client.Components.Forms
 @using WMS.Client.Components.Tables
 @using WMS.Client.Services.Interfaces
 @using WMS.Client.Components.Base
 
 @inherits CancellableComponentBase
-
-<CreateLocationForm 
-    OnSuccess="OnCreateLocationFormSuccess" />
 
 <LocationTable 
     Items="_locations" />
@@ -16,9 +12,6 @@
 @code {
     [Inject]
     private IWarehouseLocationService _warehouseLocationService { get; set; } = null!;
-
-    [Inject]
-    private ISnackbar _snackbar { get; set; } = null!;
 
     private IEnumerable<string>? _locations;
 
@@ -30,12 +23,5 @@
     private async Task ReloadLocations()
     {
         _locations = await _warehouseLocationService.GetCodesAsync(CancellationToken);
-    }
-
-    private async Task OnCreateLocationFormSuccess()
-    {
-        await ReloadLocations();
-
-        _snackbar.Add("Location added successfully!", Severity.Success);
     }
 }

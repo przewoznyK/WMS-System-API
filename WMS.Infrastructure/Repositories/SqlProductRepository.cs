@@ -25,47 +25,47 @@ namespace WMS.Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public async Task<IEnumerable<Product>> GetAllAsync()
+        public async Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _wmsDbContext.Products.ToListAsync();
+            return await _wmsDbContext.Products.ToListAsync(cancellationToken);
         }
 
-        public async Task<Product?> GetByIdAsync(Guid id)
+        public async Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
-            return await _wmsDbContext.Products.FindAsync(id);
+            return await _wmsDbContext.Products.FindAsync(id, cancellationToken);
         }
 
-        public async Task<Product?> GetBySkuAsync(string sku)
+        public async Task<Product?> GetBySkuAsync(string sku, CancellationToken cancellationToken)
         {
-            return await _wmsDbContext.Products.FirstOrDefaultAsync(l => l.Sku == sku);
+            return await _wmsDbContext.Products.FirstOrDefaultAsync(l => l.Sku == sku, cancellationToken);
         }
 
-        public async Task<Product?> GetByNameAsync(string name)
+        public async Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken)
         {
-            return await _wmsDbContext.Products.FirstOrDefaultAsync(l => l.Name == name);
+            return await _wmsDbContext.Products.FirstOrDefaultAsync(l => l.Name == name, cancellationToken);
         }
 
-        public async Task<IEnumerable<string>> GetNamesAsync()
+        public async Task<IEnumerable<string>> GetNamesAsync(CancellationToken cancellationToken)
         {
             return await _wmsDbContext.Products
                 .Select(p => p.Name)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
         }
 
-        public async Task<bool> ExistsBySkuAsync(string sku)
+        public async Task<bool> ExistsBySkuAsync(string sku, CancellationToken cancellationToken)
         {
             return await _wmsDbContext.Products
-                .AnyAsync(p => p.Sku == sku);
+                .AnyAsync(p => p.Sku == sku, cancellationToken);
         }
 
-        public async Task<Product?> GetBySkuOrNameAsync(string searchTerm)
+        public async Task<Product?> GetBySkuOrNameAsync(string searchTerm, CancellationToken cancellationToken)
         {
-            return await _wmsDbContext.Products.FirstOrDefaultAsync(p => p.Sku == searchTerm || p.Name == searchTerm);
+            return await _wmsDbContext.Products.FirstOrDefaultAsync(p => p.Sku == searchTerm || p.Name == searchTerm, cancellationToken);
         }
 
-        public Task<int> GetCountAsync()
+        public Task<int> GetCountAsync(CancellationToken cancellationToken)
         {
-            return _wmsDbContext.Products.CountAsync();
+            return _wmsDbContext.Products.CountAsync(cancellationToken);
         }
     }
 }

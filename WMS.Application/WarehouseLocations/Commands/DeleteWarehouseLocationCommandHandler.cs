@@ -18,7 +18,7 @@ namespace WMS.Application.WarehouseLocations.Commands
 
         public async Task Handle(DeleteWarehouseLocationCommand request, CancellationToken cancellationToken)
         {
-            var location = await _warehouseLocationRepository.GetByIdAsync(request.Id);
+            var location = await _warehouseLocationRepository.GetByIdAsync(request.Id, cancellationToken);
 
             if (location == null)
             {

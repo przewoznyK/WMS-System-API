@@ -15,7 +15,7 @@ namespace WMS.Application.Products.Queries
 
         public async Task<IEnumerable<ProductResponse>> Handle(GetAllProductsViewsQuery request, CancellationToken cancellationToken)
         {
-            var products = await _productRepository.GetAllAsync();
+            var products = await _productRepository.GetAllAsync(cancellationToken);
 
             return products.Select(s => new ProductResponse
             {

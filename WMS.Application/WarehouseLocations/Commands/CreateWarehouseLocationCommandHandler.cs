@@ -18,7 +18,7 @@ namespace WMS.Application.WarehouseLocations.Commands
 
         public async Task<Guid> Handle(CreateWarehouseLocationCommand request, CancellationToken cancellationToken)
         {
-            var isCodeTaken = await _warehouseLocationRepository.ExistsByCodeAsync(request.Code);
+            var isCodeTaken = await _warehouseLocationRepository.ExistsByCodeAsync(request.Code, cancellationToken);
 
             if(isCodeTaken)
             {

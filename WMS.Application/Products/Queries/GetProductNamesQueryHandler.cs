@@ -14,7 +14,7 @@ namespace WMS.Application.Products.Queries
 
         public async Task<IEnumerable<string>> Handle(GetProductNamesQuery request, CancellationToken cancellationToken)
         {
-            return await _productRepository.GetNamesAsync();
+            return await _productRepository.GetNamesAsync(cancellationToken);
         }
     }
 }

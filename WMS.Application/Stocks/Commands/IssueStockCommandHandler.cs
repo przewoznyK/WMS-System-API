@@ -21,7 +21,7 @@ namespace WMS.Application.Stocks.Commands
 
         public async Task<Guid> Handle(IssueStockCommand request, CancellationToken cancellationToken)
         {
-            Stock? stock = await _stockRepository.GetByProductSkuAndLocationCodeAsync(request.ProductSku, request.LocationCode);
+            Stock? stock = await _stockRepository.GetByProductSkuAndLocationCodeAsync(request.ProductSku, request.LocationCode, cancellationToken);
 
             if(stock == null)
             {

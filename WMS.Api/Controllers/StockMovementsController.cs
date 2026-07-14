@@ -29,5 +29,12 @@ namespace WMS.Api.Controllers
             var stocks = await _mediator.Send(new GetAllStockMovementsViewsQuery());
             return Ok(stocks);
         }
+
+        [HttpGet("chart")]
+        public async Task<IActionResult> GetChartAsync([FromQuery] int days = 7, CancellationToken cancellationToken = default)
+        {
+            var chart = await _mediator.Send(new GetStockMovementChartQuery(days),cancellationToken);
+            return Ok(chart);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using WMS.Application.StockMovements.Response;
+using WMS.Application.StockMovements.Responses;
 using WMS.Client.Services.Interfaces;
 
 namespace WMS.Client.Services.Implementations
@@ -15,6 +16,11 @@ namespace WMS.Client.Services.Implementations
         public Task<IEnumerable<StockMovementResponse>> GetSummaryAsync(CancellationToken ct)
         {
             return _apiClientService.GetListAsync<StockMovementResponse>("api/stockmovements/summary", ct);
+        }
+
+        public Task<IEnumerable<MovementChartResponse>> GetChartAsync( int days, CancellationToken ct)
+        {
+            return _apiClientService.GetListAsync<MovementChartResponse>($"api/stockmovements/chart?days={days}", ct);
         }
     }
 }

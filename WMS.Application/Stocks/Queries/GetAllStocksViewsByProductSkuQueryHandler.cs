@@ -15,7 +15,7 @@ namespace WMS.Application.Stocks.Queries
 
         public async Task<IEnumerable<StockResponse>> Handle(GetAllStocksViewsByProductSkuQuery request, CancellationToken cancellationToken)
         {
-            var stocks = await _stockRepository.GetAllByProductSkuAsync(request.sku);
+            var stocks = await _stockRepository.GetAllByProductSkuAsync(request.sku, cancellationToken);
 
             return stocks.Select(s => new StockResponse
             {

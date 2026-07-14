@@ -4,15 +4,17 @@
 @using WMS.Domain.Enums
 
 <MudTable Items="@Items"
-          Hover="true"
-          Dense="true"
-          Elevation="0"
-          Filter="FilterFunc"
+          Filter="@(new Func<StockMovementResponse, bool>(FilterFunc))"
           AllowUnsorted="false"
           InitialDirection="SortDirection.Ascending"
           Loading="@(Items == null)">
 
     <ToolBarContent>
+        <MudText Typo="Typo.h4"
+                 Color="Color.Primary"
+                 Class="mt-4 mb-6">
+            Stock Movements
+        </MudText>
         <MudSpacer />
         <MudTextField @bind-Value="_searchString"
                       Placeholder="Search..."
@@ -24,6 +26,7 @@
                       Clearable="true"
                       Immediate="true" />
     </ToolBarContent>
+
     <HeaderContent>
         <MudTh>
             <MudTableSortLabel SortBy="new Func<StockMovementResponse, object>(x => x.CreatedAt)">
@@ -67,11 +70,8 @@
                     @context.CreatedAt.ToString("yyyy-MM-dd HH:mm")
                 </MudText>
 
-                <MudText Typo="Typo.caption"
-                         Color="Color.Secondary">
-                    <MudIcon Icon="@Icons.Material.Filled.Person"
-                             Size="Size.Small"
-                             Class="mr-1" />
+                <MudText Typo="Typo.caption" Color="Color.Secondary">
+                    <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" Class="mr-1" />
                     Worker
                 </MudText>
             </MudStack>
@@ -86,49 +86,41 @@
         </MudTd>
 
         <MudTd DataLabel="Location">
-            <MudChip T="string"
-                     Size="Size.Small"
-                     Variant="Variant.Outlined">
+            <MudChip T="string" Size="Size.Small" Variant="Variant.Outlined">
                 @context.LocationCode
             </MudChip>
         </MudTd>
 
         <MudTd DataLabel="Operation & Details">
             <MudStack Spacing="1">
-                <MudChip T="string"
-                         Color="@GetOperationColor(context.OperationType)"
-                         Size="Size.Small"
-                         Variant="Variant.Filled">
+                <MudChip T="string" Color="@GetOperationColor(context.OperationType)" Size="Size.Small" Variant="Variant.Filled">
                     @context.OperationType
                 </MudChip>
+
                 @if (context.OperationType == OperationType.Issue)
                 {
-                    <MudStack Spacing="0">
-                        <MudText Typo="Typo.caption">
-                            Reason:
-                            <MudText Component="span"
-                                     Typo="Typo.caption"
-                                     Style="font-weight:600;">
-                                            @_uiUtilityService.SplitPascalCase(context.IssueType.ToString())
-                            </MudText>
-                        </MudText>
-
-                                    @if (!string.IsNullOrWhiteSpace(context.ReferenceNumber))
-                                    {
-                                <MudText Typo="Typo.caption">
-                                    Ref: @context.ReferenceNumber
+                        <MudStack Spacing="0">
+                            <MudText Typo="Typo.caption">
+                                Reason:
+                                <MudText Component="span" Typo="Typo.caption" Style="font-weight:600;">
+                                @_uiUtilityService.SplitPascalCase(context.IssueType.ToString())
                                 </MudText>
-                                    }
-                    </MudStack>
+                            </MudText>
+
+                        @if (!string.IsNullOrWhiteSpace(context.ReferenceNumber))
+                        {
+                                    <MudText Typo="Typo.caption">
+                                        Ref: @context.ReferenceNumber
+                                    </MudText>
+                        }
+                        </MudStack>
                 }
             </MudStack>
         </MudTd>
+
         <MudTd DataLabel="Quantity">
-            <MudText Color="@(context.QuantityChange > 0 ? Color.Success : Color.Error)"
-                     Class="d-flex justify-end">
-                @(context.QuantityChange > 0
-                        ? $"+{context.QuantityChange}"
-                        : context.QuantityChange.ToString())
+            <MudText Color="@(context.QuantityChange > 0 ? Color.Success : Color.Error)" Class="d-flex justify-end">
+                @(context.QuantityChange > 0 ? $"+{context.QuantityChange}" : context.QuantityChange.ToString())
             </MudText>
         </MudTd>
     </RowTemplate>
@@ -136,7 +128,6 @@
     <PagerContent>
         <MudTablePager PageSizeOptions="new int[] { 10, 25, 50, 100 }" />
     </PagerContent>
-
 </MudTable>
 
 @code {
@@ -146,7 +137,20 @@
     [Parameter]
     public IEnumerable<StockMovementResponse>? Items { get; set; }
 
+    [Parameter]
+    public string? InitialSearch { get; set; }
+
     private string _searchString = "";
+    private string? _previousInitialSearch;
+
+    protected override void OnParametersSet()
+    {
+        if (InitialSearch != _previousInitialSearch)
+        {
+            _previousInitialSearch = InitialSearch;
+            _searchString = InitialSearch ?? "";
+        }
+    }
 
     private bool FilterFunc(StockMovementResponse element)
     {
@@ -162,8 +166,8 @@
             element.ProductName?.Contains(search, StringComparison.OrdinalIgnoreCase) == true ||
             element.LocationCode?.Contains(search, StringComparison.OrdinalIgnoreCase) == true ||
             element.ReferenceNumber?.Contains(search, StringComparison.OrdinalIgnoreCase) == true ||
-            element.OperationType.ToString()
-                .Contains(search, StringComparison.OrdinalIgnoreCase);
+            element.OperationType.ToString().Contains(search, StringComparison.OrdinalIgnoreCase) ||
+            element.CreatedAt.ToString("yyyy-MM-dd").Contains(search, StringComparison.OrdinalIgnoreCase);
     }
 
     private Color GetOperationColor(OperationType operationType)

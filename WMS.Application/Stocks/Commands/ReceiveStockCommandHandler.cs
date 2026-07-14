@@ -26,21 +26,21 @@ namespace WMS.Application.Stocks.Commands
 
         public async Task<Guid> Handle(ReceiveStockCommand command, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetBySkuAsync(command.ProductSku);
+            var product = await _productRepository.GetBySkuAsync(command.ProductSku, cancellationToken);
 
             if (product == null)
             {
                 throw new WmsNotFoundException("Product", command.ProductSku);
             }
 
-            var location = await _warehouseLocationRepository.GetByCodeAsync(command.LocationCode);
+            var location = await _warehouseLocationRepository.GetByCodeAsync(command.LocationCode, cancellationToken);
 
             if (location == null)
             {
                 throw new WmsNotFoundException("WarehouseLocation", command.LocationCode);
             }
 
-            var stock = await _stockRepository.GetByProductIdAndLocationAsync(product.Id, location.Id);
+            var stock = await _stockRepository.GetByProductIdAndLocationAsync(product.Id, location.Id, cancellationToken);
 
             if (stock != null)
             {

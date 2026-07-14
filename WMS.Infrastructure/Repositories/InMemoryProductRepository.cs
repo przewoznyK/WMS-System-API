@@ -19,52 +19,52 @@ namespace WMS.Infrastructure.Repositories
             return Task.CompletedTask;
         }
 
-        public Task<bool> ExistsBySkuAsync(string sku)
+        public Task<bool> ExistsBySkuAsync(string sku, CancellationToken cancellationToken)
         {
             var exists = _products.Any(p => p.Sku == sku);
             return Task.FromResult(exists);
         }
 
-        public Task<IEnumerable<Product>> GetAllAsync()
+        public Task<IEnumerable<Product>> GetAllAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult<IEnumerable<Product>>(_products);
         }
 
-        public Task<Product?> GetByIdAsync(Guid id)
+        public Task<Product?> GetByIdAsync(Guid id, CancellationToken cancellationToken)
         {
             var product = _products.FirstOrDefault(x => x.Id == id);
             return Task.FromResult(product);
         }
 
-        public Task<Product?> GetByNameAsync(string name)
+        public Task<Product?> GetByNameAsync(string name, CancellationToken cancellationToken)
         {
             return Task.FromResult(_products.FirstOrDefault(x => x.Name == name));
         }
 
-        public Task<Product?> GetBySkuAsync(string sku)
+        public Task<Product?> GetBySkuAsync(string sku, CancellationToken cancellationToken)
         {
             var product = _products.FirstOrDefault(x => x.Sku == sku);
             return Task.FromResult(product);
         }
 
-        public Task<IEnumerable<string>> GetNamesAsync()
+        public Task<IEnumerable<string>> GetNamesAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult(_products.Select(p => p.Name));
         }
 
-        public Task UpdateDetailsAsync(Product product, string name, string description)
+        public Task UpdateDetailsAsync(Product product, string name, string description, CancellationToken cancellationToken)
         {
             product.UpdateDetails(name, description);
             return Task.CompletedTask;
         }
 
-        public Task<Product?> GetBySkuOrNameAsync(string searchTerm)
+        public Task<Product?> GetBySkuOrNameAsync(string searchTerm, CancellationToken cancellationToken)
         {
             var product = _products.FirstOrDefault(p => p.Sku == searchTerm || p.Name.Contains(searchTerm));
             return Task.FromResult(product);
         }
 
-        public Task<int> GetCountAsync()
+        public Task<int> GetCountAsync(CancellationToken cancellationToken)
         {
             return Task.FromResult(_products.Count());
         }

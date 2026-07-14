@@ -18,7 +18,7 @@ namespace WMS.Application.Products.Commands
 
         public async Task<Guid> Handle(CreateProductCommand request, CancellationToken cancellationToken)
         {
-            var isSkuTaken = await _productRepository.ExistsBySkuAsync(request.Sku);
+            var isSkuTaken = await _productRepository.ExistsBySkuAsync(request.Sku, cancellationToken);
 
             if (isSkuTaken)
             {

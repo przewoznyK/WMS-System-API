@@ -1,0 +1,29 @@
+﻿@page "/stocks/low-stock"
+@using WMS.Client.Components.Forms
+@using WMS.Client.Components.Tables
+@using WMS.Client.Services.Interfaces
+@using WMS.Client.Components.Base
+@using WMS.Application.Stocks.Responses
+
+@inherits CancellableComponentBase
+
+@if (_lowStockProducts?.Any() == true)
+{
+    <MudCard Elevation="2"
+                Class="pa-4">
+
+        <LowStockProductsTable Items="_lowStockProducts" />
+
+    </MudCard>
+}
+@code {
+    [Inject]
+    private IStockService _stockService { get; set; } = null!;
+
+    private IEnumerable<LowStockProductResponse>? _lowStockProducts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _lowStockProducts = await _stockService.GetLowStockProductsAsync(CancellationToken);
+    }
+}

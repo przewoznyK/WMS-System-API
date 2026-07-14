@@ -14,7 +14,7 @@ namespace WMS.Application.WarehouseLocations.Queries
 
         public async Task<IEnumerable<string>> Handle(GetAllWarehouseLocationCodesQuery request, CancellationToken cancellationToken)
         {
-            return await _warehouseLocationRepository.GetLocationsAsync();
+            return await _warehouseLocationRepository.GetLocationsAsync(cancellationToken);
         }
     }
 }

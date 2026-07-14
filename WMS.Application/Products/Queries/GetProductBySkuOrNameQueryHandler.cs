@@ -17,7 +17,7 @@ namespace WMS.Application.Products.Queries
 
         public async Task<ProductResponse> Handle(GetProductBySkuOrNameQuery request, CancellationToken cancellationToken)
         {
-            var product = await _productRepository.GetBySkuOrNameAsync(request.SkuOrName);
+            var product = await _productRepository.GetBySkuOrNameAsync(request.SkuOrName, cancellationToken);
 
             if (product == null)
             {

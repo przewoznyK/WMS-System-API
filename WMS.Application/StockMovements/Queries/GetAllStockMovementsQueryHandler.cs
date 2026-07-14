@@ -15,7 +15,7 @@ namespace WMS.Application.StockMovements.Queries
 
         public async Task<IEnumerable<StockMovement>> Handle(GetAllStockMovementsQuery request, CancellationToken cancellationToken)
         {
-            return await _stockMovementRepository.GetAllAsync();
+            return await _stockMovementRepository.GetAllAsync(cancellationToken);
         }
     }
 }
