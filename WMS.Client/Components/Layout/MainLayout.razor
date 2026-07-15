@@ -7,97 +7,102 @@
 
 @inherits LayoutComponentBase
 
-
 <MudThemeProvider Theme="@_theme" IsDarkMode="@_isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
 
 <MudLayout>
+    @if (!IsLoginPage)
+    {
+        <MudAppBar Elevation="1" Color="Color.Surface">
 
-    <MudAppBar Elevation="1" Color="Color.Surface">
+            <MudIconButton Icon="@Icons.Material.Filled.Menu"
+                            Color="Color.Primary"
+                            Edge="Edge.Start"
+                            OnClick="@DrawerToggle" />
 
-        <MudIconButton Icon="@Icons.Material.Filled.Menu"
-                       Color="Color.Inherit"
-                       Edge="Edge.Start"
-                       OnClick="@((e) => DrawerToggle())" />
+            <MudButton Href="/"
+                        Variant="Variant.Text"
+                        Color="Color.Primary"
+                        Class="px-2">
 
-        <MudButton Href="/"
-                   Variant="Variant.Text"
-                   Color="Color.Primary"
-                   Class="px-2">
+                <MudIcon Icon="@Icons.Material.Filled.Widgets"
+                            Size="Size.Large"
+                            Class="mr-2" />
 
-            <MudIcon Icon="@Icons.Material.Filled.Widgets"
-                     Size="Size.Large"
-                     Class="mr-2" />
-
-            <MudText Typo="Typo.h5"
-                     Style="font-weight:700; letter-spacing:1px;">
-                     WMS
-            </MudText>
-        </MudButton>
-
-        <MudSpacer />
-
-        <MudIconButton Icon="@(_isDarkMode 
+                <MudText Typo="Typo.h5"
+                            Style="font-weight:700; letter-spacing:1px;">
+                    WMS
+                </MudText>
+            </MudButton>
+            <MudSpacer />
+            <MudIconButton Icon="@(_isDarkMode 
                     ? Icons.Material.Filled.WbSunny 
                     : Icons.Material.Filled.DarkMode)"
-                       Color="Color.Primary"
-                       OnClick="@ToggleDarkMode"
-                       Class="mr-2" />
-
+                            Color="Color.Primary"
+                            OnClick="ToggleDarkMode"
+                            Class="mr-2" />
         @if (_isLoggedIn)
         {
-        <MudMenu AnchorOrigin="Origin.BottomRight"
-                 TransformOrigin="Origin.TopRight">
+            <MudMenu AnchorOrigin="Origin.BottomRight"
+                        TransformOrigin="Origin.TopRight">
 
-            <ActivatorContent>
-                <MudButton Variant="Variant.Text"
-                           Color="Color.Primary"
-                           OnClick="@context.ToggleAsync">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Text"
+                                Color="Color.Primary"
+                                OnClick="@context.ToggleAsync">
 
-                    <MudIcon Icon="@GetRoleIcon()"
-                             Class="mr-2" />
-                        @_email
-                    <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" />
-                </MudButton>
-            </ActivatorContent>
+                        <MudIcon Icon="@GetRoleIcon()"
+                                    Class="mr-2" />
+                            @_email
+                        <MudIcon Icon="@Icons.Material.Filled.ArrowDropDown" />
+                    </MudButton>
+                </ActivatorContent>
 
-
-            <ChildContent>
-                <MudMenuItem OnClick="Logout">
-                    <MudIcon Icon="@Icons.Material.Filled.Logout"
-                             Class="mr-2" />
-                    Logout
-                </MudMenuItem>
-            </ChildContent>
-        </MudMenu>
+                <ChildContent>
+                    <MudMenuItem OnClick="Logout">
+                        <MudIcon Icon="@Icons.Material.Filled.Logout"
+                                    Class="mr-2" />
+                        Logout
+                    </MudMenuItem>
+                </ChildContent>
+            </MudMenu>
         }
         else
         {
-        <MudButton Variant="Variant.Filled"
-                   Color="Color.Primary"
-                   Href="/login">
+            <MudButton Variant="Variant.Filled"
+                        Color="Color.Primary"
+                        Href="/login">
 
-            <MudIcon Icon="@Icons.Material.Filled.Login"
-                     Class="mr-2" />
-            Login
-        </MudButton>
+                <MudIcon Icon="@Icons.Material.Filled.Login"
+                            Class="mr-2" />
+                Login
+            </MudButton>
         }
 
-    </MudAppBar>
+        </MudAppBar>
+        <MudDrawer @bind-Open="_drawerOpen"
+                    Elevation="2"
+                    ClipMode="DrawerClipMode.Always"
+                    Variant="DrawerVariant.Responsive">
 
-    <MudDrawer @bind-Open="_drawerOpen"
-               Elevation="2"
-               ClipMode="DrawerClipMode.Always"
-               Variant="@DrawerVariant.Responsive">
-        <NavMenu UserRole="_role" />
-    </MudDrawer>
+            <NavMenu UserRole="_role" />
+        </MudDrawer>
+    }
+
     <MudMainContent>
-        <MudContainer MaxWidth="MaxWidth.ExtraLarge"
-                      Class="pt-8 px-6 pb-8">
+        @if (IsLoginPage)
+        {
             @Body
-        </MudContainer>
+        }
+        else
+        {
+            <MudContainer MaxWidth="MaxWidth.ExtraLarge" 
+                Class="pt-8 px-6 pb-8">
+                    @Body
+            </MudContainer>
+        }
     </MudMainContent>
 </MudLayout>
 
@@ -112,26 +117,27 @@
     [Inject]
     private IThemeService _themeService { get; set; } = null!;
 
-    bool _drawerOpen = true;
-    bool _isDarkMode => _themeService.IsDarkMode;
-
+    private bool _drawerOpen = true;
+    private bool _isDarkMode => _themeService.IsDarkMode;
     private bool _isLoggedIn;
     private string? _email;
     private UserRoleType? _role;
+    private bool IsLoginPage => Navigation.Uri.Contains("/login");
 
     protected override void OnInitialized()
     {
         _themeService.ThemeChanged += OnThemeChanged;
+        Navigation.LocationChanged += OnLocationChanged;
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
     }
 
     private void OnThemeChanged()
     {
         InvokeAsync(StateHasChanged);
-    }
-
-    public void Dispose()
-    {
-        _themeService.ThemeChanged -= OnThemeChanged;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -147,17 +153,23 @@
     {
         return _role switch
         {
-            UserRoleType.Manager => Icons.Material.Filled.AdminPanelSettings,
-            UserRoleType.Worker => Icons.Material.Filled.Person,
-            UserRoleType.Admin => Icons.Material.Filled.Security,
-            _ => Icons.Material.Filled.AccountCircle
+            UserRoleType.Manager =>
+                Icons.Material.Filled.AdminPanelSettings,
+
+            UserRoleType.Worker =>
+                Icons.Material.Filled.Person,
+
+            UserRoleType.Admin =>
+                Icons.Material.Filled.Security,
+
+            _ =>
+                Icons.Material.Filled.AccountCircle
         };
     }
 
     private async Task Logout()
     {
         await _tokenStorageService.RemoveTokenAsync();
-
         Navigation.NavigateTo("/login", true);
     }
 
@@ -181,6 +193,12 @@
         _role = _jwtTokenService.GetRole(token);
         _email = _jwtTokenService.GetEmail(token);
         _isLoggedIn = true;
+    }
+
+    public void Dispose()
+    {
+        _themeService.ThemeChanged -= OnThemeChanged;
+        Navigation.LocationChanged -= OnLocationChanged;
     }
 
     private MudTheme _theme = new MudTheme()

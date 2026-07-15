@@ -14,7 +14,9 @@
 @if (_selectedProductSku != null)
 {
     <MudCard Elevation="2" Class="pa-4">
-        <StockMovementsTable Items="_movements" />
+    <StockMovementsTable
+        @key="_movements?.Count()"
+        Items="_movements" />
     </MudCard>
 }
 

@@ -30,6 +30,7 @@ namespace WMS.Infrastructure.Repositories
         public async Task<IEnumerable<StockMovement>> GetAllAsync(CancellationToken cancellationToken)
         {
             return await _wmsDbContext.StockMovements
+                .OrderByDescending(x => x.CreatedAt)
                 .ToListAsync(cancellationToken);
         }
 

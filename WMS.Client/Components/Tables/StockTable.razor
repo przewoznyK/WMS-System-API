@@ -7,7 +7,7 @@
               Elevation="0"
               Filter="FilterFunc"
               AllowUnsorted="false"
-              InitialDirection="SortDirection.Ascending"
+              InitialDirection="SortDirection.Descending"
               Loading="@(Items == null)">
 
         <ToolBarContent>
@@ -32,23 +32,20 @@
         </ToolBarContent>
 
         <HeaderContent>
-            <MudTh>
-                <MudTableSortLabel 
-                    SortBy="new Func<StockResponse, object>(x => x.ProductName)">
+            <MudTh Style="width: 50%;">
+                <MudTableSortLabel SortBy="new Func<StockResponse, object>(x => x.ProductName)">
                     Product
                 </MudTableSortLabel>
             </MudTh>
 
-            <MudTh>
-                <MudTableSortLabel 
-                    SortBy="new Func<StockResponse, object>(x => x.LocationCode)">
+            <MudTh Style="width: 25%;">
+                <MudTableSortLabel SortBy="new Func<StockResponse, object>(x => x.LocationCode)">
                     Location
                 </MudTableSortLabel>
             </MudTh>
 
-            <MudTh>
-                <MudTableSortLabel 
-                    SortBy="new Func<StockResponse, object>(x => x.Quantity)">
+            <MudTh Style="width: 25%;">
+                <MudTableSortLabel SortBy="new Func<StockResponse, object>(x => x.Quantity)">
                     Quantity
                 </MudTableSortLabel>
             </MudTh>

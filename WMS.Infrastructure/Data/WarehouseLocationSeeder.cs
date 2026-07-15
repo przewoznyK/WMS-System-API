@@ -13,14 +13,14 @@ namespace WMS.Infrastructure.Data
 
             var locations = new List<WarehouseLocation>
             {
-                new("A-01-01"),
-                new("A-01-02"),
-                new("A-02-01"),
-                new("A-02-02"),
-                new("B-01-01"),
-                new("B-01-02"),
-                new("C-01-01"),
-                new("C-01-02")
+                new("AA-01-01"),
+                new("AA-01-02"),
+                new("AA-02-01"),
+                new("AA-02-02"),
+                new("BB-01-01"),
+                new("BB-01-02"),
+                new("CC-01-01"),
+                new("CC-01-02")
             };
 
             context.WarehouseLocations.AddRange(locations);
