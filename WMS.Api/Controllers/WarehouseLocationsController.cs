@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.WarehouseLocations.Commands;
 using WMS.Application.WarehouseLocations.Queries;
@@ -16,13 +17,15 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateAsync(CreateWarehouseLocationCommand command)
         {
-           var locationId = await _mediator.Send(command);
+            var locationId = await _mediator.Send(command);
             return Ok(locationId);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpDelete("delete-{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
@@ -30,6 +33,7 @@ namespace WMS.Api.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpGet("location-codes")]
         public async Task<IActionResult> GetCodesAsync()
         {
@@ -37,6 +41,7 @@ namespace WMS.Api.Controllers
             return Ok(locations);
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpGet("by-id-{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {
@@ -44,6 +49,7 @@ namespace WMS.Api.Controllers
             return Ok(location);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPut("update-details-{id}")]
         public async Task<IActionResult> UpdateDetailsAsync(Guid id, UpdateDetailsWarehouseLocationCommand command)
         {

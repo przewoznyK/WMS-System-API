@@ -1,0 +1,101 @@
+﻿@page "/login"
+
+@using WMS.Client.Services.Interfaces
+@using WMS.Application.Authentication.Requests
+@using WMS.Client.Components.Base
+
+@inherits CancellableComponentBase
+
+@inject NavigationManager Navigation
+
+<MudContainer MaxWidth="MaxWidth.Small"
+              Class="mt-16">
+
+    <MudCard Elevation="3">
+        <MudCardContent>
+            <MudText Typo="Typo.h5"
+                     Class="mb-6">
+                Login
+            </MudText>
+
+            <MudTextField Label="Email"
+                          @bind-Value="_loginRequest.Email"
+                          Variant="Variant.Outlined"
+                          Class="mb-4" />
+
+            <MudTextField Label="Password"
+                          @bind-Value="_loginRequest.Password"
+                          Variant="Variant.Outlined"
+                          InputType="InputType.Password" />
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       FullWidth="true"
+                       Class="mt-6"
+                       OnClick="OnLoginSubmitSuccess">
+                Login
+            </MudButton>
+
+        </MudCardContent>
+        <MudStack Row="true"
+          Spacing="2"
+          Class="mt-4">
+
+    <MudButton Variant="Variant.Outlined"
+               Color="Color.Primary"
+               FullWidth="true"
+               OnClick="LoginAsManager">
+        Login as Manager
+    </MudButton>
+
+    <MudButton Variant="Variant.Outlined"
+               Color="Color.Secondary"
+               FullWidth="true"
+               OnClick="LoginAsWorker">
+        Login as Worker
+    </MudButton>
+
+</MudStack>
+    </MudCard>
+
+</MudContainer>
+
+
+@code {
+
+    [Inject]
+    private IAuthService _authService { get; set; } = null!;
+
+    [Inject]
+    private ITokenStorageService _storageTokenService { get; set; } = null!;
+
+    private LoginRequest _loginRequest = new();
+    private string _error = string.Empty;
+
+    private async Task OnLoginSubmitSuccess()
+    {
+        var result = await _authService.LoginAsync(_loginRequest, CancellationToken);
+
+        if (result != null)
+        {
+            await _storageTokenService.SaveTokenAsync(result.Token);
+            Navigation.NavigateTo("/", forceLoad: true);
+        }
+    }
+
+    private async Task LoginAsManager()
+    {
+        _loginRequest.Email = "manager@wms.com";
+        _loginRequest.Password = "Password123!";
+
+        await OnLoginSubmitSuccess();
+    }
+
+    private async Task LoginAsWorker()
+    {
+        _loginRequest.Email = "worker@wms.com";
+        _loginRequest.Password = "Password123!";
+
+        await OnLoginSubmitSuccess();
+    }
+}

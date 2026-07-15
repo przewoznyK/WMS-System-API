@@ -1,10 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using WMS.Domain.Entities;
 using WMS.Domain.Repositories;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using WMS.Infrastructure.Identity;
 
 namespace WMS.Infrastructure
 {
-    public class WmsDbContext : DbContext, IUnitOfWork
+    public class WmsDbContext : IdentityDbContext<ApplicationUser>, IUnitOfWork
     {
         public WmsDbContext(DbContextOptions<WmsDbContext> options) : base(options) { }
 

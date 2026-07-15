@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using WMS.Application.Authentication.Interfaces;
 using WMS.Domain.Entities;
 using WMS.Domain.Enums;
 using WMS.Domain.Exceptions;
@@ -12,17 +13,26 @@ namespace WMS.Application.Products.Commands
         private readonly IStockMovementRepository _stockMovementRepository;
         private readonly IWarehouseLocationRepository _warehouseLocationRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserContext _userContext;
 
-        public MoveStockCommandHandler(IStockRepository stockRepository, IStockMovementRepository stockMovementRepository, IWarehouseLocationRepository warehouseLocationRepository, IUnitOfWork unitOfWork)
+        public MoveStockCommandHandler(IStockRepository stockRepository, IStockMovementRepository stockMovementRepository, IWarehouseLocationRepository warehouseLocationRepository, IUnitOfWork unitOfWork, IUserContext userContext)
         {
             _stockRepository = stockRepository;
             _stockMovementRepository = stockMovementRepository;
             _warehouseLocationRepository = warehouseLocationRepository;
             _unitOfWork = unitOfWork;
+            _userContext = userContext;
         }
 
         public async Task Handle(MoveStockCommand request, CancellationToken cancellationToken)
         {
+            var userId = _userContext.UserId;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new WmsBusinessRuleException("User is not authenticated.");
+            }
+
             if (request.SourceLocationCode == request.DestinationLocationCode)
             {
                 throw new WmsBusinessRuleException("Source and destination location must be different.");
@@ -52,8 +62,8 @@ namespace WMS.Application.Products.Commands
             sourceStock.DecreaseQuantity(request.Quantity);
             destStock.IncreaseQuantity(request.Quantity);
 
-            var sourceMovement = new StockMovement(sourceStock, OperationType.Transfer, -request.Quantity);
-            var destMovement = new StockMovement(destStock, OperationType.Transfer, request.Quantity);
+            var sourceMovement = new StockMovement(sourceStock, OperationType.Transfer, -request.Quantity, userId);
+            var destMovement = new StockMovement(destStock, OperationType.Transfer, request.Quantity, userId);
 
             await _stockMovementRepository.AddRangeAsync(new[] { sourceMovement, destMovement }, cancellationToken);
 

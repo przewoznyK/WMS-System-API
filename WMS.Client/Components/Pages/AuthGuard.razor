@@ -1,0 +1,80 @@
+﻿@implements IDisposable
+
+@using WMS.Client.Services.Interfaces
+
+@inject NavigationManager Navigation
+
+
+@if (_isChecking)
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+else if (_isAuthorized)
+{
+    @ChildContent
+}
+else
+{
+    <MudProgressCircular Indeterminate="true" />
+}
+
+
+@code {
+    [Inject]
+    private ITokenStorageService _tokenStorageService { get; set; } = null!;
+
+    [Inject]
+    private IJwtTokenService _jwtTokenService { get; set; } = null!;
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private bool _isChecking = true;
+    private bool _isAuthorized;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            Navigation.LocationChanged += OnLocationChanged;
+
+            await CheckAuth();
+
+            StateHasChanged();
+        }
+    }
+    private async void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        await CheckAuth();
+        StateHasChanged();
+    }
+
+    private async Task CheckAuth()
+    {
+        var current = Navigation.ToBaseRelativePath(Navigation.Uri);
+        if (current == "login")
+        {
+            _isAuthorized = true;
+            _isChecking = false;
+            return;
+        }
+
+        var token =await _tokenStorageService.GetTokenAsync();
+
+        if (string.IsNullOrWhiteSpace(token) || _jwtTokenService.IsExpired(token))
+        {
+            _isAuthorized = false;
+            _isChecking = false;
+            Navigation.NavigateTo("/login", true);
+            return;
+        }
+
+        _isAuthorized = true;
+        _isChecking = false;
+    }
+
+    public void Dispose()
+    {
+        Navigation.LocationChanged -= OnLocationChanged;
+    }
+}

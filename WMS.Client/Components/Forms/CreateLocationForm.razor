@@ -7,6 +7,11 @@
 @inherits CancellableComponentBase
 
 <MudCard Elevation="2" Class="pa-4 mb-6">
+    <MudText Typo="Typo.h4"
+         Color="Color.Primary"
+         Class="mb-6">
+         Add Location
+    </MudText>
     <EditForm Model="_request"
               OnSubmit="HandleSubmit"
               FormName="AddLocationForm">

@@ -6,7 +6,11 @@
 @inherits CancellableComponentBase
 
 <MudCard Elevation="2" Class="pa-4 mb-6">
-
+    <MudText Typo="Typo.h4"
+         Color="Color.Primary"
+         Class="mb-6">
+         Add Product
+    </MudText>
     <EditForm Model="_createProductRequest"
               OnSubmit="HandleSubmit"
               FormName="AddProductForm">

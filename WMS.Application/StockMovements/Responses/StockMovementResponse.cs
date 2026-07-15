@@ -16,7 +16,11 @@ namespace WMS.Application.StockMovements.Response
         public int QuantityChange { get; set; }
         public DateTime CreatedAt { get; set; }
 
+        public string CreatedByUserId { get; set; } = null!;
+        public string CreatedByName { get; set; } = string.Empty;
+
         public IssueType? IssueType { get; set; }
         public string? ReferenceNumber { get; set; }
+
     }
 }

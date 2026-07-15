@@ -72,7 +72,7 @@
 
                 <MudText Typo="Typo.caption" Color="Color.Secondary">
                     <MudIcon Icon="@Icons.Material.Filled.Person" Size="Size.Small" Class="mr-1" />
-                    Worker
+                    @context.CreatedByName
                 </MudText>
             </MudStack>
         </MudTd>
@@ -99,21 +99,21 @@
 
                 @if (context.OperationType == OperationType.Issue)
                 {
-                        <MudStack Spacing="0">
-                            <MudText Typo="Typo.caption">
-                                Reason:
-                                <MudText Component="span" Typo="Typo.caption" Style="font-weight:600;">
-                                @_uiUtilityService.SplitPascalCase(context.IssueType.ToString())
-                                </MudText>
+                    <MudStack Spacing="0">
+                        <MudText Typo="Typo.caption">
+                            Reason:
+                            <MudText Component="span" Typo="Typo.caption" Style="font-weight:600;">
+                            @_uiUtilityService.SplitPascalCase(context.IssueType.ToString())
                             </MudText>
+                        </MudText>
 
-                        @if (!string.IsNullOrWhiteSpace(context.ReferenceNumber))
-                        {
-                                    <MudText Typo="Typo.caption">
-                                        Ref: @context.ReferenceNumber
-                                    </MudText>
-                        }
-                        </MudStack>
+                    @if (!string.IsNullOrWhiteSpace(context.ReferenceNumber))
+                    {
+                        <MudText Typo="Typo.caption">
+                            Ref: @context.ReferenceNumber
+                        </MudText>
+                    }
+                    </MudStack>
                 }
             </MudStack>
         </MudTd>

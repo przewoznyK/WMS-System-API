@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.Products.Commands;
 using WMS.Application.Products.Queries;
@@ -7,6 +8,7 @@ namespace WMS.Api.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
+    [Authorize]
     public class ProductsController : ControllerBase
     {
         private readonly IMediator _mediator;
@@ -16,6 +18,7 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpPost("create")]
         public async Task<IActionResult> CreateAsync(CreateProductCommand command)
         {
@@ -23,6 +26,7 @@ namespace WMS.Api.Controllers
             return Ok(productId);
         }
 
+        [Authorize]
         [HttpDelete("delete-{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
@@ -30,6 +34,7 @@ namespace WMS.Api.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -37,6 +42,7 @@ namespace WMS.Api.Controllers
             return Ok(products);
         }
 
+        [Authorize]
         [HttpGet("names")]
         public async Task<IActionResult> GetNamesAsync()
         {
@@ -44,6 +50,7 @@ namespace WMS.Api.Controllers
             return Ok(products);
         }
 
+        [Authorize]
         [HttpGet("by-id-{id}")]
         public async Task<IActionResult> GetProductByIdAsync(Guid id)
         {
@@ -51,6 +58,7 @@ namespace WMS.Api.Controllers
             return Ok(product);
         }
 
+        [Authorize]
         [HttpGet("by-sku-or-name/{skuOrName}")]
         public async Task<IActionResult> GetBySkuOrNameAsync(string skuOrName)
         {
@@ -58,6 +66,7 @@ namespace WMS.Api.Controllers
             return Ok(product);
         }
 
+        [Authorize]
         [HttpPut("update-details-{id}")]
         public async Task<IActionResult> UpdateDetailsAsync(Guid id, UpdateDetailsProductCommand command)
         {
@@ -67,6 +76,7 @@ namespace WMS.Api.Controllers
             return NoContent();
         }
 
+        [Authorize]
         [HttpGet("summary")]
         public async Task<IActionResult> GetAllViewsAsync()
         {

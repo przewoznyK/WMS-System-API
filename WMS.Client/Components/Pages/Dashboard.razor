@@ -47,6 +47,7 @@
             <DashboardStatCard
                 Title="Stock Quantity"
                 Value="@_dashboard.StockQuantity"
+                Icon="@Icons.Material.Filled.Inventory2"
                 Color="Color.Success"
                 Href="/stocks" />
 
@@ -59,7 +60,7 @@
                 Value="@_dashboard.TodayMovements"
                 Icon="@Icons.Material.Filled.SwapHoriz"
                 Color="Color.Secondary"
-                    Href="@($"/stockmovements?search={DateTime.Today:yyyy-MM-dd}")" />
+                Href="@($"/stockmovements?search={DateTime.Today:yyyy-MM-dd}")" />
 
         </MudItem>
 
@@ -110,45 +111,43 @@
 
         @if (_movementChart == null)
         {
-                <MudProgressCircular Indeterminate="true" />
+            <MudProgressCircular Indeterminate="true" />
         }
         else
         {
-                <!-- tutaj później wykres -->
+            <MudTable Items="_movementChart"
+                        Dense="true"
+                        Hover="true"
+                        Elevation="0">
 
-                <MudTable Items="_movementChart"
-                          Dense="true"
-                          Hover="true"
-                          Elevation="0">
+                <HeaderContent>
+                    <MudTh>Date</MudTh>
+                    <MudTh>Receive</MudTh>
+                    <MudTh>Issue</MudTh>
+                    <MudTh>Transfer</MudTh>
+                </HeaderContent>
 
-                    <HeaderContent>
-                        <MudTh>Date</MudTh>
-                        <MudTh>Receive</MudTh>
-                        <MudTh>Issue</MudTh>
-                        <MudTh>Transfer</MudTh>
-                    </HeaderContent>
+                <RowTemplate>
 
-                    <RowTemplate>
+                    <MudTd>
+                    @context.Date.ToString("yyyy-MM-dd")
+                    </MudTd>
 
-                        <MudTd>
-                        @context.Date.ToString("yyyy-MM-dd")
-                        </MudTd>
+                    <MudTd>
+                    @context.Receive
+                    </MudTd>
 
-                        <MudTd>
-                        @context.Receive
-                        </MudTd>
+                    <MudTd>
+                    @context.Issue
+                    </MudTd>
 
-                        <MudTd>
-                        @context.Issue
-                        </MudTd>
+                    <MudTd>
+                    @context.Transfer
+                    </MudTd>
 
-                        <MudTd>
-                        @context.Transfer
-                        </MudTd>
+                </RowTemplate>
 
-                    </RowTemplate>
-
-                </MudTable>
+            </MudTable>
         }
 
     </MudCard>

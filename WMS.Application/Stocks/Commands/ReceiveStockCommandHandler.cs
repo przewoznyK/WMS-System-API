@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using WMS.Application.Authentication.Interfaces;
 using WMS.Domain.Entities;
 using WMS.Domain.Enums;
 using WMS.Domain.Exceptions;
@@ -13,19 +14,28 @@ namespace WMS.Application.Stocks.Commands
         private readonly IStockRepository _stockRepository;
         private readonly IStockMovementRepository _stockMovementRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IUserContext _userContext;
 
         public ReceiveStockCommandHandler(IProductRepository productRepository, IWarehouseLocationRepository warehouseLocationRepository, IStockRepository stockRepository,
-            IStockMovementRepository stockMovementRepository, IUnitOfWork unitOfWork)
+            IStockMovementRepository stockMovementRepository, IUnitOfWork unitOfWork, IUserContext userContext)
         {
             _productRepository = productRepository;
             _warehouseLocationRepository = warehouseLocationRepository;
             _stockRepository = stockRepository;
             _stockMovementRepository = stockMovementRepository;
             _unitOfWork = unitOfWork;
+            _userContext = userContext;
         }
 
         public async Task<Guid> Handle(ReceiveStockCommand command, CancellationToken cancellationToken)
         {
+            var userId = _userContext.UserId;
+
+            if (string.IsNullOrWhiteSpace(userId))
+            {
+                throw new WmsBusinessRuleException("User is not authenticated.");
+            }
+
             var product = await _productRepository.GetBySkuAsync(command.ProductSku, cancellationToken);
 
             if (product == null)
@@ -52,7 +62,7 @@ namespace WMS.Application.Stocks.Commands
                 await _stockRepository.Add(stock);
             }
 
-            StockMovement movement = new StockMovement(stock, OperationType.Receive, command.Quantity);
+            StockMovement movement = new StockMovement(stock, OperationType.Receive, command.Quantity, userId);
 
             await _stockMovementRepository.Add(movement);
             await _unitOfWork.SaveChangesAsync(cancellationToken);

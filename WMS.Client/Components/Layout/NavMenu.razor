@@ -1,4 +1,7 @@
-﻿<MudNavMenu Class="py-4">
+﻿@using WMS.Client.Services.Interfaces
+@using WMS.Domain.Enums;
+
+<MudNavMenu UserRole="_role" Class="py-4">
     <MudNavLink Href="/stockmovements" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.History">
         Stock Movements
     </MudNavLink>
@@ -14,13 +17,24 @@
             Transfer
         </MudNavLink>
     </MudNavGroup>
-
-    <MudNavGroup Title="Management" Icon="@Icons.Material.Filled.Settings" Expanded="false">
-        <MudNavLink Href="/products/add" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category" Class="ml-4">
-            Products
-        </MudNavLink>
-        <MudNavLink Href="/locations/add" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Place" Class="ml-4">
-            Locations
-        </MudNavLink>
-    </MudNavGroup>
+    @if (UserRole is not null)
+    {
+        @if (UserRole == UserRoleType.Manager)
+        {
+            <MudNavGroup Title="Management" Icon="@Icons.Material.Filled.Settings" Expanded="false">
+                <MudNavLink Href="/products/add" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Category" Class="ml-4">
+                    Products
+                </MudNavLink>
+                <MudNavLink Href="/locations/add" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Place" Class="ml-4">
+                    Locations
+                </MudNavLink>
+            </MudNavGroup>
+        }
+    }
 </MudNavMenu>
+
+@code{
+    [Parameter]
+    public UserRoleType? UserRole { get; set; }
+
+}

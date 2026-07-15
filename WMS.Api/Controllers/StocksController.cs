@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.Common.Settings;
 using WMS.Application.Products.Commands;
@@ -19,6 +20,7 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -26,6 +28,7 @@ namespace WMS.Api.Controllers
             return Ok(stocks);
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpGet("summary")]
         public async Task<IActionResult> GetAllViewsAsync()
         {
@@ -33,6 +36,7 @@ namespace WMS.Api.Controllers
             return Ok(stocks);
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpPost("move")]
         public async Task<IActionResult> MoveProduct([FromBody] MoveStockCommand command)
         {
@@ -40,13 +44,15 @@ namespace WMS.Api.Controllers
             return NoContent();
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpPost("receive")]
         public async Task<IActionResult> ReceiveStock([FromBody] ReceiveStockCommand command)
         {
             var stockId = await _mediator.Send(command);
             return Ok(stockId);
         }
-        
+
+        [Authorize(Roles = "Manager,Worker")]
         [HttpGet("by-product-sku/{sku}")]
         public async Task<IActionResult> GetAllViewsByProductSkuAsync(string sku)
         {
@@ -54,6 +60,7 @@ namespace WMS.Api.Controllers
             return Ok(stocks);
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpPost("issue")]
         public async Task<IActionResult> IssueStock([FromBody] IssueStockCommand command)
         {
@@ -61,6 +68,7 @@ namespace WMS.Api.Controllers
             return Ok(stockMovementId);
         }
 
+        [Authorize(Roles = "Manager")]
         [HttpGet("low-stock-products")]
         public async Task<IActionResult> GetLowStockProducts()
         {

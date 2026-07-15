@@ -16,6 +16,8 @@ namespace WMS.Domain.Entities
         public int QuantityChange { get; private set; }
         public DateTime CreatedAt { get; private set; }
 
+        public string CreatedByUserId { get; private set; }
+
         public IssueType? IssueType { get; set; }
         public string? ReferenceNumber { get; set; }
 
@@ -24,9 +26,10 @@ namespace WMS.Domain.Entities
             ProductSku = null!;
             ProductName = null!;
             LocationCode = null!;
+            CreatedByUserId = null!;
         }
 
-        public StockMovement(Stock stock, OperationType operationType, int quantityChange, IssueType? issueType = null, string? referenceNumber = null)
+        public StockMovement(Stock stock, OperationType operationType, int quantityChange, string createdByUserId, IssueType? issueType = null, string? referenceNumber = null)
         {
             if (quantityChange == 0)
             {
@@ -42,7 +45,7 @@ namespace WMS.Domain.Entities
             OperationType = operationType;
             QuantityChange = quantityChange;
             CreatedAt = DateTime.UtcNow;
-
+            CreatedByUserId = createdByUserId;
             IssueType = issueType;
             ReferenceNumber = referenceNumber;
         }

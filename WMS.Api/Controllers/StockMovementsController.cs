@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.StockMovements.Queries;
 using WMS.Application.Stocks.Queries;
@@ -16,6 +17,7 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -23,6 +25,7 @@ namespace WMS.Api.Controllers
             return Ok(stockMovements);
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpGet("summary")]
         public async Task<IActionResult> GetAllViewsAsync()
         {
@@ -30,10 +33,11 @@ namespace WMS.Api.Controllers
             return Ok(stocks);
         }
 
+        [Authorize(Roles = "Manager,Worker")]
         [HttpGet("chart")]
         public async Task<IActionResult> GetChartAsync([FromQuery] int days = 7, CancellationToken cancellationToken = default)
         {
-            var chart = await _mediator.Send(new GetStockMovementChartQuery(days),cancellationToken);
+            var chart = await _mediator.Send(new GetStockMovementChartQuery(days), cancellationToken);
             return Ok(chart);
         }
     }
