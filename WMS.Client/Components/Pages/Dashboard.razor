@@ -84,28 +84,32 @@
             Stock Movement Activity
         </MudText>
 
+        <MudStack Row="true" Spacing="2">
 
-        <MudButtonGroup Variant="Variant.Outlined">
-
-            <MudButton OnClick="@(() => LoadChartAsync(7))">
+            <MudButton Color="@(_selectedDays == 7 ? Color.Primary : Color.Default)"
+                       Variant="@(_selectedDays == 7 ? Variant.Filled : Variant.Outlined)"
+                       OnClick="@(() => LoadChartAsync(7))">
                 7 Days
             </MudButton>
 
-            <MudButton OnClick="@(() => LoadChartAsync(14))">
+            <MudButton Color="@(_selectedDays == 14 ? Color.Primary : Color.Default)"
+                       Variant="@(_selectedDays == 14 ? Variant.Filled : Variant.Outlined)"
+                       OnClick="@(() => LoadChartAsync(14))">
                 14 Days
             </MudButton>
 
-            <MudButton OnClick="@(() => LoadChartAsync(30))">
+            <MudButton Color="@(_selectedDays == 30 ? Color.Primary : Color.Default)"
+                       Variant="@(_selectedDays == 30 ? Variant.Filled : Variant.Outlined)"
+                       OnClick="@(() => LoadChartAsync(30))">
                 30 Days
             </MudButton>
 
-        </MudButtonGroup>
+        </MudStack>
 
     </MudStack>
 
 
     <MudDivider Class="my-4" />
-
 
     @if (_movementChart == null)
     {
@@ -113,34 +117,31 @@
     }
     else
     {
-            <ApexChart @key="_chartKey"
-                TItem="MovementChartResponse"
+        <ApexChart @key="_chartKey"
+                TItem="StockMovementChartResponse"
                 Height="400"
                 Options="_chartOptions">
 
+            <ApexPointSeries TItem="StockMovementChartResponse"
+                                Items="_movementChart"
+                                Name="Receive"
+                                SeriesType="SeriesType.Line"
+                                XValue="x => x.Date"
+                                YValue="x => x.ReceiveCount" />
 
-        <ApexPointSeries TItem="MovementChartResponse"
-                            Items="_movementChart"
-                            Name="Receive"
-                            SeriesType="SeriesType.Line"
-                            XValue="x => x.Date"
-                            YValue="x => x.Receive" />
+            <ApexPointSeries TItem="StockMovementChartResponse"
+                                Items="_movementChart"
+                                Name="Issue"
+                                SeriesType="SeriesType.Line"
+                                XValue="x => x.Date"
+                                YValue="x => x.IssueCount" />
 
-
-        <ApexPointSeries TItem="MovementChartResponse"
-                            Items="_movementChart"
-                            Name="Issue"
-                            SeriesType="SeriesType.Line"
-                            XValue="x => x.Date"
-                            YValue="x => x.Issue" />
-
-
-        <ApexPointSeries TItem="MovementChartResponse"
-                            Items="_movementChart"
-                            Name="Transfer"
-                            SeriesType="SeriesType.Line"
-                            XValue="x => x.Date"
-                            YValue="x => x.Transfer" />
+            <ApexPointSeries TItem="StockMovementChartResponse"
+                                Items="_movementChart"
+                                Name="Transfer"
+                                SeriesType="SeriesType.Line"
+                                XValue="x => x.Date"
+                                YValue="x => x.TransferCount" />
         </ApexChart>
     }
 
@@ -158,9 +159,10 @@
     private IThemeService _themeService { get; set; } = null!;
 
     private DashboardSummaryResponse? _dashboard;
-    private IEnumerable<MovementChartResponse>? _movementChart;
-    private ApexChartOptions<MovementChartResponse> _chartOptions = new();
+    private IEnumerable<StockMovementChartResponse>? _movementChart;
+    private ApexChartOptions<StockMovementChartResponse> _chartOptions = new();
     private int _chartKey = 0;
+    private int _selectedDays = 7;
 
     protected override async Task OnInitializedAsync()
     {
@@ -173,19 +175,27 @@
     private void OnThemeChanged()
     {
         _chartOptions = CreateChartOptions();
-        InvokeAsync(StateHasChanged);
         _chartKey++;
+        InvokeAsync(StateHasChanged);
     }
 
     private async Task LoadChartAsync(int days)
     {
-        _movementChart = await _stockMovementService.GetChartAsync(days, CancellationToken);
+        _selectedDays = days;
+
+        _movementChart = await _stockMovementService
+            .GetChartAsync(days, CancellationToken);
+
         _chartOptions = CreateChartOptions();
+
+        _chartKey++;
+
+        await InvokeAsync(StateHasChanged);
     }
 
-    private ApexChartOptions<MovementChartResponse> CreateChartOptions()
+    private ApexChartOptions<StockMovementChartResponse> CreateChartOptions()
     {
-        return new ApexChartOptions<MovementChartResponse>
+        return new ApexChartOptions<StockMovementChartResponse>
         {
             Theme = new Theme
             {

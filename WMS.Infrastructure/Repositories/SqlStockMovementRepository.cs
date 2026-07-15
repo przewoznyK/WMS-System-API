@@ -1,5 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using WMS.Domain.Data;
 using WMS.Domain.Entities;
+using WMS.Domain.Enums;
 using WMS.Domain.Repositories;
 
 namespace WMS.Infrastructure.Repositories
@@ -41,12 +43,30 @@ namespace WMS.Infrastructure.Repositories
                     cancellationToken);
         }
 
-        public async Task<IEnumerable<StockMovement>> GetBetweenDatesAsync(DateTime fromDate, DateTime toDate, CancellationToken cancellationToken)
+        public async Task<IEnumerable<StockMovementChartData>> GetMovementChartAsync(
+            DateTime fromDate,
+            DateTime toDate,
+            CancellationToken cancellationToken)
         {
             return await _wmsDbContext.StockMovements
                 .Where(x =>
                     x.CreatedAt >= fromDate &&
                     x.CreatedAt < toDate)
+                .GroupBy(x => x.CreatedAt.Date)
+                .Select(g => new StockMovementChartData
+                {
+                    Date = g.Key,
+
+                    ReceiveCount = g.Count(x =>
+                        x.OperationType == OperationType.Receive),
+
+                    IssueCount = g.Count(x =>
+                        x.OperationType == OperationType.Issue),
+
+                    TransferCount = g.Count(x =>
+                        x.OperationType == OperationType.Transfer)
+                })
+                .OrderBy(x => x.Date)
                 .ToListAsync(cancellationToken);
         }
     }

@@ -41,7 +41,7 @@ namespace WMS.Application.Stocks.Commands
             stock.DecreaseQuantity(request.Quantity);
             StockMovement newStockMovement = new(stock, OperationType.Issue, -request.Quantity, userId, request.IssueType, request.ReferenceNumber);
             await _stockMovementRepository.Add(newStockMovement);
-            await _unitOfWork.SaveChangesAsync();
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
 
             return newStockMovement.Id;
         }

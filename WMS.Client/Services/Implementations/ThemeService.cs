@@ -12,7 +12,6 @@ namespace WMS.Client.Services.Implementations
         {
             IsDarkMode = !IsDarkMode;
             ThemeChanged?.Invoke();
-            Console.WriteLine($"ThemeService.Toggle -> {IsDarkMode}");
         }
     }
 }

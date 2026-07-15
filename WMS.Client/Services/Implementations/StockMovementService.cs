@@ -18,9 +18,9 @@ namespace WMS.Client.Services.Implementations
             return _apiClientService.GetListAsync<StockMovementResponse>("api/stockmovements/summary", ct);
         }
 
-        public Task<IEnumerable<MovementChartResponse>> GetChartAsync( int days, CancellationToken ct)
+        public Task<IEnumerable<StockMovementChartResponse>> GetChartAsync( int days, CancellationToken ct)
         {
-            return _apiClientService.GetListAsync<MovementChartResponse>($"api/stockmovements/chart?days={days}", ct);
+            return _apiClientService.GetListAsync<StockMovementChartResponse>($"api/stockmovements/chart?days={days}", ct);
         }
     }
 }
