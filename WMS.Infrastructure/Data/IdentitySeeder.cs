@@ -1,13 +1,12 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using WMS.Domain.Enums;
+using WMS.Infrastructure.Identity;
 
-namespace WMS.Infrastructure.Identity;
+namespace WMS.Infrastructure.Data;
 
 public static class IdentitySeeder
 {
-    public static async Task SeedAsync(
-        UserManager<ApplicationUser> userManager,
-        RoleManager<IdentityRole> roleManager)
+    public static async Task SeedAsync(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
     {
         UserRoleType[] roles =
         {
@@ -22,14 +21,11 @@ public static class IdentitySeeder
 
             if (!await roleManager.RoleExistsAsync(roleName))
             {
-                await roleManager.CreateAsync(
-                    new IdentityRole(roleName));
+                await roleManager.CreateAsync(new IdentityRole(roleName));
             }
         }
 
-
         var email = "manager@wms.com";
-
         var user = await userManager.FindByEmailAsync(email);
 
         if (user == null)
@@ -41,9 +37,8 @@ public static class IdentitySeeder
                 EmailConfirmed = true
             };
 
-
-            await userManager.CreateAsync(user,"Password123!");
-            await userManager.AddToRoleAsync(user,"Manager");
+            await userManager.CreateAsync(user, "Password123!");
+            await userManager.AddToRoleAsync(user, "Manager");
         }
 
         if (await userManager.FindByEmailAsync("worker@wms.com") == null)
@@ -51,7 +46,8 @@ public static class IdentitySeeder
             var worker = new ApplicationUser
             {
                 UserName = "worker@wms.com",
-                Email = "worker@wms.com"
+                Email = "worker@wms.com",
+                EmailConfirmed = true
             };
 
             await userManager.CreateAsync(worker, "Password123!");

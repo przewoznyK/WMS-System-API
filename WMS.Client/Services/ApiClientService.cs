@@ -145,8 +145,6 @@ namespace WMS.Client.Services
         {
 
             var errorJson = await response.Content.ReadAsStringAsync(ct);
-            Console.WriteLine($"Status: {response.StatusCode}");
-            Console.WriteLine($"Body: '{errorJson}'");
             _logger.LogWarning("API error {StatusCode} from {Endpoint}: {Error}", response.StatusCode, endpoint, errorJson);
 
             try

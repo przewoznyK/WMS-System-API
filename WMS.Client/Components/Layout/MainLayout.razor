@@ -1,18 +1,17 @@
-﻿@using WMS.Client.Services.Interfaces
+﻿@inject NavigationManager Navigation
+
+@using WMS.Client.Services.Interfaces
 @using WMS.Domain.Enums
 @using MudBlazor
 @using System.Security.Claims
 
 @inherits LayoutComponentBase
 
-@inject NavigationManager Navigation
-
 
 <MudThemeProvider Theme="@_theme" IsDarkMode="@_isDarkMode" />
 <MudDialogProvider />
 <MudSnackbarProvider />
 <MudPopoverProvider />
-
 
 <MudLayout>
 
@@ -86,11 +85,6 @@
         </MudButton>
         }
 
-        <MudButton Variant="Variant.Text"
-                   Href="about">
-            About
-        </MudButton>
-
     </MudAppBar>
 
     <MudDrawer @bind-Open="_drawerOpen"
@@ -115,18 +109,35 @@
     [Inject]
     private IJwtTokenService _jwtTokenService { get; set; } = null!;
 
+    [Inject]
+    private IThemeService _themeService { get; set; } = null!;
+
     bool _drawerOpen = true;
-    bool _isDarkMode = true;
+    bool _isDarkMode => _themeService.IsDarkMode;
 
     private bool _isLoggedIn;
     private string? _email;
     private UserRoleType? _role;
 
+    protected override void OnInitialized()
+    {
+        _themeService.ThemeChanged += OnThemeChanged;
+    }
+
+    private void OnThemeChanged()
+    {
+        InvokeAsync(StateHasChanged);
+    }
+
+    public void Dispose()
+    {
+        _themeService.ThemeChanged -= OnThemeChanged;
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            Console.WriteLine("LOAD");
             await LoadUser();
             StateHasChanged();
         }
@@ -152,7 +163,10 @@
 
     private void DrawerToggle() => _drawerOpen = !_drawerOpen;
 
-    private void ToggleDarkMode() => _isDarkMode = !_isDarkMode;
+    private void ToggleDarkMode()
+    {
+        _themeService.Toggle();
+    }
 
     private async Task LoadUser()
     {

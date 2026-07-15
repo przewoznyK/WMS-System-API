@@ -8,7 +8,7 @@ namespace WMS.Client.Components.Base
 
         protected CancellationToken CancellationToken => _cts.Token;
 
-        public void Dispose()
+        public virtual void Dispose()
         {
             _cts.Cancel();
             _cts.Dispose();

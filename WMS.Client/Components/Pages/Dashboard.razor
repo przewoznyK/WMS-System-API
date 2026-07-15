@@ -1,15 +1,17 @@
 ﻿@page "/"
+
 @using MudBlazor
-@using WMS.Client.Components.Cards
+@using ApexCharts
+@using Color = MudBlazor.Color
 @using WMS.Application.Dashboard.Responses
 @using WMS.Application.StockMovements.Responses
 @using WMS.Client.Services.Interfaces
 @using WMS.Client.Components.Base
-@using WMS.Client.Components.Tables
+@using WMS.Client.Components.Cards
 
 @inherits CancellableComponentBase
 
-@inject NavigationManager NavManager
+<PageTitle>Dashboard</PageTitle>
 
 <MudGrid Class="mb-8">
     @if (_dashboard == null)
@@ -21,159 +23,270 @@
     else
     {
         <MudItem xs="12" sm="6" lg="3">
-
             <DashboardStatCard
                 Title="Products"
                 Value="@_dashboard.ProductCount"
                 Icon="@Icons.Material.Filled.Category"
                 Color="Color.Primary"
                 Href="/products" />
-
         </MudItem>
 
-        <MudItem xs="12" sm="6" lg="3">
 
+        <MudItem xs="12" sm="6" lg="3">
             <DashboardStatCard
                 Title="Locations"
                 Value="@_dashboard.LocationCount"
                 Icon="@Icons.Material.Filled.Warehouse"
                 Color="Color.Info"
                 Href="/locations" />
-
         </MudItem>
 
-        <MudItem xs="12" sm="6" lg="3">
 
+        <MudItem xs="12" sm="6" lg="3">
             <DashboardStatCard
                 Title="Stock Quantity"
                 Value="@_dashboard.StockQuantity"
                 Icon="@Icons.Material.Filled.Inventory2"
                 Color="Color.Success"
                 Href="/stocks" />
-
         </MudItem>
 
-        <MudItem xs="12" sm="6" lg="3">
 
+        <MudItem xs="12" sm="6" lg="3">
             <DashboardStatCard
                 Title="Today Movements"
                 Value="@_dashboard.TodayMovements"
                 Icon="@Icons.Material.Filled.SwapHoriz"
                 Color="Color.Secondary"
                 Href="@($"/stockmovements?search={DateTime.Today:yyyy-MM-dd}")" />
-
         </MudItem>
 
-        <MudItem xs="12" sm="6" lg="3">
 
+        <MudItem xs="12" sm="6" lg="3">
             <DashboardStatCard
                 Title="Low Stock"
                 Value="@_dashboard.LowStockCount"
                 Icon="@Icons.Material.Filled.Warning"
                 Color="Color.Warning"
-                Href="stocks/low-stock"/>
-
+                Href="/stocks/low-stock" />
         </MudItem>
     }
+
 </MudGrid>
 
-<MudItem xs="12">
+<MudCard Elevation="2" Class="pa-4">
 
-    <MudCard Elevation="2" Class="pa-4 mt-4">
+    <MudStack Row="true"
+              Justify="Justify.SpaceBetween"
+              AlignItems="AlignItems.Center">
 
-        <MudStack Row="true"
-                  Justify="Justify.SpaceBetween"
-                  AlignItems="AlignItems.Center">
+        <MudText Typo="Typo.h5">
+            Stock Movement Activity
+        </MudText>
 
-            <MudText Typo="Typo.h5">
-                Stock Movement Activity
-            </MudText>
 
-            <MudButtonGroup Variant="Variant.Outlined">
+        <MudButtonGroup Variant="Variant.Outlined">
 
-                <MudButton OnClick="@(() => LoadChartAsync(7))">
-                    7 Days
-                </MudButton>
+            <MudButton OnClick="@(() => LoadChartAsync(7))">
+                7 Days
+            </MudButton>
 
-                <MudButton OnClick="@(() => LoadChartAsync(14))">
-                    14 Days
-                </MudButton>
+            <MudButton OnClick="@(() => LoadChartAsync(14))">
+                14 Days
+            </MudButton>
 
-                <MudButton OnClick="@(() => LoadChartAsync(30))">
-                    30 Days
-                </MudButton>
+            <MudButton OnClick="@(() => LoadChartAsync(30))">
+                30 Days
+            </MudButton>
 
-            </MudButtonGroup>
+        </MudButtonGroup>
 
-        </MudStack>
+    </MudStack>
 
-        <MudDivider Class="my-4" />
 
-        @if (_movementChart == null)
-        {
-            <MudProgressCircular Indeterminate="true" />
-        }
-        else
-        {
-            <MudTable Items="_movementChart"
-                        Dense="true"
-                        Hover="true"
-                        Elevation="0">
+    <MudDivider Class="my-4" />
 
-                <HeaderContent>
-                    <MudTh>Date</MudTh>
-                    <MudTh>Receive</MudTh>
-                    <MudTh>Issue</MudTh>
-                    <MudTh>Transfer</MudTh>
-                </HeaderContent>
 
-                <RowTemplate>
+    @if (_movementChart == null)
+    {
+        <MudProgressCircular Indeterminate="true" />
+    }
+    else
+    {
+            <ApexChart @key="_chartKey"
+                TItem="MovementChartResponse"
+                Height="400"
+                Options="_chartOptions">
 
-                    <MudTd>
-                    @context.Date.ToString("yyyy-MM-dd")
-                    </MudTd>
 
-                    <MudTd>
-                    @context.Receive
-                    </MudTd>
+        <ApexPointSeries TItem="MovementChartResponse"
+                            Items="_movementChart"
+                            Name="Receive"
+                            SeriesType="SeriesType.Line"
+                            XValue="x => x.Date"
+                            YValue="x => x.Receive" />
 
-                    <MudTd>
-                    @context.Issue
-                    </MudTd>
 
-                    <MudTd>
-                    @context.Transfer
-                    </MudTd>
+        <ApexPointSeries TItem="MovementChartResponse"
+                            Items="_movementChart"
+                            Name="Issue"
+                            SeriesType="SeriesType.Line"
+                            XValue="x => x.Date"
+                            YValue="x => x.Issue" />
 
-                </RowTemplate>
 
-            </MudTable>
-        }
+        <ApexPointSeries TItem="MovementChartResponse"
+                            Items="_movementChart"
+                            Name="Transfer"
+                            SeriesType="SeriesType.Line"
+                            XValue="x => x.Date"
+                            YValue="x => x.Transfer" />
+        </ApexChart>
+    }
 
-    </MudCard>
-
-</MudItem>
+</MudCard>
 
 @code {
+
     [Inject]
     private IDashboardService _dashboardService { get; set; } = null!;
 
     [Inject]
     private IStockMovementService _stockMovementService { get; set; } = null!;
 
+    [Inject]
+    private IThemeService _themeService { get; set; } = null!;
+
     private DashboardSummaryResponse? _dashboard;
     private IEnumerable<MovementChartResponse>? _movementChart;
+    private ApexChartOptions<MovementChartResponse> _chartOptions = new();
+    private int _chartKey = 0;
 
     protected override async Task OnInitializedAsync()
     {
         _dashboard = await _dashboardService.GetSummaryAsync(CancellationToken);
-
         _movementChart = await _stockMovementService.GetChartAsync(7, CancellationToken);
+        _chartOptions = CreateChartOptions();
+        _themeService.ThemeChanged += OnThemeChanged;
+    }
+
+    private void OnThemeChanged()
+    {
+        _chartOptions = CreateChartOptions();
+        InvokeAsync(StateHasChanged);
+        _chartKey++;
     }
 
     private async Task LoadChartAsync(int days)
     {
-        _movementChart = await _stockMovementService
-            .GetChartAsync(days, CancellationToken);
+        _movementChart = await _stockMovementService.GetChartAsync(days, CancellationToken);
+        _chartOptions = CreateChartOptions();
+    }
+
+    private ApexChartOptions<MovementChartResponse> CreateChartOptions()
+    {
+        return new ApexChartOptions<MovementChartResponse>
+        {
+            Theme = new Theme
+            {
+                Mode = _themeService.IsDarkMode
+                    ? Mode.Dark
+                    : Mode.Light
+            },
+
+            Colors = new List<string>
+            {
+                "#4CAF50",
+                "#FFC107",
+                "#2196F3"
+            },
+
+            Chart = new Chart
+            {
+                Background = "transparent",
+
+                Toolbar = new Toolbar
+                {
+                    Show = true
+                },
+
+                Animations = new Animations
+                {
+                    Enabled = true
+                }
+            },
+
+            Stroke = new Stroke
+            {
+                Curve = Curve.Smooth,
+                Width = 3
+            },
+
+            Markers = new Markers
+            {
+                Size = 5
+            },
+
+            Legend = new Legend
+            {
+                Show = true,
+                Position = LegendPosition.Top
+            },
+
+            Tooltip = new Tooltip
+            {
+                Enabled = true
+            },
+
+            Grid = new Grid
+            {
+                Show = true,
+                BorderColor = _themeService.IsDarkMode
+                    ? "#555555"
+                    : "#dddddd"
+            },
+
+            DataLabels = new DataLabels
+            {
+                Enabled = false
+            },
+
+            Xaxis = new XAxis
+            {
+                Type = XAxisType.Datetime,
+
+                Title = new AxisTitle
+                {
+                    Text = "Date"
+                },
+
+                Labels = new XAxisLabels
+                {
+                    DatetimeFormatter = new DatetimeFormatter
+                    {
+                        Year = "yyyy",
+                        Month = "MM/yyyy",
+                        Day = "dd/MM"
+                    }
+                }
+            },
+
+            Yaxis = new List<YAxis>
+            {
+                new YAxis
+                {
+                    Title = new AxisTitle
+                    {
+                        Text = "Quantity"
+                    }
+                }
+            }
+        };
+    }
+
+    public override void Dispose()
+    {
+        base.Dispose();
+       _themeService.ThemeChanged -= OnThemeChanged;
     }
 }

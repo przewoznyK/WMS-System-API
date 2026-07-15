@@ -9,6 +9,7 @@ using WMS.Application.Products.Commands;
 using WMS.Application.WarehouseLocations.Commands;
 using WMS.Domain.Repositories;
 using WMS.Infrastructure;
+using WMS.Infrastructure.Data;
 using WMS.Infrastructure.Identity;
 using WMS.Infrastructure.Repositories;
 
@@ -99,14 +100,7 @@ var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
-
-    var userManager = services.GetRequiredService<UserManager<ApplicationUser>>();
-    var roleManager = services.GetRequiredService<RoleManager<IdentityRole>>();
-
-    await IdentitySeeder.SeedAsync(
-        userManager,
-        roleManager);
+    await DbSeeder.SeedAsync(scope.ServiceProvider);
 }
 
 app.UseMiddleware<ExceptionMiddleware>();

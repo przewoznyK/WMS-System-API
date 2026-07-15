@@ -21,7 +21,7 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITokenStorageService, TokenStorageService>();
 builder.Services.AddScoped<IJwtTokenService, JwtTokenService>();
 builder.Services.AddMudServices();
-
+builder.Services.AddSingleton<IThemeService, ThemeService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

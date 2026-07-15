@@ -49,5 +49,10 @@ namespace WMS.Domain.Entities
             IssueType = issueType;
             ReferenceNumber = referenceNumber;
         }
+
+        public void SetCreatedAt(DateTime date)
+        {
+            CreatedAt = date;
+        }
     }
 }
