@@ -1,0 +1,908 @@
+{
+  "info": {
+    "_postman_id": "473aeeca-c3c3-4abb-8109-a8e493446f54",
+    "name": "WMS API Automated Tests",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "28287705"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "[POST] Login as manager",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.collectionVariables.set(\"jwtToken\", jsonData.token);\r",
+                  "    console.log(\"SUCCESS: Logged in as manager. Token updated.\");\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Login failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"manager@wms.com\",\r\n  \"password\": \"Password123!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] Login as worker",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    pm.collectionVariables.set(\"jwtToken\", jsonData.token);\r",
+                  "    console.log(\"SUCCESS: Logged in as worker. Token updated.\");\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Login failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"email\": \"worker@wms.com\",\r\n  \"password\": \"Password123!\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Products",
+      "item": [
+        {
+          "name": "[POST] Create Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var newProductId = pm.response.text().replace(/\"/g, '');\r",
+                  "    pm.collectionVariables.set(\"createdProductId\", newProductId);\r",
+                  "    console.log(\"SUCCESS: Product created. ID: \" + newProductId);\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Creation failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"New Laptop Dell\",\r\n  \"sku\": \"DELL-XPS-001\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] Delete Product",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204 No Content\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 204) \r",
+                  "{\r",
+                  "    pm.collectionVariables.unset(\"createdProductId\");\r",
+                  "    console.log(\"SUCCESS: Product deleted successfully.\");\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Deletion failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/delete-{{createdProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "delete-{{createdProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] Get Products Names",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    console.log(\"SUCCESS: Product names retrieved successfully.\");\r",
+                  "    console.log(\"Data:\", jsonData);\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Retrieval failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/names",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "names"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] Get Product By Id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    console.log(\"SUCCESS: Product retrieved successfully.\");\r",
+                  "    console.log(\"Data:\", jsonData);\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Retrieval failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/by-id-{{createdProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "by-id-{{createdProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] Get Product By SKU or Name",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    console.log(\"SUCCESS: Product retrieved successfully.\");\r",
+                  "    console.log(\"Data:\", jsonData);\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Retrieval failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/by-sku-or-name/DELL-XPS-001",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "by-sku-or-name",
+                "DELL-XPS-001"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[PUT] Product Update Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204 No Content\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 204) \r",
+                  "{\r",
+                  "    console.log(\"SUCCESS: Product updated successfully.\");\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Update failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"name\": \"Update 2 Laptop Dell\",\r\n  \"description\": \"desc 2\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/products/update-details-{{createdProductId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "update-details-{{createdProductId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] Get Products Summary",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    console.log(\"SUCCESS: Product summary retrieved successfully.\");\r",
+                  "    console.log(\"Data:\", jsonData);\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Retrieval failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/products/summary",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "products",
+                "summary"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "WarehouseLocations",
+      "item": [
+        {
+          "name": "[POST] Create Location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var newLocationId = pm.response.text().replace(/\"/g, '');\r",
+                  "    pm.collectionVariables.set(\"createdLocationId\", newLocationId);\r",
+                  "    console.log(\"SUCCESS: Warehouse location created. ID: \" + newLocationId);\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Creation failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "  {\r\n    \"code\": \"AA-11-10\"\r\n  }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/warehouselocations/create",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "warehouselocations",
+                "create"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[POST] Delete Location",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204 No Content\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 204) \r",
+                  "{\r",
+                  "    pm.collectionVariables.unset(\"createdLocationId\");\r",
+                  "    console.log(\"SUCCESS: Warehouse location deleted successfully.\");\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Deletion failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/warehouselocations/delete-{{createdLocationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "warehouselocations",
+                "delete-{{createdLocationId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] Get Location Codes",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    console.log(\"SUCCESS: Location codes retrieved successfully.\");\r",
+                  "    console.log(\"Data:\", jsonData);\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Retrieval failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/warehouselocations/location-codes",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "warehouselocations",
+                "location-codes"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[GET] Get Location By Id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 200 OK\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(200);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 200) \r",
+                  "{\r",
+                  "    var jsonData = pm.response.json();\r",
+                  "    console.log(\"SUCCESS: Warehouse location retrieved successfully.\");\r",
+                  "    console.log(\"Data:\", jsonData);\r",
+                  "} \r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Retrieval failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/warehouselocations/by-id-{{createdLocationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "warehouselocations",
+                "by-id-{{createdLocationId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "[PUT] Location Update Details",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "pm.test(\"Status code is 204 No Content\", function () \r",
+                  "{\r",
+                  "    pm.response.to.have.status(204);\r",
+                  "});\r",
+                  "\r",
+                  "if (pm.response.code === 204) \r",
+                  "{\r",
+                  "    console.log(\"SUCCESS: Warehouse location updated successfully.\");\r",
+                  "}\r",
+                  "else \r",
+                  "{\r",
+                  "    var errorDetails = pm.response.text();\r",
+                  "    console.error(\"ERROR: Update failed. Status: \" + pm.response.code + \" (\" + pm.response.status + \")\");\r",
+                  "    console.error(\"SERVER ERROR DETAILS: \" + errorDetails);\r",
+                  "}"
+                ],
+                "type": "text/javascript",
+                "packages": {},
+                "requests": {}
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{jwtToken}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n  \"locationCode\": \"AA-10-10\",\r\n  \"description\": \"\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/warehouselocations/update-details-{{createdLocationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "warehouselocations",
+                "update-details-{{createdLocationId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "jwtToken",
+      "value": ""
+    },
+    {
+      "key": "createdProductId",
+      "value": ""
+    },
+    {
+      "key": "createdLocationId",
+      "value": ""
+    }
+  ]
+}

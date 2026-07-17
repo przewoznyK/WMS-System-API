@@ -1,6 +1,7 @@
 ﻿using MediatR;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using WMS.Application.Products.Request;
 using WMS.Application.WarehouseLocations.Commands;
 using WMS.Application.WarehouseLocations.Queries;
 
@@ -51,11 +52,11 @@ namespace WMS.Api.Controllers
 
         [Authorize(Roles = "Manager")]
         [HttpPut("update-details-{id}")]
-        public async Task<IActionResult> UpdateDetailsAsync(Guid id, UpdateDetailsWarehouseLocationCommand command)
+        public async Task<IActionResult> UpdateDetailsAsync(Guid id, UpdateDetailsWarehouseLocationRequest request)
         {
-            var commandWithId = command with { Id = id };
-
-            await _mediator.Send(commandWithId);
+            var command = new UpdateDetailsWarehouseLocationCommand(id, request.LocationCode, request.Description ?? "");
+            
+            await _mediator.Send(command);
             return NoContent();
         }
     }

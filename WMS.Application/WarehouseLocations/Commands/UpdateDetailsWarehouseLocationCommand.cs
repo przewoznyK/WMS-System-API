@@ -2,5 +2,5 @@
 
 namespace WMS.Application.WarehouseLocations.Commands
 {
-    public record UpdateDetailsWarehouseLocationCommand(Guid Id, string Code, string Description) : IRequest;
+    public record UpdateDetailsWarehouseLocationCommand(Guid Id, string LocationCode, string Description) : IRequest;
 }

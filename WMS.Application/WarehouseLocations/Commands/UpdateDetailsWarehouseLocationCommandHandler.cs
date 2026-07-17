@@ -25,7 +25,7 @@ namespace WMS.Application.WarehouseLocations.Commands
                 throw new WmsNotFoundException(nameof(WarehouseLocation), request.Id);
             }
 
-            warehouseLocation.UpdateDetails(request.Code, request.Description);
+            warehouseLocation.UpdateDetails(request.LocationCode, request.Description);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
         }
     }

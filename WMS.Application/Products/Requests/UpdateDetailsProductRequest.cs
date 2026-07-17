@@ -2,11 +2,8 @@
 
 namespace WMS.Application.Products.Request
 {
-    public class CreateProductRequest
+    public class UpdateDetailsProductRequest
     {
-        [Required(ErrorMessage = "The Sku field cannot be empty.")]
-        public string Sku { get; set; } = string.Empty;
-
         [Required(ErrorMessage = "The product name field cannot be empty.")]
         public string Name { get; set; } = string.Empty;
         public string? Description { get; set; }

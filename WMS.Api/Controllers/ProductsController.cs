@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WMS.Application.Products.Commands;
 using WMS.Application.Products.Queries;
+using WMS.Application.Products.Request;
 
 namespace WMS.Api.Controllers
 {
@@ -68,11 +69,11 @@ namespace WMS.Api.Controllers
 
         [Authorize]
         [HttpPut("update-details-{id}")]
-        public async Task<IActionResult> UpdateDetailsAsync(Guid id, UpdateDetailsProductCommand command)
+        public async Task<IActionResult> UpdateDetailsAsync(Guid id, UpdateDetailsProductRequest request)
         {
-            var commandWithId = command with { Id = id };
+            var command = new UpdateDetailsProductCommand(id, request.Name, request.Description ?? "");
 
-            await _mediator.Send(commandWithId);
+            await _mediator.Send(command);
             return NoContent();
         }
 
