@@ -21,7 +21,7 @@ namespace WMS.Application.Products.Queries
 
             if (product == null)
             {
-                throw new WmsNotFoundException(nameof(Product), request.SkuOrName);
+                throw new WmsNotFoundException(nameof(Product), "SKU/Name", request.SkuOrName);
             }
 
             return new ProductResponse

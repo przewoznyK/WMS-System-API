@@ -20,7 +20,7 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
-        [Authorize(Roles = "Manager,Worker")]
+        [Authorize(Roles = "Manager, Worker")]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {

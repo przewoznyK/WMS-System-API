@@ -13,6 +13,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.Api", "WMS.Api\WMS.Api.
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.Client", "WMS.Client\WMS.Client.csproj", "{AB68E47F-2E9D-40B2-B4E6-1EFCD486E7FB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Domain.Tests", "WMS.Domain.Tests\WMS.Domain.Tests.csproj", "{842D4843-E8DA-4237-BFA8-5FD1482354F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Api.IntegrationTests", "WMS.Api.IntegrationTests\WMS.Api.IntegrationTests.csproj", "{14F9AAAF-25E8-4DC1-8480-6C81885D5993}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +43,14 @@ Global
 		{AB68E47F-2E9D-40B2-B4E6-1EFCD486E7FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AB68E47F-2E9D-40B2-B4E6-1EFCD486E7FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AB68E47F-2E9D-40B2-B4E6-1EFCD486E7FB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{842D4843-E8DA-4237-BFA8-5FD1482354F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{842D4843-E8DA-4237-BFA8-5FD1482354F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{842D4843-E8DA-4237-BFA8-5FD1482354F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{842D4843-E8DA-4237-BFA8-5FD1482354F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14F9AAAF-25E8-4DC1-8480-6C81885D5993}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14F9AAAF-25E8-4DC1-8480-6C81885D5993}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14F9AAAF-25E8-4DC1-8480-6C81885D5993}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14F9AAAF-25E8-4DC1-8480-6C81885D5993}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
