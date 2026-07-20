@@ -10,13 +10,8 @@ namespace WMS.Api.IntegrationTests.TestBuilders
 
         public StockBuilder()
         {
-            _product = new Product(
-                $"SKU-001-{Guid.NewGuid()}",
-                "Default Product");
-
-            _location = new WarehouseLocation(
-                "XX-00-00");
-
+            _product = new Product($"SKU-001-{Guid.NewGuid()}", "Default Product");
+            _location = new WarehouseLocation("XX-00-00");
             _quantity = 10;
         }
 
@@ -28,10 +23,7 @@ namespace WMS.Api.IntegrationTests.TestBuilders
 
         public StockBuilder WithProduct(string sku, string name = "Test Product")
         {
-            _product = new Product(
-                sku,
-                name);
-
+            _product = new Product(sku, name);
             return this;
         }
 
@@ -44,7 +36,6 @@ namespace WMS.Api.IntegrationTests.TestBuilders
         public StockBuilder WithLocation(string code)
         {
             _location = new WarehouseLocation(code);
-
             return this;
         }
 

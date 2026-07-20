@@ -4,12 +4,11 @@ namespace WMS.Api.IntegrationTests
 {
     public static class TestDataBuilder
     {
-        public static Product CreateProduct(string sku = "SKU-001-", string name = "Default Product")
+        public static Product CreateProduct(string sku = TestConstants.ProductSku,string name = TestConstants.ProductName)
         {
             return new Product(sku, name);
         }
-
-        public static WarehouseLocation CreateLocation(string code = "LOC-01")
+        public static WarehouseLocation CreateWarehouseLocation(string code = TestConstants.LocationCode)
         {
             return new WarehouseLocation(code);
         }
@@ -18,7 +17,7 @@ namespace WMS.Api.IntegrationTests
         {
             return new Stock(
                 product ?? CreateProduct(),
-                location ?? CreateLocation(),
+                location ?? CreateWarehouseLocation(),
                 quantity
             );
         }

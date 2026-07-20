@@ -15,8 +15,7 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
     {
         builder.ConfigureTestServices(services =>
         {
-            var descriptor = services.SingleOrDefault(
-                d => d.ServiceType == typeof(DbContextOptions<WmsDbContext>));
+            var descriptor = services.SingleOrDefault(d => d.ServiceType == typeof(DbContextOptions<WmsDbContext>));
 
             if (descriptor != null)
             {
@@ -31,12 +30,12 @@ public class CustomWebApplicationFactory : WebApplicationFactory<Program>
                 options.UseSqlite(_connection);
             });
         
-    services.AddAuthentication(options =>
-    {
-        options.DefaultAuthenticateScheme = "Test";
-        options.DefaultChallengeScheme = "Test";
-    })
-.AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
+            services.AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = "Test";
+                options.DefaultChallengeScheme = "Test";
+            })
+            .AddScheme<AuthenticationSchemeOptions, TestAuthHandler>("Test", options => { });
 
             using (var serviceProvider = services.BuildServiceProvider())
             {

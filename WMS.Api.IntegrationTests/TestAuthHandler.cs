@@ -7,6 +7,7 @@ using System.Text.Encodings.Web;
 public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions>
 {
     public static string Role { get; set; } = "Manager";
+
     public TestAuthHandler(IOptionsMonitor<AuthenticationSchemeOptions> options,
         ILoggerFactory logger, UrlEncoder encoder)
         : base(options, logger, encoder) { }
@@ -15,17 +16,9 @@ public class TestAuthHandler : AuthenticationHandler<AuthenticationSchemeOptions
     {
         var claims = new[]
         {
-            new Claim(
-                ClaimTypes.NameIdentifier,
-                Guid.NewGuid().ToString()),
-
-            new Claim(
-                ClaimTypes.Name,
-                "Test user"),
-
-            new Claim(
-                ClaimTypes.Role,
-                Role)
+            new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+            new Claim(ClaimTypes.Name, "Test user"),
+            new Claim(ClaimTypes.Role, Role)
         };
 
         var identity = new ClaimsIdentity(claims, "Test");

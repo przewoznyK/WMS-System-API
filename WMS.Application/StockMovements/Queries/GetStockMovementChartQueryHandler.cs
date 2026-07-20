@@ -14,9 +14,7 @@ namespace WMS.Application.StockMovements.Queries
             _stockMovementRepository = stockMovementRepository;
         }
 
-        public async Task<IEnumerable<StockMovementChartResponse>> Handle(
-    GetStockMovementChartQuery request,
-    CancellationToken cancellationToken)
+        public async Task<IEnumerable<StockMovementChartResponse>> Handle(GetStockMovementChartQuery request, CancellationToken cancellationToken)
         {
             var toDate = DateTime.UtcNow.Date.AddDays(1);
 
