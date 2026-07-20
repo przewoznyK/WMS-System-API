@@ -34,7 +34,7 @@ namespace WMS.Api.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpGet("location-codes")]
         public async Task<IActionResult> GetCodesAsync()
         {
@@ -42,7 +42,7 @@ namespace WMS.Api.Controllers
             return Ok(locations);
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpGet("by-id-{id}")]
         public async Task<IActionResult> GetByIdAsync(Guid id)
         {

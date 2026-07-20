@@ -17,7 +17,7 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpGet("all")]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -25,7 +25,7 @@ namespace WMS.Api.Controllers
             return Ok(stockMovements);
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpGet("summary")]
         public async Task<IActionResult> GetAllViewsAsync()
         {
@@ -33,7 +33,7 @@ namespace WMS.Api.Controllers
             return Ok(stocks);
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpGet("chart")]
         public async Task<IActionResult> GetChartAsync([FromQuery] int days = 7, CancellationToken cancellationToken = default)
         {

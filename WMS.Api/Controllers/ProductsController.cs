@@ -27,7 +27,7 @@ namespace WMS.Api.Controllers
             return Ok(productId);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Manager")]
         [HttpDelete("delete-{id}")]
         public async Task<IActionResult> DeleteAsync(Guid id)
         {
@@ -67,7 +67,7 @@ namespace WMS.Api.Controllers
             return Ok(product);
         }
 
-        [Authorize]
+        [Authorize(Roles = "Manager")]
         [HttpPut("update-details-{id}")]
         public async Task<IActionResult> UpdateDetailsAsync(Guid id, UpdateDetailsProductRequest request)
         {

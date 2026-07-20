@@ -138,7 +138,8 @@ namespace WMS.Client.Services
         private async Task AttachTokenAsync()
         {
             var token = await _tokenStorageService.GetTokenAsync();
-            _http.DefaultRequestHeaders.Authorization =string.IsNullOrWhiteSpace(token) ? null : new AuthenticationHeaderValue("Bearer", token);
+            _http.DefaultRequestHeaders.Authorization =string.IsNullOrWhiteSpace(token) ? null : new 
+                ("Bearer", token);
         }
 
         private async Task HandleErrorAsync(HttpResponseMessage response, string endpoint, CancellationToken ct)

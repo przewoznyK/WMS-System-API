@@ -20,7 +20,7 @@ namespace WMS.Api.Controllers
             _mediator = mediator;
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpGet]
         public async Task<IActionResult> GetAllAsync()
         {
@@ -28,7 +28,7 @@ namespace WMS.Api.Controllers
             return Ok(stocks);
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpGet("summary")]
         public async Task<IActionResult> GetAllViewsAsync()
         {
@@ -36,7 +36,7 @@ namespace WMS.Api.Controllers
             return Ok(stocks);
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpPost("move")]
         public async Task<IActionResult> MoveProduct([FromBody] MoveStockCommand command)
         {
@@ -44,7 +44,7 @@ namespace WMS.Api.Controllers
             return NoContent();
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpPost("receive")]
         public async Task<IActionResult> ReceiveStock([FromBody] ReceiveStockCommand command)
         {
@@ -52,7 +52,7 @@ namespace WMS.Api.Controllers
             return Ok(stockId);
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpGet("by-product-sku/{sku}")]
         public async Task<IActionResult> GetAllViewsByProductSkuAsync(string sku)
         {
@@ -60,7 +60,7 @@ namespace WMS.Api.Controllers
             return Ok(stocks);
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpPost("issue")]
         public async Task<IActionResult> IssueStock([FromBody] IssueStockCommand command)
         {
@@ -68,7 +68,7 @@ namespace WMS.Api.Controllers
             return Ok(stockMovementId);
         }
 
-        [Authorize(Roles = "Manager, Worker")]
+        [Authorize]
         [HttpGet("low-stock-products")]
         public async Task<IActionResult> GetLowStockProducts()
         {
