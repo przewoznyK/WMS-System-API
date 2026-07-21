@@ -26,6 +26,11 @@ namespace WMS.Application.Products.Commands
 
         public async Task Handle(MoveStockCommand request, CancellationToken cancellationToken)
         {
+            if (request.Quantity <= 0)
+            {
+                throw new WmsBusinessRuleException("Move stock quantity have to be greater than zero.");
+            }
+
             var userId = _userContext.UserId;
 
             if (string.IsNullOrWhiteSpace(userId))
@@ -43,6 +48,16 @@ namespace WMS.Application.Products.Commands
             if (sourceStock == null)
             {
                 throw new WmsNotFoundException($"Stock for Product {request.ProductSku} and Location {request.SourceLocationCode} was not found.");
+            }
+
+            if (sourceStock.Quantity <= 0)
+            {
+                throw new WmsBusinessRuleException("Cannot move stock from empty stock.");
+            }
+
+            if (sourceStock.Quantity < request.Quantity)
+            {
+                throw new WmsBusinessRuleException("Cannot move more quantity than available in source stock.");
             }
 
             var destStock = await _stockRepository.GetByProductSkuAndLocationCodeAsync(request.ProductSku, request.DestinationLocationCode, cancellationToken);

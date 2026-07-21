@@ -22,7 +22,7 @@ namespace WMS.Application.WarehouseLocations.Commands
 
             if(isCodeTaken)
             {
-                throw new WmsAlreadyExistsException("Location", nameof(request.Code), request.Code);
+                throw new WmsAlreadyExistsException(nameof(WarehouseLocation), nameof(request.Code), request.Code);
             }
 
             WarehouseLocation newWarehouseLocation = new(request.Code, request.Description ?? "");
@@ -32,4 +32,4 @@ namespace WMS.Application.WarehouseLocations.Commands
             return newWarehouseLocation.Id;
         }
     }
-}
+} 

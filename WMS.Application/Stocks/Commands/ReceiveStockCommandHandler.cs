@@ -29,6 +29,11 @@ namespace WMS.Application.Stocks.Commands
 
         public async Task<Guid> Handle(ReceiveStockCommand command, CancellationToken cancellationToken)
         {
+            if (command.Quantity <= 0)
+            {
+                throw new WmsBusinessRuleException("Receive stock quantity have to be greater than zero.");
+            }
+
             var userId = _userContext.UserId;
 
             if (string.IsNullOrWhiteSpace(userId))

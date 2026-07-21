@@ -8,6 +8,7 @@ using WMS.Application.StockMovements.Response;
 using WMS.Application.StockMovements.Responses;
 using WMS.Domain.Entities;
 using WMS.Domain.Enums;
+using WMS.Tests.Common;
 
 namespace WMS.Api.IntegrationTests.Tests.StockMovements
 {

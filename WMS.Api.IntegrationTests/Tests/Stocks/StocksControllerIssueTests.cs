@@ -8,6 +8,7 @@ using WMS.Api.IntegrationTests.TestBuilders;
 using WMS.Application.Stocks.Commands;
 using WMS.Domain.Entities;
 using WMS.Domain.Enums;
+using WMS.Tests.Common;
 
 namespace WMS.Api.IntegrationTests.Tests.Stocks
 {

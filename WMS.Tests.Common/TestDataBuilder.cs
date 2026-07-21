@@ -1,6 +1,6 @@
 ﻿using WMS.Domain.Entities;
 
-namespace WMS.Api.IntegrationTests
+namespace WMS.Tests.Common
 {
     public static class TestDataBuilder
     {

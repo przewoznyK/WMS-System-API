@@ -6,6 +6,7 @@ using WMS.Api.IntegrationTests.Helpers;
 using WMS.Api.IntegrationTests.TestBuilders;
 using WMS.Application.Stocks.Response;
 using WMS.Domain.Entities;
+using WMS.Tests.Common;
 
 namespace WMS.Api.IntegrationTests.Tests.Stocks
 {

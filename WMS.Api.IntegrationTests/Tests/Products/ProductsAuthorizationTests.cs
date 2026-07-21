@@ -5,6 +5,7 @@ using FluentAssertions;
 using WMS.Api.IntegrationTests.Helpers;
 using WMS.Application.Products.Commands;
 using WMS.Application.Products.Request;
+using WMS.Tests.Common;
 
 namespace WMS.Api.IntegrationTests.Tests.Products
 {

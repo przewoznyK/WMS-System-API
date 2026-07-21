@@ -1,4 +1,4 @@
-﻿namespace WMS.Api.IntegrationTests
+﻿namespace WMS.Tests.Common
 {
     public static class TestConstants
     {
@@ -8,10 +8,9 @@
         public const string SecondLocationCode = "AB-02-02";
         public const string ProductDescription = "Default description";
         public const string LocationDescription = "Default description";
-        public const int Quantity = 10;
         public const string ReferenceNumber = "REF-001";
-        public const int IssueQuantity = 3;
         public const string User = "Test-User";
-
+        public const int Quantity = 10;
+        public const int IssueQuantity = 3;
     }
 }

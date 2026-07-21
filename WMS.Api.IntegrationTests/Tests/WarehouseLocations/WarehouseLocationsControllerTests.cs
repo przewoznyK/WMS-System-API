@@ -6,6 +6,7 @@ using System.Net.Http.Json;
 using WMS.Api.IntegrationTests.Helpers;
 using WMS.Application.Products.Request;
 using WMS.Application.WarehouseLocations.Commands;
+using WMS.Tests.Common;
 
 namespace WMS.Api.IntegrationTests.Tests.WarehouseLocations
 {

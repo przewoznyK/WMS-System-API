@@ -19,6 +19,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\WMS.Api\WMS.Api.csproj" />
+		<ProjectReference Include="..\WMS.Tests.Common\WMS.Tests.Common.csproj" />
 	</ItemGroup>
 
 	<ItemGroup>
