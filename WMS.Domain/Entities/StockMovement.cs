@@ -36,6 +36,11 @@ namespace WMS.Domain.Entities
                 throw new WmsBusinessRuleException("Stock movement quantity cannot be zero.");
             }
 
+            if (string.IsNullOrWhiteSpace(createdByUserId))
+            {
+                throw new WmsNullOrEmptyException(nameof(createdByUserId));
+            }
+
             Id = Guid.NewGuid();
             ProductId = stock.ProductId;
             LocationId = stock.LocationId;

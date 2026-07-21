@@ -16,7 +16,7 @@ namespace WMS.Domain.Entities
             Description = null!;
         }
 
-        public Product(string sku, string name, string description = "")
+        public Product(string sku, string name, string? description = "")
         {
             if (string.IsNullOrWhiteSpace(sku))
             {
@@ -31,10 +31,10 @@ namespace WMS.Domain.Entities
             Id = Guid.NewGuid();
             Sku = sku;
             Name = name;
-            Description = description;
+            Description = description ?? "";
         }
 
-        public void UpdateDetails(string name, string description)
+        public void UpdateDetails(string name, string? description)
         {
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -42,7 +42,7 @@ namespace WMS.Domain.Entities
             }
 
             Name = name;
-            Description = description;
+            Description = description ?? "";
         }
     }
 }

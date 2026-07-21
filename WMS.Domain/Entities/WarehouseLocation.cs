@@ -16,21 +16,21 @@ namespace WMS.Domain.Entities
             Description = null!;
         }
 
-        public WarehouseLocation(string code, string description = "")
+        public WarehouseLocation(string code, string? description = "")
         {
             ValidateCode(code);
 
             Id = Guid.NewGuid();
             Code = code;
-            Description = description;
+            Description = description ?? "";
         }
 
-        public void UpdateDetails(string code, string description)
+        public void UpdateDetails(string code, string? description)
         {
             ValidateCode(code);
 
             Code = code;
-            Description = description;
+            Description = description ?? "";
         }
 
         private void ValidateCode(string code)

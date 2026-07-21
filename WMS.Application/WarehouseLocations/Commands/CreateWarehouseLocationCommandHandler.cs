@@ -25,7 +25,7 @@ namespace WMS.Application.WarehouseLocations.Commands
                 throw new WmsAlreadyExistsException(nameof(WarehouseLocation), nameof(request.Code), request.Code);
             }
 
-            WarehouseLocation newWarehouseLocation = new(request.Code, request.Description ?? "");
+            WarehouseLocation newWarehouseLocation = new(request.Code, request.Description);
             await _warehouseLocationRepository.Add(newWarehouseLocation);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
 

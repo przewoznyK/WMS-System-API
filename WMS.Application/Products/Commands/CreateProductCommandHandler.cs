@@ -25,7 +25,7 @@ namespace WMS.Application.Products.Commands
                 throw new WmsAlreadyExistsException(nameof(Product), nameof(request.Sku), request.Sku);
             }
 
-            Product newProduct = new(request.Sku, request.Name, request.Description ?? "");
+            Product newProduct = new(request.Sku, request.Name, request.Description);
 
             await _productRepository.Add(newProduct);
             await _unitOfWork.SaveChangesAsync(cancellationToken);
