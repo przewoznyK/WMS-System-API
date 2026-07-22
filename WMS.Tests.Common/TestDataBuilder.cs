@@ -1,4 +1,5 @@
 ﻿using WMS.Domain.Entities;
+using WMS.Domain.Enums;
 
 namespace WMS.Tests.Common
 {
@@ -20,6 +21,25 @@ namespace WMS.Tests.Common
                 location ?? CreateWarehouseLocation(),
                 quantity
             );
+        }
+
+        public static StockMovement CreateStockMovement(
+    Stock? stock = null,
+    OperationType operationType = OperationType.Receive,
+    int quantityChange = 10,
+    string createdByUserId = "test-user",
+    IssueType? issueType = null,
+    string? referenceNumber = null)
+        {
+            stock ??= CreateStock();
+
+            return new StockMovement(
+                stock,
+                operationType,
+                quantityChange,
+                createdByUserId,
+                issueType,
+                referenceNumber);
         }
     }
 }

@@ -3,7 +3,7 @@ using WMS.Application.Authentication.Interfaces;
 using WMS.Application.StockMovements.Response;
 using WMS.Domain.Repositories;
 
-namespace WMS.Application.Stocks.Queries
+namespace WMS.Application.StockMovements.Queries
 {
     internal class GetAllStockMovementsViewsQueryHandler : IRequestHandler<GetAllStockMovementsViewsQuery, IEnumerable<StockMovementResponse>>
     {
@@ -19,6 +19,9 @@ namespace WMS.Application.Stocks.Queries
         public async Task<IEnumerable<StockMovementResponse>> Handle(GetAllStockMovementsViewsQuery request, CancellationToken cancellationToken)
         {
             var stockMovements = await _stockMovementRepository.GetAllAsync(cancellationToken);
+
+            if (!stockMovements.Any())
+                return Enumerable.Empty<StockMovementResponse>();
 
             var users = await _userService.GetUsersAsync(stockMovements.Select(x => x.CreatedByUserId));
 

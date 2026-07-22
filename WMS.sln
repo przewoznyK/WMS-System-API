@@ -23,7 +23,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{B41BD957-E32
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{A4B6216C-EABC-47A6-8804-FCC49A4E9F32}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WMS.Domain.UnitTests", "WMS.Domain.UnitTests\WMS.Domain.UnitTests.csproj", "{353A7A83-21EE-4369-A900-FBAF5F7B9D62}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WMS.Domain.UnitTests", "WMS.Domain.UnitTests\WMS.Domain.UnitTests.csproj", "{353A7A83-21EE-4369-A900-FBAF5F7B9D62}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{240748B3-E185-4753-BB43-3DB933A0AC61}"
+	ProjectSection(SolutionItems) = preProject
+		WMS.runsettings = WMS.runsettings
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
