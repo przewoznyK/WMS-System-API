@@ -7,7 +7,7 @@ using WMS.Domain.Exceptions;
 using WMS.Domain.Repositories;
 using WMS.Tests.Common;
 
-namespace WMS.Application.UnitTests.Tests.Products
+namespace WMS.Application.UnitTests.Tests.Products.Commands
 {
     public class UpdateDetailsProductCommandHandlerTests
     {

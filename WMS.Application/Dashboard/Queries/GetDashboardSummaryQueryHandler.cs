@@ -2,7 +2,6 @@
 using WMS.Application.Common.Settings;
 using WMS.Application.Dashboard.Queries;
 using WMS.Application.Dashboard.Responses;
-using WMS.Domain.Entities;
 using WMS.Domain.Repositories;
 
 namespace WMS.Application.Products.Queries

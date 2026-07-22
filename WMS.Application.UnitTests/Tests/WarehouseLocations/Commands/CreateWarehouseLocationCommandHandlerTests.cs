@@ -6,7 +6,7 @@ using WMS.Domain.Exceptions;
 using WMS.Domain.Repositories;
 using WMS.Tests.Common;
 
-namespace WMS.Application.UnitTests.Tests.WarehouseLocations
+namespace WMS.Application.UnitTests.Tests.WarehouseLocations.Commands
 {
     public class CreateWarehouseLocationCommandHandlerTests
     {

@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using WMS.Application.StockMovements.Response;
 
-namespace WMS.Application.Stocks.Queries
+namespace WMS.Application.StockMovements.Queries
 {
     public record GetAllStockMovementsViewsQuery() : IRequest<IEnumerable<StockMovementResponse>>;
 }
