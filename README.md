@@ -2,7 +2,7 @@
 
 ![Status](https://img.shields.io/badge/status-in%20progress-orange)
 
-A full-stack Warehouse Management System built with **.NET 8**, **Blazor WebAssembly** and **Clean Architecture principles**.
+A full-stack Warehouse Management System built with .NET 8, Blazor WebAssembly and Clean Architecture principles, including automated testing of core business processes.
 
 > This project is currently under active development.  
 > Features, UI and architecture are continuously improved.
@@ -91,6 +91,15 @@ WMS.Application
     ↓
 WMS.Domain
 
+```
+               WMS.Client
+                    |
+                 WMS.Api
+                    |
+             WMS.Application
+                    |
+               WMS.Domain
+```
 WMS.Infrastructure implements Application interfaces
 
 Main concepts used:
@@ -103,6 +112,34 @@ Main concepts used:
 - Global exception handling
 
 ---
+
+## Testing
+
+The project includes automated unit, integration and API tests covering core business processes.
+
+Testing approach includes:
+
+- Unit testing of domain entities and business rules
+- Application layer testing with mocked dependencies
+- API integration testing using WebApplicationFactory
+- Designing positive and negative test scenarios
+- Validation of business rules and error handling
+- Manual REST API testing using Postman and Swagger
+- Validation of HTTP responses, authentication flow and CRUD operations
+
+Test stack:
+
+- xUnit
+- FluentAssertions
+- Moq
+- WebApplicationFactory
+- SQLite In-Memory
+- Coverlet
+- ReportGenerator
+
+Detailed testing documentation:
+
+[TESTING.md](TESTING.md)
 
 ## Tech Stack
 
@@ -168,3 +205,4 @@ Personal portfolio project created to demonstrate:
 - Database modeling
 - Frontend integration
 - Clean architecture
+- Automated software testing
